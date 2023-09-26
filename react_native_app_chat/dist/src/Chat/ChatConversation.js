@@ -47,12 +47,10 @@ const [userData,setUserData] = useState({
         to:props.item.targetUserId,
     }
     const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
-    console.log("response chat history",response.status)
-    if(response.status == true){
+   // console.log("response chat history",response.status)
       const reversedArray = response.reverse();
   
       setData(reversedArray)
-    }
     
   
       

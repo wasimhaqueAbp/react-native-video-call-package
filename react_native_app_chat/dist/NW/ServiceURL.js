@@ -8,7 +8,7 @@ export const ServiceConfig = {
    
       BASE_URL_FILE_UPLOAD: 'https://testdl.abpweddings.com',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
-     BASE_CHAT :"https://chatqa.abpweddings.com/api"
+     BASE_CHAT :"https://chatqa.abpweddings.com:6001/api"
     },
   
     UAT: {
@@ -17,7 +17,7 @@ export const ServiceConfig = {
    
        BASE_URL_FILE_UPLOAD: 'https://uatdl.abpweddings.com:8443',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
-      BASE_CHAT :"https://chatqa.abpweddings.com/api"
+      BASE_CHAT :"https://chatqa.abpweddings.com:6001/api"
     },
   
     PROD: {
@@ -25,7 +25,7 @@ export const ServiceConfig = {
       BASE_URL_SOF: 'https://sof.abpweddings.com',
       BASE_URL_FILE_UPLOAD: 'https://dl.abpweddings.com',
       BASE_URL_IMAGE: 'https://media.abpweddings.com',
-      BASE_CHAT :"https://chatqa.abpweddings.com/api"
+      BASE_CHAT :"https://chatqa.abpweddings.com:6001/api"
      },
   };
 export const getImageUrl = path => {

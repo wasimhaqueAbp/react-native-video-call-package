@@ -19,7 +19,7 @@ import { callApi } from '../../NW/APIManager';
 import  { ServiceConstant } from '../../NW/ServiceAPI';
  const ChatUserList = props => {
 //console.log("ChatUserList props",props.route.params.props)
-const newProps = props//props.route.params.props;
+const newProps = props //props.route.params.props; //props
 //const navigation = useNavigation();
 const inputRef = useRef(null);
 
@@ -90,11 +90,11 @@ const [data, setData] = useState([
     //setsocket(io("http://10.133.14.23:5001"));
       //const socketConnection = io("https://chatqa.abpweddings.com");
 
-      const socketConnection = io('ws://chatqa.abpweddings.com:6001',{
+      const socketConnection = io('wss://chatqa.abpweddings.com:6001',{
         "force new connection" : true,
           "reconnectionAttempts": "Infinity", 
         "timeout" : 10000,                  
-       //   "transports" : ["websocket"],
+      "transports" : ["websocket"],
         withCredentials: true,
        extraHeaders: {
          "my-custom-header": "abcd"

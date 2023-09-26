@@ -1,6 +1,6 @@
 {
   "name": "react_native_app_chat",
-  "version": "1.0.4",
+  "version": "1.0.3",
   "description": "This is video chat component",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,10 @@
     "react": "17.0.2",
     "react-dom": "^17.0.2",
     "react-native": "0.67.5",
-    "socket.io-client": "^4.7.2"
+    "socket.io-client": "^4.7.2",
+    "@react-navigation/native": "^6.1.7",
+    "@react-navigation/native-stack": "^6.9.13",
+    "react-native-safe-area-context": "^4.7.2",
+    "react-native-screens": "^3.25.0"
   }
 }
