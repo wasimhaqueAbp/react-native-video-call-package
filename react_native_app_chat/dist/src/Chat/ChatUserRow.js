@@ -1,0 +1,105 @@
+import React, {useState, useEffect, createRef, useRef} from 'react';
+
+import {
+  StyleSheet,
+  View,
+  Text,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+  Dimensions,
+  Platform,
+  Pressable,
+ 
+
+} from 'react-native';
+
+import {Divider, Button, Card, Avatar} from 'react-native-paper';
+import { formatChatDateTimeGMT, prepareShortName } from '../Utility/Utility';
+import { getImageUrl } from '../../NW/ServiceURL';
+
+import { formatChatDateTime } from '../Utility/Utility';
+
+export const Circle = ({size, color}) => {
+    
+  return <View style={styles.circleView(size,color)} />;
+
+};
+
+export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = true, style={marginHorizontal:16, marginVertical:8, elevation:2}}) => {
+ 
+ 
+    
+  return (
+        
+    //   <Card style={style}>
+    <View>
+      <Pressable style={styles.mainView} onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}>
+    
+       <View style={styles.imageMainView}>
+  
+       <Avatar.Image style={{backgroundColor:'white'}} size={55} source={{uri: getImageUrl(item.profileImageDtl)}} /> 
+  
+       <View style={styles.textMainView}>
+       
+        <View style={styles.flexRow}>
+        <View style={styles.flex1}>
+       <Text style={styles.userText(item)}> {prepareShortName(item.matrimonyUserName) + ", " }<Text style={styles.userIdText}> {item.userCode } </Text> </Text>
+  
+       
+       </View>
+       <View style={styles.dateMainView}>
+       <Text style={styles.dateText(item)}> {formatChatDateTimeGMT(item.lastMessageTime) } </Text>
+       </View>
+       </View>
+       <View style={styles.lastMessageView}>
+      
+       { showLastMessage && item.lastMessage != "" && (
+         <View style={styles.flex1}>
+        <Text 
+        numberOfLines={1}
+        style={styles.lastMessageText(item)}> {item.lastMessage} </Text>
+        </View>
+       )}
+       {item.userChatCount> 0 && (
+         <View style={styles.userCountMainView}>
+          <Text 
+        
+        style={styles.userCountText}> {item.userChatCount >99 ? "99+":item.userChatCount} </Text>
+        </View>
+       )}
+       </View>
+  
+       </View>
+  
+       </View>
+  
+      </Pressable>
+      </View>
+      //</Card>
+    
+    );
+  }
+
+
+  const styles = StyleSheet.create({
+
+    circleView:(size,color)=>({width: size, height: size, borderRadius: size / 2, backgroundColor: color, margin:2}),
+    mainView:{paddingVertical:12, marginLeft:0},
+    imageMainView:{flexDirection:'row', alignItems:'center'},
+    textMainView:{marginLeft:8, flex:1,},
+    flexRow:{ flexDirection:"row"},
+    flex1:{flex:1},
+    dateMainView:{justifyContent:"flex-end", alignItems:"flex-end"},
+    dateText:(item)=>({textAlign:"right", color: item.onlinestatus == 'true' ?  '#DB233D':"#717171",fontSize:13,}),
+    lastMessageView:{flexDirection:'row', alignItems:'center'},
+    userText:(item)=>({
+      fontWeight: item.onlinestatus == 'true' ? "500":"normal",
+      color: item.onlinestatus == 'true' ? "#262626" : "#262626"}),
+    userIdText:{color: "#DB233D"},
+    lastMessageText: (item)=>({fontSize:12,
+      fontWeight: item.onlinestatus == 'true' ? "500":"normal",
+       color: item.onlinestatus == 'true' ? "black" : "#717171"}),
+    userCountMainView:{backgroundColor:"#DB233D",alignItems:"center",justifyContent:"center", borderRadius:360, height:25,width:25,marginTop:4},
+    userCountText:{fontSize:12, color: "#FFFFFF",fontWeight:"500"}
+  })
