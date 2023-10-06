@@ -19,6 +19,8 @@ import { formatChatDateTime,formatTime,formatDate, getCreatedDate } from '../Uti
 import { ChatHeaderView } from './ChatHeaderView';
 import { callApi } from '../../NW/APIManager';
 import  { ServiceConstant } from '../../NW/ServiceAPI';
+import EmojiSelector,{Categories} from 'react-native-emoji-selector'
+
 const ChatConversation = (props,item) => {
 //console.log("props",props)
 // const [socket,setsocket] = useState(props.socket)
@@ -35,7 +37,7 @@ const [userData,setUserData] = useState({
               "test": "reply me"
           },
           "showDate": false,
-          readId:"send"
+          readId:"pending"
       },{
         "created_at": "2023-10-06T09:51:47.187Z",
         "fromSelf": true,
@@ -122,7 +124,7 @@ const [userData,setUserData] = useState({
         "created_at": "2023-09-26T09:51:40.567Z",
         "fromSelf": true,
         "message": {
-            "test": "how r u?"
+            "test": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
         },
         "showDate": false,
         readId:"read"
@@ -131,7 +133,7 @@ const [userData,setUserData] = useState({
         "created_at": "2023-09-26T09:51:47.187Z",
         "fromSelf": false,
         "message": {
-            "test": "i am fine"
+            "test": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
         },
         "showDate": true,
         readId:"read"
@@ -144,6 +146,7 @@ const [userData,setUserData] = useState({
         const [startIndex, setStartIndex] = React.useState(0);
         const [totalCount, setTotalCount] = React.useState(0);
         const [incomeMesage,setIncomeMesage]= React.useState(null);
+       const [showEmoji,setShowEmoji] = React.useState(false);
         const inputRef = useRef();
        
         useEffect( ()=>{
@@ -551,13 +554,31 @@ console.log('Last Processed Message Value:', lastProcessedMessageValue);
           
                 const chatInputView=()=>{
                   return(
+                    <View>
+                      
+
                     <View style={styles.inputMainView}>
                     <View style={styles.inputInnerView}>
-                    <TouchableOpacity style={{paddingLeft:5}} onPress={()=>{inputRef.current.focus()}}>
+                    <TouchableOpacity style={{paddingLeft:5}} onPress={()=>{ 
+                     // console.log(showEmoji)
+                      const emoji = showEmoji
+                      console.log(emoji)
+                      setShowEmoji(!showEmoji)
+                      
+                     // Keyboard.dismiss()
+                      if(emoji){
+                        inputRef.current.focus() 
+                      }
+                      else{
+                        Keyboard.dismiss()
+                      }
+                      
+                     //inputRef.current.focus()
+                    }}>
                     {/* <RNVectorIcon group='MaterialCommunityIcons' name="emoticon-happy-outline" size={30} color={"gray"} /> */}
                     <Image
         style={{height:25,width:25,marginRight:10}}
-       source={require('../icons/smile.png')} resizeMode="contain" /> 
+       source={showEmoji?require('../icons/mute.png') :require('../icons/smile.png')} resizeMode="contain" /> 
                     </TouchableOpacity>       
                               <TextInput 
                               ref={inputRef}
@@ -572,6 +593,9 @@ console.log('Last Processed Message Value:', lastProcessedMessageValue);
                               keyboardType='default'
                               clearButtonMode='always' 
                               onChangeText={onChangeText}
+                              onFocus={()=>{
+                                setShowEmoji(false)
+                              }}
                               /> 
                               </View>
                               
@@ -584,8 +608,20 @@ console.log('Last Processed Message Value:', lastProcessedMessageValue);
         style={{height:40,width:40,marginRight:10}}
        source={require('../icons/send.png')} resizeMode="contain" /> 
                             </TouchableOpacity>
-                           
-                            </View>
+
+                            
+                                    </View>
+                                   {showEmoji && <View style={{height:250}}>
+<EmojiSelector
+showTabs={false} 
+showSearchBar={false}
+columns={10}
+onEmojiSelected={emoji => console.log(emoji)}
+  category={Categories.emotion}
+ />
+</View>}
+                                    </View>
+
                   )
                 }
 

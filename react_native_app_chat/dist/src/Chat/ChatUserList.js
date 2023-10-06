@@ -17,12 +17,12 @@ import io from 'socket.io-client';
 import { callApi } from '../../NW/APIManager';
 
 import  { ServiceConstant } from '../../NW/ServiceAPI';
+import { DefaultView } from '../Utility/DefaultView';
  const ChatUserList = props => {
 //console.log("ChatUserList props",props.route.params.props)
 const newProps = props //props.route.params.props; //props
 //const navigation = useNavigation();
 const inputRef = useRef(null);
-
 const [searchText,setSearchText] = useState("")
 const [openUserDetailPage,setOpenUserDetailPage] = useState(false)
 const [items,setItems] = useState(null)
@@ -133,7 +133,19 @@ const [data, setData] = useState([
   "userChatCount": 0,
 },
   ])
+  const [isConnected, setIsConnected] = useState(false);
 
+  // useEffect(() => {
+  //   const handleConnectivityChange = (connectionInfo) => {
+  //     setIsConnected(connectionInfo.isConnected);
+  //   };
+
+  //   NetInfo.addEventListener('connectionChange', handleConnectivityChange);
+
+  //   return () => {
+  //     NetInfo.removeEventListener('connectionChange', handleConnectivityChange);
+  //   };
+  // }, []);
   useEffect(()=>{
     //setsocket(io("http://10.132.100.175:5001"));
     //setsocket(io("http://10.133.14.23:5001"));
@@ -358,6 +370,7 @@ setSearchText(e)
           setOpenUserDetailPage(false);
         }
     return (
+      
       <View style={styles.container}>
       {openUserDetailPage == false? 
         <View style={styles.container}>
@@ -377,7 +390,7 @@ setSearchText(e)
       }
       </View>
      
-       
+      
         
       );
 }
