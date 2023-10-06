@@ -44,8 +44,8 @@ export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = tru
        
         <View style={styles.flexRow}>
         <View style={styles.flex1}>
-       <Text style={styles.userText(item)}> {prepareShortName(item.matrimonyUserName) + ", " }<Text style={styles.userIdText}> {item.userCode } </Text> </Text>
-  
+       {/* <Text style={styles.userText(item)}> {prepareShortName(item.matrimonyUserName) + ", " }<Text style={styles.userIdText}> {item.userCode } </Text> </Text> */}
+       <Text style={styles.userText(item)}> {prepareShortName(item.matrimonyUserName)}</Text>
        
        </View>
        <View style={styles.dateMainView}>
@@ -54,18 +54,20 @@ export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = tru
        </View>
        <View style={styles.lastMessageView}>
       
-       { showLastMessage && item.lastMessage != "" && (
+        { showLastMessage && item.lastMessage != "" && ( 
          <View style={styles.flex1}>
         <Text 
         numberOfLines={1}
         style={styles.lastMessageText(item)}> {item.lastMessage} </Text>
         </View>
-       )}
-       {item.userChatCount> 0 && (
+        )} 
+        {item.userChatCount> 0 && ( 
          <View style={styles.userCountMainView}>
           <Text 
         
-        style={styles.userCountText}> {item.userChatCount >99 ? "99+":item.userChatCount} </Text>
+        style={styles.userCountText}> {item.userChatCount >99 ? "99+":"2"}
+        {/* item.userChatCount */}
+         </Text>
         </View>
        )}
        </View>
@@ -94,12 +96,13 @@ export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = tru
     dateText:(item)=>({textAlign:"right", color: item.onlinestatus == 'true' ?  '#DB233D':"#717171",fontSize:13,}),
     lastMessageView:{flexDirection:'row', alignItems:'center'},
     userText:(item)=>({
+      fontSize:16,
       fontWeight: item.onlinestatus == 'true' ? "500":"normal",
       color: item.onlinestatus == 'true' ? "#262626" : "#262626"}),
     userIdText:{color: "#DB233D"},
-    lastMessageText: (item)=>({fontSize:12,
+    lastMessageText: (item)=>({fontSize:13,
       fontWeight: item.onlinestatus == 'true' ? "500":"normal",
-       color: item.onlinestatus == 'true' ? "black" : "#717171"}),
+       color: item.onlinestatus == 'true' ? "#000000" : "#777777"}),
     userCountMainView:{backgroundColor:"#DB233D",alignItems:"center",justifyContent:"center", borderRadius:360, height:25,width:25,marginTop:4},
     userCountText:{fontSize:12, color: "#FFFFFF",fontWeight:"500"}
   })

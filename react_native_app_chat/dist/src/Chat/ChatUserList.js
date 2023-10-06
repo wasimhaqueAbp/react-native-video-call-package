@@ -32,57 +32,106 @@ const [userData,setUserData] = useState({
 })
 let selectItem = null
 const [data, setData] = useState([
-    // {
-    //   lastMessage:'hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd',
-    //   lastMessageTime: '12-06-2023 09:54:57 GMT',
-    //   matrimonyUserName: 'Test User',
-    //   onlinestatus: 'true',
-    //   profileImageDtl: '/documents/images/image-Male.jpg',
-    //   targetUserId: 2713882,
-    //   userCode: 'AW27605902',
-    //   userFullName: 'Test.U(AW27605902)',
-    //   userJID:'test.testagent1001@ip-10-200-18-60.ap-southeast-1.compute.internal',
-    //   userChatCount: 20,
-    // },
-    // {
-    //   lastMessage: 'hello',
-    //   lastMessageTime: '09-06-2023 10:07:02 GMT',
-    //   matrimonyUserName: 'Test User',
-    //   onlinestatus: 'false',
-    //   profileImageDtl:'/documents/4c8659d9d0d078cb5669b01d6b0981b1/1686311304191.jpg',
-    //   targetUserId: 2713678,
-    //   userCode: 'AW54903997',
-    //   userFullName: 'Test.U(AW54903997)',
-    //   userJID: 'test.agent5@ip-10-200-18-60.ap-southeast-1.compute.internal',
-    //   userChatCount: 0,
-    // },
-  ]);
+  {
+    "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
+    "lastMessageTime": "05-10-2023 15:26:46 GMT",
+    "matrimonyUserName": "Test Marathi",
+    "onlinestatus": "true",
+    "profileImageDtl": "/documents/images/image-Female.jpg",
+    "targetUserId": 2702140,
+    "userCode": "AW69998014",
+    "userFullName": "Test.M(AW69998014)",
+    "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
+    "userChatCount": 20,
+},
+{
+    "lastMessage": "hello",
+    "lastMessageTime": "05-10-2023 05:24:46 GMT",
+    "matrimonyUserName": "Test Femaletest",
+    "onlinestatus": "false",
+    "profileImageDtl": "/documents/images/image-Female.jpg",
+    "targetUserId": 2699360,
+    "userCode": "AW93971116",
+    "userFullName": "Test.F(AW93971116)",
+    "userJID": "test.test99367@ip-10-200-18-60.ap-southeast-1.compute.internal",
+    "userChatCount": 0,
+},
+{
+  "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
+  "lastMessageTime": "04-10-2023 06:44:46 GMT",
+  "matrimonyUserName": "Test Marathi new",
+  "onlinestatus": "false",
+  "profileImageDtl": "/documents/images/image-Female.jpg",
+  "targetUserId": 2702140,
+  "userCode": "AW69998014",
+  "userFullName": "Test.M(AW69998014)",
+  "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
+  "userChatCount": 0,
+},
+{
+"lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
+"lastMessageTime": "13-06-2023 06:44:46 GMT",
+"matrimonyUserName": "Test new",
+"onlinestatus": "false",
+"profileImageDtl": "/documents/images/image-Female.jpg",
+"targetUserId": 2702140,
+"userCode": "AW69998014",
+"userFullName": "Test.M(AW69998014)",
+"userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
+"userChatCount": 0,
+},
+   
+]);
 
   const [previousData,setPreviousData] = useState([
-    // {
-    //   lastMessage:'hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd',
-    //   lastMessageTime: '12-06-2023 09:54:57 GMT',
-    //   matrimonyUserName: 'Test User',
-    //   onlinestatus: 'true',
-    //   profileImageDtl: '/documents/images/image-Male.jpg',
-    //   targetUserId: 2713882,
-    //   userCode: 'AW27605902',
-    //   userFullName: 'Test.U(AW27605902)',
-    //   userJID:'test.testagent1001@ip-10-200-18-60.ap-southeast-1.compute.internal',
-    //   userChatCount: 20,
-    // },
-    // {
-    //   lastMessage: 'hello',
-    //   lastMessageTime: '09-06-2023 10:07:02 GMT',
-    //   matrimonyUserName: 'Test User',
-    //   onlinestatus: 'false',
-    //   profileImageDtl:'/documents/4c8659d9d0d078cb5669b01d6b0981b1/1686311304191.jpg',
-    //   targetUserId: 2713678,
-    //   userCode: 'AW54903997',
-    //   userFullName: 'Test.U(AW54903997)',
-    //   userJID: 'test.agent5@ip-10-200-18-60.ap-southeast-1.compute.internal',
-    //   userChatCount: 0,
-    // },
+    {
+      "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
+      "lastMessageTime": "13-06-2023 06:44:46 GMT",
+      "matrimonyUserName": "Test Marathi",
+      "onlinestatus": "true",
+      "profileImageDtl": "/documents/images/image-Female.jpg",
+      "targetUserId": 2702140,
+      "userCode": "AW69998014",
+      "userFullName": "Test.M(AW69998014)",
+      "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
+      "userChatCount": 20,
+  },
+  {
+      "lastMessage": "hello",
+      "lastMessageTime": "13-06-2023 06:02:33 GMT",
+      "matrimonyUserName": "Test Femaletest",
+      "onlinestatus": "false",
+      "profileImageDtl": "/documents/images/image-Female.jpg",
+      "targetUserId": 2699360,
+      "userCode": "AW93971116",
+      "userFullName": "Test.F(AW93971116)",
+      "userJID": "test.test99367@ip-10-200-18-60.ap-southeast-1.compute.internal",
+      "userChatCount": 0,
+  },
+  {
+    "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
+    "lastMessageTime": "13-06-2023 06:44:46 GMT",
+    "matrimonyUserName": "Test Marathi new",
+    "onlinestatus": "false",
+    "profileImageDtl": "/documents/images/image-Female.jpg",
+    "targetUserId": 2702140,
+    "userCode": "AW69998014",
+    "userFullName": "Test.M(AW69998014)",
+    "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
+    "userChatCount": 0,
+},
+{
+  "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
+  "lastMessageTime": "13-06-2023 06:44:46 GMT",
+  "matrimonyUserName": "Test new",
+  "onlinestatus": "false",
+  "profileImageDtl": "/documents/images/image-Female.jpg",
+  "targetUserId": 2702140,
+  "userCode": "AW69998014",
+  "userFullName": "Test.M(AW69998014)",
+  "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
+  "userChatCount": 0,
+},
   ])
 
   useEffect(()=>{
@@ -117,7 +166,7 @@ const [data, setData] = useState([
     }
 },[userData,socket]);
   useEffect(()=>{
-      fetchChatFriends()
+    //  fetchChatFriends()
 
     //const result = await isUserPaidMember(null)
     //setIsPaidMember(result)
@@ -134,7 +183,7 @@ const [data, setData] = useState([
       //setIsLoading(true)
 
       const response =  await callApi(ServiceConstant.FETCH_CHAT_FRIENDS_LIST, null);
-
+      console.log(response)
       if(response != null && response['chatFriendList'] != null){
 
         let result = response.chatFriendList

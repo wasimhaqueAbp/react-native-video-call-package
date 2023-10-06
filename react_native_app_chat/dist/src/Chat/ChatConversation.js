@@ -3,7 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
-  
+  StatusBar,
   FlatList,
   TouchableOpacity,
   TextInput,
@@ -15,7 +15,7 @@ import {
   Linking,
   Platform
 } from 'react-native';
-import { formatChatDateTime, getCreatedDate } from '../Utility/Utility';
+import { formatChatDateTime,formatTime,formatDate, getCreatedDate } from '../Utility/Utility';
 import { ChatHeaderView } from './ChatHeaderView';
 import { callApi } from '../../NW/APIManager';
 import  { ServiceConstant } from '../../NW/ServiceAPI';
@@ -27,7 +27,119 @@ const [userData,setUserData] = useState({
   userId:2713882
 })
     const [data, setData] = React.useState(
-        []);
+       [
+        {
+          "created_at": "2023-10-06T09:51:47.187Z",
+          "fromSelf": true,
+          "message": {
+              "test": "reply me"
+          },
+          "showDate": false,
+          readId:"send"
+      },{
+        "created_at": "2023-10-06T09:51:47.187Z",
+        "fromSelf": true,
+        "message": {
+            "test": "where r u?"
+        },
+        "showDate": false,
+        readId:"send"
+    },
+        {
+          "created_at": "2023-10-06T09:51:47.187Z",
+          "fromSelf": true,
+          "message": {
+              "test": "good"
+          },
+          "showDate": false,
+          readId:"received"
+      },
+        {
+          "created_at": "2023-10-06T09:51:47.187Z",
+          "fromSelf": true,
+          "message": {
+              "test": "i am fine"
+          },
+          "showDate": false,
+          readId:"read"
+      },
+       
+      {
+          "created_at": "2023-10-06T09:51:47.187Z",
+          "fromSelf": false,
+          "message": {
+              "test": "i am fine"
+          },
+          "showDate": true,
+          readId:"send"
+      },
+      {
+        "created_at": "2023-10-05T08:43:41.898Z",
+        "fromSelf": true,
+        "message": {
+            "test": "hi"
+        },
+        "showDate": false,
+        readId:"received"
+    },
+    {
+        "created_at": "2023-10-05T09:48:50.026Z",
+        "fromSelf": false,
+        "message": {
+            "test": "hi"
+        },
+        "showDate": false,
+        readId:"read"
+    },
+    {
+        "created_at": "2023-10-05T09:51:40.567Z",
+        "fromSelf": true,
+        "message": {
+            "test": "how r u?"
+        },
+        "showDate": true,
+        readId:"read"
+    },
+      {
+        "created_at": "2023-09-26T08:43:41.898Z",
+        "fromSelf": true,
+        "message": {
+            "test": "hi"
+        },
+        "showDate": false,
+        readId:"read"
+    },
+    {
+        "created_at": "2023-09-26T09:48:50.026Z",
+        "fromSelf": false,
+        "message": {
+            "test": "hi"
+        },
+        "showDate": false,
+        readId:"read"
+    },
+    {
+        "created_at": "2023-09-26T09:51:40.567Z",
+        "fromSelf": true,
+        "message": {
+            "test": "how r u?"
+        },
+        "showDate": false,
+        readId:"read"
+    },
+    {
+        "created_at": "2023-09-26T09:51:47.187Z",
+        "fromSelf": false,
+        "message": {
+            "test": "i am fine"
+        },
+        "showDate": true,
+        readId:"read"
+    },
+    
+
+        
+    ]);
         const [chatText, setChatText] = React.useState(null);
         const [startIndex, setStartIndex] = React.useState(0);
         const [totalCount, setTotalCount] = React.useState(0);
@@ -37,7 +149,7 @@ const [userData,setUserData] = useState({
         useEffect( ()=>{
           
           if(props.item!=null && props.item.targetUserId!=null && userData!=null){
-            chatHistory() 
+            //chatHistory() 
           }
       },[props.item,userData]);
   const chatHistory = async ()=>{
@@ -47,10 +159,31 @@ const [userData,setUserData] = useState({
         to:props.item.targetUserId,
     }
     const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
-   // console.log("response chat history",response.status)
-      const reversedArray = response.reverse();
+    console.log("response chat history",response)
+  //  const groupedData = response.reduce((result, item) => {
+  //   const date = item.created_at.split('T')[0];
+  //   if (!result[date]) {
+  //     result[date] = { date, message: [] };
+  //   }
+  //   result[date].message.push(item);
+  //   return result;
+  // }, {});
+  // const formattedData = Object.values(groupedData);
+  // console.log("groupedData",groupedData)
+
+  const processedMessages = response.map((message, index) => {
+    const showDate =
+      index === 0 ||
+      new Date(message.created_at).toDateString() !==
+        new Date(response[index - 1].created_at).toDateString();
+    return { ...message, showDate };
+  });
+  console.log("processedMessages",processedMessages)
+  const reversedArray = processedMessages.reverse();
+     // const reversedArray = response.reverse();
   
       setData(reversedArray)
+    // setData(processedMessages)
     
   
       
@@ -312,28 +445,39 @@ const [userData,setUserData] = useState({
           
            } 
            const didSendMessage = async (chatText) => {
-            console.log("chatText")
+            console.log("chatText",data);
+            //const reverseData =data.reverse()
+            const processedMessages = data.map((message, index) => {
+              const showDate =
+                index === 0 ||
+                new Date(message.created_at).toDateString() !==
+                  new Date(data[index - 1].created_at).toDateString();
+              return showDate ;
+            });
+            console.log("processedMessages",processedMessages)
+            const lastProcessedMessageValue = processedMessages[processedMessages.length - 1];
+console.log('Last Processed Message Value:', lastProcessedMessageValue);
            
-
             const message ={
               "fromSelf": true,
               "message": {
                   "test":chatText
               },
-              "created_at":  getCreatedDate()
+              "created_at":  getCreatedDate(),
+              "showDate":lastProcessedMessageValue ? false: true
           }
-            
-            setData(addAfter(data, 0, message))
-            let arr={
-              from:userData.userId,
-              to:props.item.targetUserId,
-              message:chatText
-          }
-          console.log("socket",socket)
-            socket.emit("send-msg",arr);
+            console.log(getCreatedDate())
+           setData(addAfter(data, 0, message))
+          //   let arr={
+          //     from:userData.userId,
+          //     to:props.item.targetUserId,
+          //     message:chatText
+          // }
+          // console.log("socket",socket)
+          //   socket.emit("send-msg",arr);
 
-            setChatText(null)
-          const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr);
+          //   setChatText(null)
+          // const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr);
          // console.log("response chat history",response)
         
         
@@ -352,41 +496,55 @@ const [userData,setUserData] = useState({
                   // https://www.freecodecamp.org/news/design-imessage-like-chat-bubble-react-native/
           
         //const alignment = 2713882  == item.creatorId ? "left" : "right"; //props.route.params.targetUserId == item.creatorId ? "left" : "right"
-          
+        
         const alignment = item.fromSelf  ==false ? "left" : "right"; //props.route.params.targetUserId == item.creatorId ? "left" : "right"
-          
+  
                 const dateVal = () => {
-          
-                  return formatChatDateTime(item.created_at)
+                  return formatTime(item.created_at)
+                 // return formatChatDateTime(item.created_at)
           
                 } 
                  
                 return (
+                  <View>
+                     {item.showDate && (
+          <View style={styles.dateContainer}>
+            <Text style={styles.dateText}>{formatDate(item.created_at)}</Text>
+          </View>
+        )}
               
                     <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
+                   
                       <Text style={{ fontSize: 14, color: "black", }} key={index}>{item.message.test}</Text>
                       <View style={{flexDirection:"row",justifyContent:"flex-end"}}>
                       <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
-                      {/* {item.readId=="send"&& alignment == "right" &&<Icon name={'checkmark-outline'} size={15} color={'#838383'} /> } */}
-                      {/* {item.readId=="received"&& alignment == "right" && <Icon name={'checkmark-done-outline'} size={15} color={'#838383'} />} */}
-                      {/* {item.readId=="read"&& alignment == "right" && <Icon name={'checkmark-done-outline'} size={15} color={'#0087C3'} />} */}
+                      
                       {item.readId=="send"&& alignment == "right" &&
                       <Image
-        style={{height:10,width:10,}}
+        style={{height:10,width:10,marginLeft:6,marginTop:2}}
        source={require('../icons/send_tick.png')} resizeMode="contain" /> 
                       }
                       {item.readId=="received"&& alignment == "right" && 
                       <Image
-        style={{height:15,width:15,}}
+        style={{height:15,width:15,marginLeft:6,}}
        source={require('../icons/received_tick.png')} resizeMode="contain" /> 
                       } 
                       {item.readId=="read"&& alignment == "right" && 
                       <Image
-        style={{height:15,width:15,}}
+        style={{height:15,width:15,marginLeft:6,}}
        source={require('../icons/seen_tick.png')} resizeMode="contain" /> 
+                      } 
+                      {item.readId=="pending"&& alignment == "right" && 
+                      <Image
+        style={{height:15,width:15,marginLeft:6,}}
+       source={require('../icons/time_left.png')} resizeMode="contain" /> 
                       } 
                       </View>
                     </View> 
+                  
+                    
+                    </View>
+          
                 );
                  
                 }
@@ -424,7 +582,7 @@ const [userData,setUserData] = useState({
                              {/* <RNVectorIcon group='MaterialCommunityIcons' name="send" size={25} color={"white"} /> */}
                              <Image
         style={{height:40,width:40,marginRight:10}}
-       source={require('../icons/send_btn_chat.png')} resizeMode="contain" /> 
+       source={require('../icons/send.png')} resizeMode="contain" /> 
                             </TouchableOpacity>
                            
                             </View>
@@ -435,7 +593,8 @@ const [userData,setUserData] = useState({
 
     return(
         <View style={styles.container}>
-            <ChatHeaderView style={{height:70, width: "100%", elevation:4}}
+            <ChatHeaderView 
+            
              item={props.item}
     //          item ={ {
     //   lastMessage:'hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd',
@@ -526,8 +685,12 @@ const styles = StyleSheet.create({
       },
       inputMainView:{flexDirection:'row', justifyContent:'space-between', alignContent:'center',paddingVertical:10,paddingHorizontal:12},
       inputInnerView:{flexDirection:"row",backgroundColor:"white", alignItems:"center",borderWidth:1,borderRadius:20,borderColor:"#717171",width:"85%"},
-      sendMainView:{height:45,width:45, backgroundColor:"#DB233D",alignItems:"center",justifyContent:"center",borderRadius:360,paddingLeft:4}
-
+      sendMainView:{height:45,width:45, backgroundColor:"#DB233D",alignItems:"center",justifyContent:"center",borderRadius:360,paddingLeft:4},
+      dateContainer: {
+        flex: 1,
+        alignItems: 'center',
+        marginBottom: 10,
+      },
 })
 
 export default ChatConversation

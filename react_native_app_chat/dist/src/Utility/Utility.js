@@ -88,9 +88,9 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
     let displayVal = "Now"
   
     try {
-  
-        const dateString = new Date(createdAt).replace(" GMT", "")
+        const newCreatedDate = createdAt.replace(" GMT", "")
         
+        const dateString = newCreatedDate //.replace(" GMT", "")
         //const formattedDateTime = DATE.format(dateString, 'DD-MM-YYYY HH:mm:ss');
 
         const date =  DATE.parse(dateString, 'DD-MM-YYYY HH:mm:ss', true)
@@ -114,18 +114,91 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
   
           //displayVal =  format(date, 'h:mm a')
   
-          displayVal = DATE.format(date, 'hh:mm A');
+          displayVal = "Today"//DATE.format(date, 'hh:mm A');
   
          } 
          else {
   
-          displayVal =  DATE.format(date, 'DD MMM, YYYY')
+          displayVal =  DATE.format(date, 'DD/MM/YYYY')
   
          }
         }
         catch(e){
   
+          console.log(e)
+  
+         // displayVal = dateString
+        }
+  
+       return  displayVal
+  
+  }
+  export const formatTime = (createdAt) =>{
+
+    let displayVal = "Now"
+  
+    try {
+  
+        const dateString = new Date(createdAt) //.replace(" GMT", "")
+        
+        const formattedDateTime = DATE.format(dateString, 'HH:mm A');
+
+        displayVal = formattedDateTime
+        }
+        catch(e){
+  
           //console.log(e)
+  
+         // displayVal = dateString
+        }
+  
+       return  displayVal
+  
+  }
+  export const formatDate = (createdAt) =>{
+
+    let displayVal = "Now"
+  
+    try {
+  
+        const dateString = new Date(createdAt) //.replace(" GMT", "")
+       // console.log("dateString",dateString)
+       // const date = DATE.format(dateString, 'DD/MM/YYYY HH:mm:ss');
+
+       // displayVal = formattedDateTime
+       const currentDate = new Date() 
+ 
+       let yesterDayDate  = new Date()
+       
+       yesterDayDate.setDate(currentDate.getDate() - 1);
+       const yesterDay =  DATE.format(yesterDayDate, 'DD', true)
+       
+        const diff = (currentDate.getTime() - dateString.getTime())/1000
+        
+        if(diff < 60){
+         displayVal = "Today"
+        }
+        else if (dateString.getDate() == yesterDay) {
+ 
+         displayVal =  "Yesterday"
+        }
+        else if (diff < 60*60*24) { //Today
+ 
+         //displayVal =  format(date, 'h:mm a')
+ 
+         displayVal = "Today" //DATE.format(date, 'hh:mm A');
+ 
+        } 
+        else {
+ 
+         displayVal =  DATE.format(dateString, 'DD/MM/YYYY')
+ 
+        }
+      
+        }
+        catch(e){
+  
+          console.log(e)
   
          // displayVal = dateString
         }

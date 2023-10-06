@@ -23,10 +23,15 @@ import { useNavigation } from '@react-navigation/native';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { prepareShortName } from '../Utility/Utility';
 import { RNVectorIcon } from '../Utility/RNVectorIcon';
-export const ChatHeaderView = ({item, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback, style={marginHorizontal:16, marginVertical:8, elevation:2}} ) => {
+import {useTranslation, withTranslation} from 'react-i18next';
+export const ChatHeaderView = ({item, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback, 
+  style={borderRadius:0,backgroundColor:"#FFF",elevation:2}
+} 
+  ) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
  /// const navigation = useNavigation();
  //console.log("item header", item)
+ //const {t, i18n} = useTranslation();
 return(
     <Card style={style}>
     <Pressable style={{paddingVertical:16, marginHorizontal:10}} onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}>
@@ -54,18 +59,12 @@ return(
        <Text style={{color:"black",fontWeight:"500"  }}> {prepareShortName(item.matrimonyUserName)} </Text>
        <Text style={{color:"#DB233D",fontWeight:"500" }}> {item.userCode } </Text>
   </View>
-  <View>
+  {/* <View>
   <Pressable onPress={() => onAudioPress()}>
   <Image
         style={{height:25,width:25,marginLeft: 8,paddingRight:10,}}
        source={require('../icons/smile.png')} resizeMode="contain" /> 
-                 {/* <RNVectorIcon
-                  group='Feather'
-                  style={{marginLeft: 8,paddingRight:10,}}
-                  name="phone-call"
-                  size={25}
-                  color="black"
-                /> */}
+                 
               </Pressable>
   </View>
   <View>
@@ -73,15 +72,9 @@ return(
   <Image
         style={{height:25,width:25,marginLeft:10}}
        source={require('../icons/smile.png')} resizeMode="contain" /> 
-                 {/* <RNVectorIcon
-                  group='Feather'
-                  style={{marginLeft: 8}}
-                  name="video"
-                  size={25}
-                  color="black"
-                /> */}
+                 
               </Pressable>
-  </View>
+  </View> */}
   <View>
   <Menu
             visible={isMenuVisible}
@@ -89,7 +82,7 @@ return(
               <Pressable onPress={() => setIsMenuVisible(true)}>
               <Image
         style={{height:25,width:25,marginLeft:10}}
-       source={require('../icons/dots.png')} resizeMode="contain" /> 
+       source={require('../icons/app_menu_black.png')} resizeMode="contain" /> 
                  {/* <RNVectorIcon
                   group='MaterialCommunityIcons'
                   style={{marginLeft: 8}}
@@ -100,18 +93,48 @@ return(
               </Pressable>
             }
             onRequestClose={() => setIsMenuVisible(false)}>
-           {/* <MenuItem onPress={() => {
+          <MenuItem onPress={() => {
               setIsMenuVisible(false)
-              onMenuPress("not")}}>
-              {t('lbl-Not-my-type')}
+              onMenuPress("block")}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight:10 }}>
+      
+      <Image
+      resizeMode="contain"
+  source={require('../icons/block_user.png')}
+  style={{ width: 20, height: 20, marginRight: 10,marginLeft:15  }}
+/>
+<Text> {"Block"}</Text>
+     </View>
+    
             </MenuItem>
-             <MenuItem onPress={() => {}}>
-              {t('lbl-Block-User')}
-            </MenuItem> */}
-            <MenuItem onPress={()=>{
+             <MenuItem onPress={() => {
+               setIsMenuVisible(false)
+              onMenuPress("report")
+             }}>
+             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      
+      <Image
+      resizeMode="contain"
+  source={require('../icons/report_abuse.png')}
+  style={{ width: 20, height: 20, marginRight: 10 ,marginLeft:15}}
+/>
+<Text> {"Report Abuse"}</Text>
+     </View>
+    
+            </MenuItem> 
+            <MenuItem 
+            onPress={()=>{
               setIsMenuVisible(false)
-              onMenuPress("report") }}>
-              {"Report Abuse"}
+              onMenuPress("mute") }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      
+              <Image
+              resizeMode="contain"
+          source={require('../icons/mute.png')}
+          style={{ width: 20, height: 20, marginRight: 10 ,marginLeft:15}}
+        />
+        <Text> {"Mute"}</Text>
+             </View>
             </MenuItem>
           </Menu>
           </View>
