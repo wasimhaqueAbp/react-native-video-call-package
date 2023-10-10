@@ -101,9 +101,9 @@ return(
       <Image
       resizeMode="contain"
   source={require('../icons/block_user.png')}
-  style={{ width: 20, height: 20, marginRight: 10,marginLeft:15  }}
+  style={{ width: 20, height: 20, marginRight: 10  }}
 />
-<Text> {"Block"}</Text>
+<Text style={{color:"black",  }}> {"Block"}</Text>
      </View>
     
             </MenuItem>
@@ -116,9 +116,9 @@ return(
       <Image
       resizeMode="contain"
   source={require('../icons/report_abuse.png')}
-  style={{ width: 20, height: 20, marginRight: 10 ,marginLeft:15}}
+  style={{ width: 20, height: 20, marginRight: 10 }}
 />
-<Text> {"Report Abuse"}</Text>
+<Text style={{color:"black",  }}> {"Report Abuse"}</Text>
      </View>
     
             </MenuItem> 
@@ -131,9 +131,9 @@ return(
               <Image
               resizeMode="contain"
           source={require('../icons/mute.png')}
-          style={{ width: 20, height: 20, marginRight: 10 ,marginLeft:15}}
+          style={{ width: 20, height: 20, marginRight: 10}}
         />
-        <Text> {"Mute"}</Text>
+        <Text style={{color:"black", }}> {"Mute"}</Text>
              </View>
             </MenuItem>
           </Menu>

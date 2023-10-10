@@ -13,18 +13,22 @@ import {
   Permissions,
   Alert,
   Linking,
-  Platform
+  Platform,
+  Pressable,
+  BackHandler
 } from 'react-native';
 import { formatChatDateTime,formatTime,formatDate, getCreatedDate } from '../Utility/Utility';
 import { ChatHeaderView } from './ChatHeaderView';
 import { callApi } from '../../NW/APIManager';
 import  { ServiceConstant } from '../../NW/ServiceAPI';
 import EmojiSelector,{Categories} from 'react-native-emoji-selector'
-
+import {useNetInfo} from "@react-native-community/netinfo";
+import DATE from 'date-and-time';
 const ChatConversation = (props,item) => {
 //console.log("props",props)
 // const [socket,setsocket] = useState(props.socket)
 const {socket} = props
+const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
   userId:2713882
 })
@@ -142,13 +146,32 @@ const [userData,setUserData] = useState({
 
         
     ]);
-        const [chatText, setChatText] = React.useState(null);
+        const [chatText, setChatText] = React.useState("");
         const [startIndex, setStartIndex] = React.useState(0);
         const [totalCount, setTotalCount] = React.useState(0);
         const [incomeMesage,setIncomeMesage]= React.useState(null);
        const [showEmoji,setShowEmoji] = React.useState(false);
         const inputRef = useRef();
        
+        
+        useEffect(() => {
+          const backHandler = BackHandler.addEventListener(
+            'hardwareBackPress',
+            () => {
+              // Handle the back button press (e.g., navigate back or show a confirmation dialog)
+              // Return true to indicate that we've handled the back button
+              // Return false to let the default behavior (e.g., exit the app) happen
+              // For example:
+              // navigateBack(); // Implement your navigation logic
+              props.goBack()
+              return true;
+            }
+          );
+      
+          return () => {
+            backHandler.remove(); // Unsubscribe from the event when the component is unmounted
+          };
+        }, []); 
         useEffect( ()=>{
           
           if(props.item!=null && props.item.targetUserId!=null && userData!=null){
@@ -288,8 +311,8 @@ const [userData,setUserData] = useState({
         const onChangeText = (text) => {
 
             //  //console.log(text)
-        
-              setChatText(text)
+            
+        setChatText(text)
         
             }
 
@@ -448,26 +471,42 @@ const [userData,setUserData] = useState({
           
            } 
            const didSendMessage = async (chatText) => {
-            console.log("chatText",data);
-            //const reverseData =data.reverse()
-            const processedMessages = data.map((message, index) => {
-              const showDate =
-                index === 0 ||
-                new Date(message.created_at).toDateString() !==
-                  new Date(data[index - 1].created_at).toDateString();
-              return showDate ;
-            });
-            console.log("processedMessages",processedMessages)
-            const lastProcessedMessageValue = processedMessages[processedMessages.length - 1];
-console.log('Last Processed Message Value:', lastProcessedMessageValue);
-           
+           // console.log("chatText",data);
+           // const reverseData =data.reverse()
+            // const processedMessages = data.map((message, index) => {
+            //   const showDate =
+            //     index === 0 ||
+            //     new Date(message.created_at).toDateString() !==
+            //       new Date(data[index - 1].created_at).toDateString();
+            //   return showDate ;
+            // });
+            // console.log("processedMessages",processedMessages)
+//             const lastProcessedMessageValue = revData[revData.length - 1];
+// console.log('Last Processed Message Value:', lastProcessedMessageValue);
+let value = true;
+
+const lastMsgDate=new Date(data[0].created_at);
+const formateDate = DATE.format(lastMsgDate, 'DD/MM/YYYY')
+const currentDate = new Date();
+const formateCurrentDate = DATE.format(currentDate, 'DD/MM/YYYY')
+
+
+
+//console.log(formateDate )
+//console.log(formateCurrentDate)
+
+if (formateDate === formateCurrentDate) {
+  value = false;
+}
+//console.log('Value:', value);
             const message ={
               "fromSelf": true,
               "message": {
                   "test":chatText
               },
               "created_at":  getCreatedDate(),
-              "showDate":lastProcessedMessageValue ? false: true
+              "showDate":value,
+              "readId": netInfo.isConnected ? "send":"pending"
           }
             console.log(getCreatedDate())
            setData(addAfter(data, 0, message))
@@ -479,7 +518,7 @@ console.log('Last Processed Message Value:', lastProcessedMessageValue);
           // console.log("socket",socket)
           //   socket.emit("send-msg",arr);
 
-          //   setChatText(null)
+           setChatText("")
           // const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr);
          // console.log("response chat history",response)
         
@@ -592,7 +631,9 @@ console.log('Last Processed Message Value:', lastProcessedMessageValue);
                               placeholder={"Start Conversation"}
                               keyboardType='default'
                               clearButtonMode='always' 
-                              onChangeText={onChangeText}
+                              onChangeText={(text)=>{
+                                onChangeText(text)
+                              }}
                               onFocus={()=>{
                                 setShowEmoji(false)
                               }}
@@ -612,13 +653,26 @@ console.log('Last Processed Message Value:', lastProcessedMessageValue);
                             
                                     </View>
                                    {showEmoji && <View style={{height:250}}>
+                                   {/* <TouchableOpacity  style={{backgroundColor:"red",width:35, height:30,alignSelf:"flex-end",justifyContent:"center",alignItems:"center",}}
+                                  onPress={()=>{
+                                    
+                                   // setChatText( chatText.slice(0, -1));
+ }}
+ >
+                                   <Text>{"⌫"}</Text>
+                                   </TouchableOpacity>           */}
 <EmojiSelector
 showTabs={false} 
 showSearchBar={false}
 columns={10}
-onEmojiSelected={emoji => console.log(emoji)}
+onEmojiSelected={emoji => {setChatText((prevText) => prevText+emoji);
+  
+}}
   category={Categories.emotion}
  />
+ 
+ 
+  
 </View>}
                                     </View>
 
@@ -699,7 +753,7 @@ const styles = StyleSheet.create({
   
   
       rightView: {
-        backgroundColor: "#E3F9FF",
+        backgroundColor: "#E3F9FE",
         paddingVertical:8,
         paddingHorizontal:8,
         marginLeft: '20%',

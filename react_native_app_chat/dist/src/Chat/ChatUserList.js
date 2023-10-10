@@ -3,7 +3,7 @@ import {
   StyleSheet,
   View,
   Text,
-  
+  Pressable,
   FlatList,
   TouchableOpacity,
   TextInput,
@@ -15,13 +15,17 @@ import { ChatUserRow } from './ChatUserRow';
 import ChatConversation from './ChatConversation';
 import io from 'socket.io-client';
 import { callApi } from '../../NW/APIManager';
-
+import {useNetInfo} from "@react-native-community/netinfo";
 import  { ServiceConstant } from '../../NW/ServiceAPI';
 import { DefaultView } from '../Utility/DefaultView';
+import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
+import BlockList from './BlockList';
+import PendingRequest from './PendingRequest';
  const ChatUserList = props => {
 //console.log("ChatUserList props",props.route.params.props)
 const newProps = props //props.route.params.props; //props
 //const navigation = useNavigation();
+const netInfo = useNetInfo();
 const inputRef = useRef(null);
 const [searchText,setSearchText] = useState("")
 const [openUserDetailPage,setOpenUserDetailPage] = useState(false)
@@ -132,9 +136,10 @@ const [data, setData] = useState([
   "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
   "userChatCount": 0,
 },
-  ])
-  const [isConnected, setIsConnected] = useState(false);
-
+  ]);
+  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [pageType,setPageType] = useState(null)
+  
   // useEffect(() => {
   //   const handleConnectivityChange = (connectionInfo) => {
   //     setIsConnected(connectionInfo.isConnected);
@@ -251,24 +256,58 @@ const [data, setData] = useState([
             <View style={newProps.headerTitle? newProps.headerTitle:styles.flex1}>
               <Text style={newProps.headerTitleText? newProps.headerTitleText:styles.headerTitle}>{newProps.headerText?newProps.headerText:"Chat"}</Text>
             </View>
-           { newProps.rightIcon&&<TouchableOpacity
-              style={styles.menuView}
-              onPress={()=>{
-                newProps.onPressRight()
-              
-              }
-                
-                 
-               // eventEmitter.emit('DID_OPEN_MORE', {isSideMenuVisible: true});
-              }>
-                
-                  {newProps.rightIcon != null ? newProps.rightIcon :<Image
-        style={{height:25,width:25}}
-       source={require('../icons/menu.png')} resizeMode="contain" /> 
-       }  
 
-            </TouchableOpacity>}
-          </View>
+            <View>
+            <Menu
+            visible={isMenuVisible}
+            anchor={
+              <Pressable onPress={() => setIsMenuVisible(true)}>
+              <Image
+        style={{height:20,width:20,marginLeft:10}}
+       source={require('../icons/app_menu_black.png')} resizeMode="contain" /> 
+                  </Pressable>
+            }
+            onRequestClose={() => setIsMenuVisible(false)}>
+          <MenuItem onPress={() => {
+              setIsMenuVisible(false)
+              //setTimeout(()=>{
+          setOpenUserDetailPage(true);
+          setPageType("block")
+        //}, 1000)
+              }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginRight:10 }}>
+      
+      <Image
+      resizeMode="contain"
+  source={require('../icons/block_user.png')}
+  style={{ width: 20, height: 20, marginRight: 10  }}
+/>
+<Text style={{color:"black",  }}> {"Block List"}</Text>
+     </View>
+    
+            </MenuItem>
+             <MenuItem onPress={() => {
+               setIsMenuVisible(false)
+               setOpenUserDetailPage(true);
+          setPageType("pending")
+              
+             }}>
+             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      
+      <Image
+      resizeMode="contain"
+  source={require('../icons/pending_request.png')}
+  style={{ width: 20, height: 20, marginRight: 10 }}
+/>
+<Text style={{color:"black", }}> {"Pending Request"}</Text>
+     </View>
+    
+            </MenuItem> 
+                   </Menu>
+  
+            </View>
+           
+           </View>
        
           
            );
@@ -362,12 +401,14 @@ setSearchText(e)
        // console.log("in",selectItem)
         setTimeout(()=>{
           setOpenUserDetailPage(true);
+          setPageType("detail")
         }, 1000)
        
         }
 
         const onPressGoBack=()=>{
           setOpenUserDetailPage(false);
+          setPageType(null)
         }
     return (
       
@@ -375,19 +416,35 @@ setSearchText(e)
       {openUserDetailPage == false? 
         <View style={styles.container}>
         {headerView()}  
-       <View  style={{flex:1, padding: 15}}>
+        {netInfo.isConnected ? 
+          <View  style={{flex:1, paddingHorizontal: 15}}>
        {searchView()} 
         {userListView()} 
         </View> 
+        :
+        <DefaultView title ={"You are not connected to internet" } action={fetchChatFriends} />
+
+        }
+       
       </View>
       : 
-      <ChatConversation props={props}
+     pageType != null && pageType =="detail"? <ChatConversation props={props}
         item={items}
         goBack={()=>onPressGoBack()}
         socket={socket}
       />
-
+      :
+      pageType != null && pageType =="block"?
+      <BlockList
+         goBack={()=>onPressGoBack()}
+      />
+      :
+      <PendingRequest
+        goBack={()=>onPressGoBack()}
+      />
       }
+
+      
       </View>
      
       
@@ -409,10 +466,10 @@ const styles = StyleSheet.create({
       
     },
     serachMainView:{flexDirection:"row",alignItems:"center", borderWidth:1,borderColor:"#BDBDBD",borderRadius:10,marginVertical:10,height:48,backgroundColor:"#FFF"},
-    headerMainView:{flexDirection: 'row', height: 40, alignItems: 'center',paddingHorizontal:15},
+    headerMainView:{flexDirection: 'row', height: 50, alignItems: 'center',paddingHorizontal:15,},
     flex1:{flex: 1},
     headerTitle:{fontSize: 17, fontWeight: '500',color:"#000"},
-    menuView:{top: 0, alignItems: 'center', paddingRight: 3}
+    menuView:{ alignItems: 'center', paddingRight: -10, }
   });
   
 export default ChatUserList
