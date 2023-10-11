@@ -24,6 +24,8 @@ import  { ServiceConstant } from '../../NW/ServiceAPI';
 import EmojiSelector,{Categories} from 'react-native-emoji-selector'
 import {useNetInfo} from "@react-native-community/netinfo";
 import DATE from 'date-and-time';
+import ModalScreen from '../Utility/Modal';
+import ViewProfile from './ViewProfile';
 const ChatConversation = (props,item) => {
 //console.log("props",props)
 // const [socket,setsocket] = useState(props.socket)
@@ -151,7 +153,10 @@ const [userData,setUserData] = useState({
         const [totalCount, setTotalCount] = React.useState(0);
         const [incomeMesage,setIncomeMesage]= React.useState(null);
        const [showEmoji,setShowEmoji] = React.useState(false);
-        const inputRef = useRef();
+       const [showModal,setShowModal] = useState(false)
+       const [modalType,setModalType] = useState("");
+       const [openViewProfile,setOpenViewProfile] = useState(false)
+       const inputRef = useRef();
        
         
         useEffect(() => {
@@ -533,6 +538,24 @@ if (formateDate === formateCurrentDate) {
                 ...array.slice(index)
             ];
             }
+
+            const onMenuPress =(type)=>{
+              if(type=="block"){
+                setShowModal(true);
+                setModalType(type);
+              }
+              else if(type == "report"){
+                setShowModal(true);
+                setModalType(type+" abuse");
+              }
+              else if(type == "mute"){
+                setShowModal(true);
+                setModalType(type);
+              }
+
+            }
+
+
               const renderRowItem = ({ item, index }) => {
           
                   // https://www.freecodecamp.org/news/design-imessage-like-chat-bubble-react-native/
@@ -683,24 +706,16 @@ onEmojiSelected={emoji => {setChatText((prevText) => prevText+emoji);
 
     return(
         <View style={styles.container}>
+        {!openViewProfile ?
+        <View style={{flex:1}}>
             <ChatHeaderView 
-            
              item={props.item}
-    //          item ={ {
-    //   lastMessage:'hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd',
-    //   lastMessageTime: '12-06-2023 09:54:57 GMT',
-    //   matrimonyUserName: 'Test User',
-    //   onlinestatus: 'true',
-    //   profileImageDtl: '/documents/images/image-Male.jpg',
-    //   targetUserId: 2713882,
-    //   userCode: 'AW27605902',
-    //   userFullName: 'Test.U(AW27605902)',
-    //   userJID:'test.testagent1001@ip-10-200-18-60.ap-southeast-1.compute.internal',
-    //   userChatCount: 20,
-    // }}
+             onSelectProfile={(item,index)=>{
+               setOpenViewProfile(true);
+             }}
               showLastMessage={false}
               onGoback={(e)=> props.goBack()}
-            onMenuPress={(e)=> console.log(e)}
+            onMenuPress={(e)=> onMenuPress(e)}
             onAudioPress={(e)=> console.log(e)}
        onVideoPress={(e)=>{
         
@@ -708,8 +723,7 @@ onEmojiSelected={emoji => {setChatText((prevText) => prevText+emoji);
          }
         
        }
-
-            />
+           />
 
             
             <FlatList style={{marginVertical:8}}
@@ -723,7 +737,27 @@ onEmojiSelected={emoji => {setChatText((prevText) => prevText+emoji);
         />
 
       {chatInputView()}
-      
+      </View>
+
+:
+<ViewProfile
+
+goBack={(e)=> {setOpenViewProfile(false)}}
+item={props.item}
+/>
+    }
+      <ModalScreen
+        text1={modalType}
+        loading={showModal}
+        onDismiss={()=>{
+          setShowModal(false)
+          setModalType("")
+        }}
+        image={props.item.profileImageDtl}
+        onMenuPress={(type)=>{
+          alert(type);
+        }}
+      />
        
  
 

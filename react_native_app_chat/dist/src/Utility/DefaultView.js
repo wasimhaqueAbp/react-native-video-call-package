@@ -26,7 +26,7 @@ return (
 <View style={[styles.container, style]}>
 <View style={{alignItems:'center', justifyContent:'center'}}>
 <Text style={{paddingTop:8, fontSize:16, color: 'gray'}}>  {title}</Text>
-<Button style={{marginVertical:16}} icon="reload" mode="contained" color={theme.colors.primary} onPress={action}> 
+<Button style={{marginVertical:16}} icon="reload" mode="contained" color={"#DB233D"} onPress={action}> 
 {"Retry"}
 </Button>  
 </View>

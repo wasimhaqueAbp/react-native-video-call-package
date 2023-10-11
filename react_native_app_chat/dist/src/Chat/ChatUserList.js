@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
-  Keyboard
+  Keyboard,
+  
 } from 'react-native';
 
 import { ChatUserRow } from './ChatUserRow';
@@ -21,6 +22,10 @@ import { DefaultView } from '../Utility/DefaultView';
 import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
 import BlockList from './BlockList';
 import PendingRequest from './PendingRequest';
+//import SockJS from 'sockjs-client';
+//import { Client } from '@stomp/stompjs';
+
+
  const ChatUserList = props => {
 //console.log("ChatUserList props",props.route.params.props)
 const newProps = props //props.route.params.props; //props
@@ -34,6 +39,7 @@ const [socket,setsocket]=useState(null);
 const [userData,setUserData] = useState({
   userId:2713882
 })
+const ws = useRef(null);
 let selectItem = null
 const [data, setData] = useState([
   {
@@ -139,24 +145,97 @@ const [data, setData] = useState([
   ]);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [pageType,setPageType] = useState(null)
+ // var newSocket =  new WebSocket('http://10.133.12.25:8080/websocket-chat') //React.useRef(new WebSocket('http://10.133.12.25:8080/websocket-chat')).current;  
+  //('ws://w567l.sse.codesandbox.io/')).current;
+
   
-  // useEffect(() => {
-  //   const handleConnectivityChange = (connectionInfo) => {
-  //     setIsConnected(connectionInfo.isConnected);
+ 
+
+//   useEffect(() => {
+//     // Create a new WebSocket instance
+//     //const newSocket = new WS('http://10.133.12.25:8080/websocket-chat');
+//    // const newSocket = new WS('http://10.133.12.25:8080/websocket-chat');
+  
+//    // console.log("newSocket",newSocket)
+
+
+//     var sock = new SockJS('http://10.133.12.25:8080/websocket-chat');
+//    console.log(sock)
+//     sock.onopen = function() {
+//       console.log('open');
+//       sock.send(JSON.stringify({
+//         type: 'subscribe',
+//         topic: '/topic/user',
+       
+//       }));
+//   };
+//   sock.onmessage = function(e) {
+//     const data = JSON.parse(event.data);
+
+//   if (data.type === 'message') {
+//     console.log('Received message on topic', data.topic, ':', data.message);
+//   }
+// };
+
+// sock.onclose = function() {
+//     console.log('close');
+// };
+
+//     // const client = new Client({
+//     //   brokerURL: 'http://10.133.12.25:8080/websocket-chat',
+//     //   onConnect: () => {
+//     //     client.subscribe('/topic/user', message =>
+//     //       //console.log(`Received: ${message.body}`)
+//     //       console.log('Received:',message.body)
+//     //     );
+//     //     client.publish({ destination: '/topic/test01', body: 'First Message' });
+//     //   },
+//     // });
+  
+//     // client.activate();
+//   //  connectWebSocket();
+   
+//     // Clean up on component unmount
+//     // return () => {
+//     //   if (newSocket) {
+//     //     console.log("in close soc")
+//     //    // newSocket.close();
+//     //   }
+//     // };
+//   }, []);
+
+  // const connectWebSocket = () => {
+
+  //   newSocket.onopen = () => {
+  //     console.log('WebSocket connection opened');
+  //     newSocket.send('Hello')
+  //    // setIsConnected(true);
   //   };
 
-  //   NetInfo.addEventListener('connectionChange', handleConnectivityChange);
-
-  //   return () => {
-  //     NetInfo.removeEventListener('connectionChange', handleConnectivityChange);
+  //   newSocket.onmessage = (e) => {
+  //     console.log('Received message:', e.data);
   //   };
-  // }, []);
+
+  //   newSocket.onclose = (e) => {
+  //     console.log('WebSocket connection closed:', e);
+  //    // setIsConnected(false);
+  //     connectWebSocket()
+  //   };
+  //   newSocket.onerror =(e)=>{
+  //     console.log('WebSocket connection error:', e);
+  //   }
+  
+  //   setsocket(newSocket);
+  //   console.log("socketID", newSocket._socketId)
+
+  // }
+
   useEffect(()=>{
     //setsocket(io("http://10.132.100.175:5001"));
     //setsocket(io("http://10.133.14.23:5001"));
       //const socketConnection = io("https://chatqa.abpweddings.com");
 
-      const socketConnection = io('wss://chatqa.abpweddings.com:6001',{
+      const socketConnection = io('ws://10.133.12.122:8878',{
         "force new connection" : true,
           "reconnectionAttempts": "Infinity", 
         "timeout" : 10000,                  
@@ -444,7 +523,19 @@ setSearchText(e)
       />
       }
 
-      
+     
+      {/* <WS
+          ref={ws}
+          url="http://10.133.12.25:8080/websocket-chat"
+          onOpen={() => {
+            console.log('Open!')
+            ws.send('Hello')
+          }}
+          onMessage={(e)=>{console.log("message",e)}}
+          onError={(e)=>{console.log("onError",e)}}
+          onClose={(e)=>{console.log("onClose",e)}}
+          reconnect={false} // Will try to reconnect onClose
+        /> */}
       </View>
      
       
