@@ -14,7 +14,7 @@ import {
 
 import { ChatUserRow } from './ChatUserRow';
 import ChatConversation from './ChatConversation';
-import io from 'socket.io-client';
+
 import { callApi } from '../../NW/APIManager';
 import {useNetInfo} from "@react-native-community/netinfo";
 import  { ServiceConstant } from '../../NW/ServiceAPI';
@@ -35,10 +35,8 @@ const inputRef = useRef(null);
 const [searchText,setSearchText] = useState("")
 const [openUserDetailPage,setOpenUserDetailPage] = useState(false)
 const [items,setItems] = useState(null)
-const [socket,setsocket]=useState(null);
-const [userData,setUserData] = useState({
-  userId:2713882
-})
+//const [socket,setsocket]=useState(props.socket);
+
 const ws = useRef(null);
 let selectItem = null
 const [data, setData] = useState([
@@ -230,37 +228,7 @@ const [data, setData] = useState([
 
   // }
 
-  useEffect(()=>{
-    //setsocket(io("http://10.132.100.175:5001"));
-    //setsocket(io("http://10.133.14.23:5001"));
-      //const socketConnection = io("https://chatqa.abpweddings.com");
 
-      const socketConnection = io('ws://10.133.12.122:8878',{
-        "force new connection" : true,
-          "reconnectionAttempts": "Infinity", 
-        "timeout" : 10000,                  
-      "transports" : ["websocket"],
-        withCredentials: true,
-       extraHeaders: {
-         "my-custom-header": "abcd"
-       }
-     });
-      //console.log("socketConnection",socketConnection)
-      socketConnection.on('connect', () => {
-        console.log('Socket connected');
-        //setsocketConneted(true);
-
-      });
-      setsocket(socketConnection);
-
-  },[]);
-
-  useEffect(()=>{
-    if(socket!=null && userData!=null ){
-        console.log("add User")
-        socket.emit('ad-user',userData.userId)
-    }
-},[userData,socket]);
   useEffect(()=>{
     //  fetchChatFriends()
 
@@ -507,10 +475,11 @@ setSearchText(e)
        
       </View>
       : 
-     pageType != null && pageType =="detail"? <ChatConversation props={props}
+     pageType != null && pageType =="detail"? 
+     <ChatConversation props={props}
         item={items}
         goBack={()=>onPressGoBack()}
-        socket={socket}
+        socket={props.socket}
       />
       :
       pageType != null && pageType =="block"?

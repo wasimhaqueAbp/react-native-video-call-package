@@ -34,7 +34,7 @@ export const ChatHeaderView = ({item, index, onSelectProfile, showLastMessage = 
  //const {t, i18n} = useTranslation();
 return(
     <Card style={style}>
-    <Pressable style={{paddingVertical:16, marginHorizontal:10}} onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}>
+    <View style={{paddingVertical:16, marginHorizontal:10}} >
     
          <View style={{flexDirection:'row', alignItems:'center',justifyContent:"space-between"}}>
   <View>
@@ -54,11 +54,15 @@ return(
                 /> */}
               </Pressable>
   </View>
+  <Pressable onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}>
   <Avatar.Image style={{backgroundColor:'white',}} size={45} source={{uri: getImageUrl(item.profileImageDtl)}} />
-  <View style={{marginHorizontal:8,flex:1,}}>
+  </Pressable>
+  <Pressable style={{marginHorizontal:8,flex:1,}}
+  onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}
+  >
        <Text style={{color:"black",fontWeight:"500"  }}> {prepareShortName(item.matrimonyUserName)} </Text>
        <Text style={{color:"#DB233D",fontWeight:"500" }}> {item.userCode } </Text>
-  </View>
+  </Pressable>
   {/* <View>
   <Pressable onPress={() => onAudioPress()}>
   <Image
@@ -139,7 +143,7 @@ return(
           </Menu>
           </View>
 </View>
-</Pressable>
+</View>
     </Card>
 )
 }

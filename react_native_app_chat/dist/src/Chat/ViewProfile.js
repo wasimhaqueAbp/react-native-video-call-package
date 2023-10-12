@@ -10,18 +10,96 @@ import {
   Image,
   ImageBackground,
   Keyboard,
-  BackHandler
+  BackHandler,
+  SafeAreaView,
+  ScrollView,
+  
 } from 'react-native';
 
 import { getImageUrl } from '../../NW/ServiceURL';
-import { prepareShortName } from '../Utility/Utility';
-
-
+import { prepareShortName,  } from '../Utility/Utility';
+import { Button } from 'react-native-paper';
+import {RequestHolder, ViewProfileFieldValueHolder} from '../Utility/DefaultView'
 const ViewProfile = props => {
     const [minMaxAboutNumberOfLines, setMinMaxAboutNumberOfLines] = useState(3);
     const [showAboutMeText, setShowAboutMeText] = useState('hisjdfdf kjsdhjkgfhgf fgshkjfgdhfg kghkjgfhkjgf kjsfghkjgfhgk  skldlkd kdsfkfjlkgjgl klfdjglkfdjglfkjgfl kjfghkjdfjhgkj jkfsgkjhjkgf kjfhkjfbgf gfmbvkmvjfbgfbgkjhgkbfjhegjbfmnbfjhfbngfbfgjbfgfjhg sdhajkdhdkjfhdskfhd djsdfkjfdksfd ');
     const [aboutMeShowMore, setAboutMeShowMore] = useState(true);
    
+
+    useEffect(() => {
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          // Handle the back button press (e.g., navigate back or show a confirmation dialog)
+          // Return true to indicate that we've handled the back button
+          // Return false to let the default behavior (e.g., exit the app) happen
+          // For example:
+          // navigateBack(); // Implement your navigation logic
+          props.goBack()
+          return true;
+        }
+      );
+  
+      return () => {
+        backHandler.remove(); // Unsubscribe from the event when the component is unmounted
+      };
+    }, []); 
+
+    const getContactText = () => {
+
+      let text = "Request Now"
+    
+      switch(props.contactState){
+    
+        case 0:
+    
+         text =  "Request Now"
+    
+        break
+    
+        case 1:
+    
+           const number = contactNumber
+          text = number
+        
+        break
+    
+        case 5:
+          text = "Requested"
+        
+        break
+    
+        case 7:
+    
+          text = "Request rejected"
+    
+        break
+      }
+    
+      return text
+    
+    }
+
+    const makeCall = async () => {
+
+      // const res = await AsyncAlertDialog(t("lbl-Call"), t("lbl-Are-you-sure-you-want-to-call")+" " + contactNumber 
+      // + "?", t("lbl-Call"), t("lbl-Cancel"));
+    
+      // if(res == 1) return
+      
+      // let phNumber = ""
+      // if (Platform.OS === 'android') {
+    
+      //   phNumber = 'tel:' + contactNumber
+      // }
+      // else {
+      //   phNumber = 'telprompt:' + contactNumber;
+      // }
+    
+      // Linking.openURL(phNumber);
+    
+    
+    }
     const headerView=()=>{
         return(
             <View style={{flexDirection:"row", height:50,alignItems:'center',paddingHorizontal:10}}>
@@ -120,11 +198,7 @@ const ViewProfile = props => {
                   setAboutMeShowMore(true);
                 }
               }}
-              style={{
-                fontSize: 14,
-                fontWeight: '500',
-                color: "#DB233D",
-              }}>
+              style={styles.readMoreText}>
               {aboutMeShowMore ? "Read More..." : "Read Less..."}
             </Text>
           )}
@@ -170,18 +244,77 @@ const ViewProfile = props => {
     const userDetails =()=>{
         return(
             <View style={styles.aboutMainView}>
+ 
+        <View>
+        <RequestHolder type={props.contactState == 1? "call" : "contact-request"} title={"Mobile Number"} buttonTitle={getContactText()} onAction ={ 
+          makeCall
+          //props.contactState == 1? makeCall : props.onAction
+          }
+            
+          />
+        {/* {props.contactState == 1 && ( */}
+          <>
+          <ViewProfileFieldValueHolder name={"Name"} value={"targetUserName"}/>
+          <ViewProfileFieldValueHolder name={"Email ID"} value={"targetUserEmail"}/>
+          </>
+        {/* )} */}
 
+        <ViewProfileFieldValueHolder name={"Location"} value={"basicDetail.locationValue"}/>
+        <ViewProfileFieldValueHolder name={"Age"} value={"basicDetail.ageValue"}/>
+        <ViewProfileFieldValueHolder name={"Profile Maintained By"} value={"basicDetail.profileCreatedByValue"}/>
+        <ViewProfileFieldValueHolder name={"Marital Status"} value={"basicDetail.maritalStatusValue"}/>
+
+        {/* {basicDetail.numChildrenProspectValue != null && ( */}
+        <ViewProfileFieldValueHolder name={"Kids"} value={"basicDetail.numChildrenProspectValue"}/>
+        {/* )} */}
+
+        {/* {isReligionHindu && ( */}
+        <ViewProfileFieldValueHolder name={"Manglik"} value={ 
+          "Astro"
+          //astrologyDetails !=null ? astrologyDetails["manglikFlagValue"] : "-" 
+          }/>
+        {/* )} */}
+
+        <ViewProfileFieldValueHolder name={"Physical Appearance"} value={
+          "physicalDescDetails"
+          // physicalDescDetails !=null ? physicalDescDetails.destbodyTypeValue : "-"
+          }/>
+        <ViewProfileFieldValueHolder name={"Height"} value={
+          "physicalDescDetails"
+          // physicalDescDetails !=null ? physicalDescDetails.heightText : "-"
+          }/>
+        <ViewProfileFieldValueHolder name={"Complexion"} value={
+          "physicalDescDetails"
+          //physicalDescDetails !=null ? physicalDescDetails.destcomplexionValue : "-"
+          }/>
+        <ViewProfileFieldValueHolder name={"Hobbies"} value={"hobbiesValue"}/>
+        </View>
+       
+       <View style={{alignItems:"center",marginBottom:10,marginTop:20}}>
+        <Button
+                mode="contained"
+               
+                style={styles.viewProfileBtn}
+                onPress={()=>{}}>
+                {"View Profile"}
+              </Button>
+              </View>
            </View>
         )
     }
     return(
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
+         <ScrollView
+        style={{}}
+        // onScroll={onParentScrollEvent}
+        nestedScrollEnabled={false}>
         {headerView()}
             {userImageView()}
             {aboutUsView()}
             {userDetails()}
             {actionView()}
-        </View>
+            </ScrollView>
+        </SafeAreaView>
     )
 
 }
@@ -217,6 +350,12 @@ const styles = StyleSheet.create({
       reportMainView:{ flexDirection: 'row', alignItems: 'center',marginTop:15 },
       muteMainView:{ flexDirection: 'row', alignItems: 'center',marginTop:15,marginBottom:10 },
       textColor:{color:"#DB233D",  },
+      readMoreText:{
+        fontSize: 14,
+        fontWeight: '500',
+        color: "#DB233D",
+      },
+      viewProfileBtn:{backgroundColor: "#DB233D",width:150,borderRadius:10}
 })
 
 export default ViewProfile; 
