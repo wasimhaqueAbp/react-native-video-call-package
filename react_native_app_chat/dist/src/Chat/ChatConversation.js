@@ -26,128 +26,17 @@ import {useNetInfo} from "@react-native-community/netinfo";
 import DATE from 'date-and-time';
 import ModalScreen from '../Utility/Modal';
 import ViewProfile from './ViewProfile';
-const ChatConversation = (props,item) => {
+const ChatConversation = (props) => {
 //console.log("props",props)
 // const [socket,setsocket] = useState(props.socket)
-const {socket} = props
+const {socket,item,userCode} = props
+console.log("props",item)
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
   userId:2713882
 })
     const [data, setData] = React.useState(
-       [
-        {
-          "created_at": "2023-10-06T09:51:47.187Z",
-          "fromSelf": true,
-          "message": {
-              "test": "reply me"
-          },
-          "showDate": false,
-          readId:"pending"
-      },{
-        "created_at": "2023-10-06T09:51:47.187Z",
-        "fromSelf": true,
-        "message": {
-            "test": "where r u?"
-        },
-        "showDate": false,
-        readId:"send"
-    },
-        {
-          "created_at": "2023-10-06T09:51:47.187Z",
-          "fromSelf": true,
-          "message": {
-              "test": "good"
-          },
-          "showDate": false,
-          readId:"received"
-      },
-        {
-          "created_at": "2023-10-06T09:51:47.187Z",
-          "fromSelf": true,
-          "message": {
-              "test": "i am fine"
-          },
-          "showDate": false,
-          readId:"read"
-      },
-       
-      {
-          "created_at": "2023-10-06T09:51:47.187Z",
-          "fromSelf": false,
-          "message": {
-              "test": "i am fine"
-          },
-          "showDate": true,
-          readId:"send"
-      },
-      {
-        "created_at": "2023-10-05T08:43:41.898Z",
-        "fromSelf": true,
-        "message": {
-            "test": "hi"
-        },
-        "showDate": false,
-        readId:"received"
-    },
-    {
-        "created_at": "2023-10-05T09:48:50.026Z",
-        "fromSelf": false,
-        "message": {
-            "test": "hi"
-        },
-        "showDate": false,
-        readId:"read"
-    },
-    {
-        "created_at": "2023-10-05T09:51:40.567Z",
-        "fromSelf": true,
-        "message": {
-            "test": "how r u?"
-        },
-        "showDate": true,
-        readId:"read"
-    },
-      {
-        "created_at": "2023-09-26T08:43:41.898Z",
-        "fromSelf": true,
-        "message": {
-            "test": "hi"
-        },
-        "showDate": false,
-        readId:"read"
-    },
-    {
-        "created_at": "2023-09-26T09:48:50.026Z",
-        "fromSelf": false,
-        "message": {
-            "test": "hi"
-        },
-        "showDate": false,
-        readId:"read"
-    },
-    {
-        "created_at": "2023-09-26T09:51:40.567Z",
-        "fromSelf": true,
-        "message": {
-            "test": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-        },
-        "showDate": false,
-        readId:"read"
-    },
-    {
-        "created_at": "2023-09-26T09:51:47.187Z",
-        "fromSelf": false,
-        "message": {
-            "test": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
-        },
-        "showDate": true,
-        readId:"read"
-    },
-    
-
-        
-    ]);
+       []);
         const [chatText, setChatText] = React.useState("");
         const [startIndex, setStartIndex] = React.useState(0);
         const [totalCount, setTotalCount] = React.useState(0);
@@ -179,43 +68,39 @@ const [userData,setUserData] = useState({
         }, []); 
         useEffect( ()=>{
           
-          if(props.item!=null && props.item.targetUserId!=null && userData!=null){
-            //chatHistory() 
+          if(props.item!=null && item.mappedUserid!=null && userData!=null){
+            chatHistory() 
           }
       },[props.item,userData]);
   const chatHistory = async ()=>{
     try {
-      let obj1={
-        from:userData.userId,
-        to:props.item.targetUserId,
+    //   let obj1={
+    //     from:userData.userId,
+    //     to:item.mappedUserid,
+    // }
+    let obj1= {
+      "userid":userCode,
+      "mappeduserid":item.mappedUserid
     }
     const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
     console.log("response chat history",response)
-  //  const groupedData = response.reduce((result, item) => {
-  //   const date = item.created_at.split('T')[0];
-  //   if (!result[date]) {
-  //     result[date] = { date, message: [] };
-  //   }
-  //   result[date].message.push(item);
-  //   return result;
-  // }, {});
-  // const formattedData = Object.values(groupedData);
-  // console.log("groupedData",groupedData)
-
-  const processedMessages = response.map((message, index) => {
-    const showDate =
-      index === 0 ||
-      new Date(message.created_at).toDateString() !==
-        new Date(response[index - 1].created_at).toDateString();
-    return { ...message, showDate };
-  });
-  console.log("processedMessages",processedMessages)
-  const reversedArray = processedMessages.reverse();
-     // const reversedArray = response.reverse();
-  
-      setData(reversedArray)
-    // setData(processedMessages)
+  if(response.status != 0){
+    const processedMessages = response.map((message, index) => {
+      const showDate =
+        index === 0 ||
+        new Date(message.createdon).toDateString() !==
+          new Date(response[index - 1].createdon).toDateString();
+      return { ...message, showDate };
+    });
+    console.log("processedMessages",processedMessages)
+    const reversedArray = processedMessages.reverse();
+       // const reversedArray = response.reverse();
     
+        setData(reversedArray)
+      // setData(processedMessages)
+      
+  }
+
   
       
     } catch (error) {
@@ -227,38 +112,11 @@ const [userData,setUserData] = useState({
     if(socket!=null && socket!=''){
      
       
-        socket.on("msg-recieve", (msg) => {
+        socket.on(userCode, (msg) => {
         console.log("msg",msg);
-        const arrData = data;
-        console.log("data",data);
+      //  onMessageReceived(msg, data)
+       
         setIncomeMesage(msg);
-        //    let arr3={}
-        //     if(userData.userId==msg.from){
-        //         arr3={
-        //             fromSelf:true,
-        //             message:{
-        //                 test:msg.message
-        //             },
-        //             created_at:  getCreatedDate()
-        //         }
-        //        // arrData.push(arr3);
-        //      //   setData(arrData)
-        // setData(addAfter(data, 0, arr3))
-               
-        //     }
-        //     else if(props.item.targetUserId==msg.from || userData.userId==msg.to){
-        //         arr3={
-        //             fromSelf:false,
-        //             message:{
-        //                 test:msg.message
-        //             },
-        //             created_at:  getCreatedDate()
-        //         }
-        //        // arrData.push(arr3);
-        //         //setData(arrData)
-        //         setData(addAfter(data, 0, arr3))
-               
-        //     }
             })
         
     }
@@ -266,7 +124,7 @@ const [userData,setUserData] = useState({
    }, [socket])
 
    useEffect( () => {
-
+console.log("incomeMesage",incomeMesage)
     if(incomeMesage == null) return
 
     onMessageReceived(incomeMesage, data)
@@ -282,30 +140,56 @@ const [userData,setUserData] = useState({
      if(msg == null) return
 
      try {
-      let arr3={}
-      if(userData.userId==msg.from){
-          arr3={
-              fromSelf:true,
-              message:{
-                  test:msg.message
-              },
-              created_at:  getCreatedDate()
-          }
-          setData(addAfter(messages, 0, arr3))
-       
-      }
-      else if(props.item.targetUserId==msg.from || userData.userId==msg.to){
-          arr3={
-              fromSelf:false,
-              message:{
-                  test:msg.message
-              },
-              created_at:  getCreatedDate()
-          }
-          setData(addAfter(messages, 0, arr3))
 
-         
+
+      let arr3={}
+      let value = true;
+      const lastMsgDate= data.length == 0?new Date() :new Date(data[0].createdon);
+      const formateDate = DATE.format(lastMsgDate, 'DD/MM/YYYY')
+      const currentDate = new Date();
+      const formateCurrentDate = DATE.format(currentDate, 'DD/MM/YYYY')
+      
+      
+      
+      //console.log(formateDate)
+      //console.log(formateCurrentDate)
+      if(data.length == 0 ){
+        value = true
       }
+      else if (formateDate === formateCurrentDate) {
+        value = false;
+      }
+            if(userCode==msg.senderName){
+              
+       
+                arr3={
+                    fromSelf:true,
+                    message:{
+                        test:msg.message
+                    },
+                    createdon:  getCreatedDate(),
+                    "showDate":value,
+                }
+               // arrData.push(arr3);
+             //   setData(arrData)
+        setData(addAfter(messages, 0, arr3))
+               
+            }
+            else if(item.mappedUserCode==msg.senderName || userCode==msg.targetUserName){
+                arr3={
+                    fromSelf:false,
+                    message:{
+                        test:msg.message
+                    },
+                   createdon:  getCreatedDate(),
+                   "showDate":value,
+                }
+               // arrData.push(arr3);
+                //setData(arrData)
+                setData(addAfter(messages, 0, arr3))
+               
+            }
+          
      } 
      catch(e) {
 
@@ -439,7 +323,7 @@ const [userData,setUserData] = useState({
 
             let roomNo =generateUniqueNumber();
               //  props.navigation.navigate("VideoChatCall",
-              //  {roomno: item.targetUserId,rooms :roomNo,
+              //  {roomno: item.mappedUserid,rooms :roomNo,
               //  audio:true,video:true,
               //  callinitiateByothers:"own",
               //  item:props.item
@@ -481,8 +365,8 @@ const [userData,setUserData] = useState({
             // const processedMessages = data.map((message, index) => {
             //   const showDate =
             //     index === 0 ||
-            //     new Date(message.created_at).toDateString() !==
-            //       new Date(data[index - 1].created_at).toDateString();
+            //     new Date(message.createdon).toDateString() !==
+            //       new Date(data[index - 1].createdon).toDateString();
             //   return showDate ;
             // });
             // console.log("processedMessages",processedMessages)
@@ -490,7 +374,7 @@ const [userData,setUserData] = useState({
 // console.log('Last Processed Message Value:', lastProcessedMessageValue);
 let value = true;
 
-const lastMsgDate=new Date(data[0].created_at);
+const lastMsgDate= data.length == 0?new Date() :new Date(data[0].createdon);
 const formateDate = DATE.format(lastMsgDate, 'DD/MM/YYYY')
 const currentDate = new Date();
 const formateCurrentDate = DATE.format(currentDate, 'DD/MM/YYYY')
@@ -499,8 +383,10 @@ const formateCurrentDate = DATE.format(currentDate, 'DD/MM/YYYY')
 
 //console.log(formateDate )
 //console.log(formateCurrentDate)
-
-if (formateDate === formateCurrentDate) {
+if(data.length == 0 ){
+  value = true
+}
+else if (formateDate === formateCurrentDate) {
   value = false;
 }
 //console.log('Value:', value);
@@ -509,19 +395,20 @@ if (formateDate === formateCurrentDate) {
               "message": {
                   "test":chatText
               },
-              "created_at":  getCreatedDate(),
+              "createdon":  getCreatedDate(),
               "showDate":value,
               "readId": netInfo.isConnected ? "send":"pending"
           }
-            console.log(getCreatedDate())
+           
            setData(addAfter(data, 0, message))
-          //   let arr={
-          //     from:userData.userId,
-          //     to:props.item.targetUserId,
-          //     message:chatText
-          // }
-          // console.log("socket",socket)
-          //   socket.emit("send-msg",arr);
+            let arr={
+              senderName: userCode,
+ targetUserName: item.mappedUserCode,
+ message: chatText,
+ type:'text'
+          }
+          console.log("socket",socket)
+            socket.emit("messageSendToUser",arr);
 
            setChatText("")
           // const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr);
@@ -562,11 +449,13 @@ if (formateDate === formateCurrentDate) {
           
         //const alignment = 2713882  == item.creatorId ? "left" : "right"; //props.route.params.targetUserId == item.creatorId ? "left" : "right"
         
-        const alignment = item.fromSelf  ==false ? "left" : "right"; //props.route.params.targetUserId == item.creatorId ? "left" : "right"
+        const alignment = item.fromSelf  ==false ? "left" : "right"; 
   
                 const dateVal = () => {
-                  return formatTime(item.created_at)
-                 // return formatChatDateTime(item.created_at)
+                  console.log("item.createdon",item)
+                  console.log("item.createdon",item.createdon)
+                  return formatTime(item.createdon)
+                 // return formatChatDateTime(item.createdon)
           
                 } 
                  
@@ -574,7 +463,7 @@ if (formateDate === formateCurrentDate) {
                   <View>
                      {item.showDate && (
           <View style={styles.dateContainer}>
-            <Text style={styles.dateText}>{formatDate(item.created_at)}</Text>
+            <Text style={styles.dateText}>{formatDate(item.createdon)}</Text>
           </View>
         )}
               
@@ -743,7 +632,7 @@ onEmojiSelected={emoji => {setChatText((prevText) => prevText+emoji);
 <ViewProfile
 
 goBack={(e)=> {setOpenViewProfile(false)}}
-item={props.item}
+item={item}
 />
     }
       <ModalScreen
@@ -753,7 +642,7 @@ item={props.item}
           setShowModal(false)
           setModalType("")
         }}
-        image={props.item.profileImageDtl}
+        image={props.item.userphotoimageurl}
         onMenuPress={(type)=>{
           alert(type);
         }}

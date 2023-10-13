@@ -1,12 +1,11 @@
 import React, {useState, useEffect, createRef, useRef} from 'react';
 import { View } from 'react-native';
-import ChatUserList from './Chat/ChatUserList';
+import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
 const ChatApp = props => {
-
-    const [userData,setUserData] = useState({
-        userId:2713882
-      })
+ const  {userCode,chatuserId,profileImage,profileName } = props;
+ console.log(userCode,"userCode")
+    
       const [socket,setsocket]=useState(null);
     useEffect(()=>{
         //setsocket(io("http://10.132.100.175:5001"));
@@ -34,17 +33,19 @@ const ChatApp = props => {
       },[]);
     
       useEffect(()=>{
-        if(socket!=null && userData!=null ){
+        if(socket!=null && chatuserId!=null ){
             console.log("add User")
-           // socket.emit('ad-user',userData.userId)
+           // socket.emit('ad-user',chatuserId)
         }
-    },[userData,socket]);
+    },[chatuserId,socket]);
 return(
     <View style={{flex:1}}>
         <ChatUserList
             socket={socket}
-            
-
+            userCode={userCode} 
+            chatuserId={chatuserId} 
+            profileImage={profileImage}
+             profileName={profileName}
         />
     </View>
 )

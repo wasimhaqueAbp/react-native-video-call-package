@@ -3,29 +3,27 @@ import { getEnvironment, ServiceConstant } from "./ServiceAPI";
 
 export const ServiceConfig = {
     TEST: {
-      BASE_URL_LIFERAY:"https://testeem.abpweddings.com",
       BASE_URL_SOF: 'https://softestweb.abpweddings.com',
    
       BASE_URL_FILE_UPLOAD: 'https://testdl.abpweddings.com',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
-     BASE_CHAT :"https://chatqa.abpweddings.com:6001/api"
+     BASE_CHAT :"http://10.132.100.191:8083"
+     
     },
   
     UAT: {
-      BASE_URL_LIFERAY:"https://testeem.abpweddings.com",
       BASE_URL_SOF: 'https://sofuat.abpweddings.com',
    
        BASE_URL_FILE_UPLOAD: 'https://uatdl.abpweddings.com:8443',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
-      BASE_CHAT :"https://chatqa.abpweddings.com:6001/api"
+      BASE_CHAT :"http://10.132.100.191:8083"
     },
   
     PROD: {
-      BASE_URL_LIFERAY :"https://testeem.abpweddings.com",
       BASE_URL_SOF: 'https://sof.abpweddings.com',
       BASE_URL_FILE_UPLOAD: 'https://dl.abpweddings.com',
       BASE_URL_IMAGE: 'https://media.abpweddings.com',
-      BASE_CHAT :"https://chatqa.abpweddings.com:6001/api"
+      BASE_CHAT :"http://10.132.100.191:8083"
      },
   };
 export const getImageUrl = path => {
@@ -38,10 +36,10 @@ export const getImageUrl = path => {
 
   const ServiceApi = {
     FETCH_CHAT_FRIENDS_LIST_URL:
-    '/api/jsonws/abpmapp-v2-service-portlet.userchat/get-user-chat-friend-list/user-id/{USER_ID}/auth-id/{AUTH_ID}',
+    '/messegingservice/user/chat/getUsersFriendList',
     //'/api/jsonws/abpmapp-v2-service-portlet.userchat/get-user-chat-friend-list/user-id/2713882/auth-id/a9892c654fc28f6c5965d769b8a8ca40',
     FETCH_CHAT_HISTORY_URL:
-    '/message/getmsg',
+    '/messegingservice/user/chat/usersSpecificChathistory',
     FETCH_SEND_CHAT_URL:'/message/addmsg'
 
   }
@@ -58,7 +56,7 @@ export const getImageUrl = path => {
 
   switch (serviceConstant) {
     case ServiceConstant.FETCH_CHAT_FRIENDS_LIST:
-      url = base.BASE_URL_LIFERAY +ServiceApi.FETCH_CHAT_FRIENDS_LIST_URL //base.BASE_URL_SOF + ServiceApi.FETCH_CHAT_FRIENDS_LIST_URL;
+      url = base.BASE_CHAT +ServiceApi.FETCH_CHAT_FRIENDS_LIST_URL //base.BASE_URL_SOF + ServiceApi.FETCH_CHAT_FRIENDS_LIST_URL;
       break;
       case ServiceConstant.FETCH_CHAT_HISTORY:
       url = base.BASE_CHAT +ServiceApi.FETCH_CHAT_HISTORY_URL //base.BASE_URL_SOF + ServiceApi.FETCH_CHAT_FRIENDS_LIST_URL;

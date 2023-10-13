@@ -29,6 +29,9 @@ import PendingRequest from './PendingRequest';
  const ChatUserList = props => {
 //console.log("ChatUserList props",props.route.params.props)
 const newProps = props //props.route.params.props; //props
+const  {userCode,chatuserId,profileImage,profileName } = props;
+ console.log(userCode,"userCodes")
+ 
 //const navigation = useNavigation();
 const netInfo = useNetInfo();
 const inputRef = useRef(null);
@@ -40,197 +43,19 @@ const [items,setItems] = useState(null)
 const ws = useRef(null);
 let selectItem = null
 const [data, setData] = useState([
-  {
-    "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
-    "lastMessageTime": "05-10-2023 15:26:46 GMT",
-    "matrimonyUserName": "Test Marathi",
-    "onlinestatus": "true",
-    "profileImageDtl": "/documents/images/image-Female.jpg",
-    "targetUserId": 2702140,
-    "userCode": "AW69998014",
-    "userFullName": "Test.M(AW69998014)",
-    "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
-    "userChatCount": 20,
-},
-{
-    "lastMessage": "hello",
-    "lastMessageTime": "05-10-2023 05:24:46 GMT",
-    "matrimonyUserName": "Test Femaletest",
-    "onlinestatus": "false",
-    "profileImageDtl": "/documents/images/image-Female.jpg",
-    "targetUserId": 2699360,
-    "userCode": "AW93971116",
-    "userFullName": "Test.F(AW93971116)",
-    "userJID": "test.test99367@ip-10-200-18-60.ap-southeast-1.compute.internal",
-    "userChatCount": 0,
-},
-{
-  "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
-  "lastMessageTime": "04-10-2023 06:44:46 GMT",
-  "matrimonyUserName": "Test Marathi new",
-  "onlinestatus": "false",
-  "profileImageDtl": "/documents/images/image-Female.jpg",
-  "targetUserId": 2702140,
-  "userCode": "AW69998014",
-  "userFullName": "Test.M(AW69998014)",
-  "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
-  "userChatCount": 0,
-},
-{
-"lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
-"lastMessageTime": "13-06-2023 06:44:46 GMT",
-"matrimonyUserName": "Test new",
-"onlinestatus": "false",
-"profileImageDtl": "/documents/images/image-Female.jpg",
-"targetUserId": 2702140,
-"userCode": "AW69998014",
-"userFullName": "Test.M(AW69998014)",
-"userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
-"userChatCount": 0,
-},
    
 ]);
 
   const [previousData,setPreviousData] = useState([
-    {
-      "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
-      "lastMessageTime": "13-06-2023 06:44:46 GMT",
-      "matrimonyUserName": "Test Marathi",
-      "onlinestatus": "true",
-      "profileImageDtl": "/documents/images/image-Female.jpg",
-      "targetUserId": 2702140,
-      "userCode": "AW69998014",
-      "userFullName": "Test.M(AW69998014)",
-      "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
-      "userChatCount": 20,
-  },
-  {
-      "lastMessage": "hello",
-      "lastMessageTime": "13-06-2023 06:02:33 GMT",
-      "matrimonyUserName": "Test Femaletest",
-      "onlinestatus": "false",
-      "profileImageDtl": "/documents/images/image-Female.jpg",
-      "targetUserId": 2699360,
-      "userCode": "AW93971116",
-      "userFullName": "Test.F(AW93971116)",
-      "userJID": "test.test99367@ip-10-200-18-60.ap-southeast-1.compute.internal",
-      "userChatCount": 0,
-  },
-  {
-    "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
-    "lastMessageTime": "13-06-2023 06:44:46 GMT",
-    "matrimonyUserName": "Test Marathi new",
-    "onlinestatus": "false",
-    "profileImageDtl": "/documents/images/image-Female.jpg",
-    "targetUserId": 2702140,
-    "userCode": "AW69998014",
-    "userFullName": "Test.M(AW69998014)",
-    "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
-    "userChatCount": 0,
-},
-{
-  "lastMessage": "hii shgfdhf fjhkjgfhgkfjh fgjhgfkjhgfkjhgf kjfghkfhgfkj jhsfkjghfd",
-  "lastMessageTime": "13-06-2023 06:44:46 GMT",
-  "matrimonyUserName": "Test new",
-  "onlinestatus": "false",
-  "profileImageDtl": "/documents/images/image-Female.jpg",
-  "targetUserId": 2702140,
-  "userCode": "AW69998014",
-  "userFullName": "Test.M(AW69998014)",
-  "userJID": "user.1677476722397@ip-10-200-18-60.ap-southeast-1.compute.internal",
-  "userChatCount": 0,
-},
+   
   ]);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [pageType,setPageType] = useState(null)
- // var newSocket =  new WebSocket('http://10.133.12.25:8080/websocket-chat') //React.useRef(new WebSocket('http://10.133.12.25:8080/websocket-chat')).current;  
-  //('ws://w567l.sse.codesandbox.io/')).current;
-
-  
  
-
-//   useEffect(() => {
-//     // Create a new WebSocket instance
-//     //const newSocket = new WS('http://10.133.12.25:8080/websocket-chat');
-//    // const newSocket = new WS('http://10.133.12.25:8080/websocket-chat');
-  
-//    // console.log("newSocket",newSocket)
-
-
-//     var sock = new SockJS('http://10.133.12.25:8080/websocket-chat');
-//    console.log(sock)
-//     sock.onopen = function() {
-//       console.log('open');
-//       sock.send(JSON.stringify({
-//         type: 'subscribe',
-//         topic: '/topic/user',
-       
-//       }));
-//   };
-//   sock.onmessage = function(e) {
-//     const data = JSON.parse(event.data);
-
-//   if (data.type === 'message') {
-//     console.log('Received message on topic', data.topic, ':', data.message);
-//   }
-// };
-
-// sock.onclose = function() {
-//     console.log('close');
-// };
-
-//     // const client = new Client({
-//     //   brokerURL: 'http://10.133.12.25:8080/websocket-chat',
-//     //   onConnect: () => {
-//     //     client.subscribe('/topic/user', message =>
-//     //       //console.log(`Received: ${message.body}`)
-//     //       console.log('Received:',message.body)
-//     //     );
-//     //     client.publish({ destination: '/topic/test01', body: 'First Message' });
-//     //   },
-//     // });
-  
-//     // client.activate();
-//   //  connectWebSocket();
-   
-//     // Clean up on component unmount
-//     // return () => {
-//     //   if (newSocket) {
-//     //     console.log("in close soc")
-//     //    // newSocket.close();
-//     //   }
-//     // };
-//   }, []);
-
-  // const connectWebSocket = () => {
-
-  //   newSocket.onopen = () => {
-  //     console.log('WebSocket connection opened');
-  //     newSocket.send('Hello')
-  //    // setIsConnected(true);
-  //   };
-
-  //   newSocket.onmessage = (e) => {
-  //     console.log('Received message:', e.data);
-  //   };
-
-  //   newSocket.onclose = (e) => {
-  //     console.log('WebSocket connection closed:', e);
-  //    // setIsConnected(false);
-  //     connectWebSocket()
-  //   };
-  //   newSocket.onerror =(e)=>{
-  //     console.log('WebSocket connection error:', e);
-  //   }
-  
-  //   setsocket(newSocket);
-  //   console.log("socketID", newSocket._socketId)
-
-  // }
 
 
   useEffect(()=>{
-    //  fetchChatFriends()
+      fetchChatFriends()
 
     //const result = await isUserPaidMember(null)
     //setIsPaidMember(result)
@@ -245,12 +70,14 @@ const [data, setData] = useState([
     //  trackAWEngageScreen(AWEngageEvent.CHAT)
 
       //setIsLoading(true)
-
-      const response =  await callApi(ServiceConstant.FETCH_CHAT_FRIENDS_LIST, null);
+      let arr = {
+          "userid":chatuserId
+        }
+      const response =  await callApi(ServiceConstant.FETCH_CHAT_FRIENDS_LIST, arr);
       console.log(response)
-      if(response != null && response['chatFriendList'] != null){
+      if(response != null && response['friendlist'] != null){
 
-        let result = response.chatFriendList
+        let result = response.friendlist
 
         /// Remove self from the list
         //  const loggedInUserId = response['loggedinUserId']
@@ -480,6 +307,7 @@ setSearchText(e)
         item={items}
         goBack={()=>onPressGoBack()}
         socket={props.socket}
+        userCode={userCode}
       />
       :
       pageType != null && pageType =="block"?

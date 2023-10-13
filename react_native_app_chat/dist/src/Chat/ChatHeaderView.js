@@ -45,23 +45,17 @@ return(
     <Image
         style={{height:25,width:25,marginRight:10}}
        source={require('../icons/back.png')} resizeMode="contain" /> 
-                 {/* <RNVectorIcon
-                  group='Ionicons'
-                  style={{marginLeft: 4}}
-                  name="arrow-back"
-                  size={30}
-                  color="black"
-                /> */}
+                 
               </Pressable>
   </View>
   <Pressable onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}>
-  <Avatar.Image style={{backgroundColor:'white',}} size={45} source={{uri: getImageUrl(item.profileImageDtl)}} />
+  <Avatar.Image style={{backgroundColor:'white',}} size={45} source={{uri: getImageUrl(item.userphotoimageurl)}} />
   </Pressable>
   <Pressable style={{marginHorizontal:8,flex:1,}}
   onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}
   >
-       <Text style={{color:"black",fontWeight:"500"  }}> {prepareShortName(item.matrimonyUserName)} </Text>
-       <Text style={{color:"#DB233D",fontWeight:"500" }}> {item.userCode } </Text>
+       <Text style={{color:"black",fontWeight:"500"  }}> {prepareShortName(item.mappedUserName)} </Text>
+       <Text style={{color:"#DB233D",fontWeight:"500" }}> {item.mappedUserCode } </Text>
   </Pressable>
   {/* <View>
   <Pressable onPress={() => onAudioPress()}>

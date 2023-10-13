@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 import {Divider, Button, Card, Avatar} from 'react-native-paper';
-import { formatChatDateTimeGMT, prepareShortName } from '../Utility/Utility';
+import { formatChatDateTimeGMT,formatDate, prepareShortName } from '../Utility/Utility';
 import { getImageUrl } from '../../NW/ServiceURL';
 
 import { formatChatDateTime } from '../Utility/Utility';
@@ -38,34 +38,34 @@ export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = tru
     
        <View style={styles.imageMainView}>
   
-       <Avatar.Image style={{backgroundColor:'white'}} size={55} source={{uri: getImageUrl(item.profileImageDtl)}} /> 
+       <Avatar.Image style={{backgroundColor:'white'}} size={55} source={{uri: getImageUrl(item.userphotoimageurl)}} /> 
   
        <View style={styles.textMainView}>
        
         <View style={styles.flexRow}>
         <View style={styles.flex1}>
        {/* <Text style={styles.userText(item)}> {prepareShortName(item.matrimonyUserName) + ", " }<Text style={styles.userIdText}> {item.userCode } </Text> </Text> */}
-       <Text style={styles.userText(item)}> {prepareShortName(item.matrimonyUserName)}</Text>
+       <Text style={styles.userText(item)}> {prepareShortName(item.mappedUserName)}</Text>
        
        </View>
        <View style={styles.dateMainView}>
-       <Text style={styles.dateText(item)}> {formatChatDateTimeGMT(item.lastMessageTime) } </Text>
+       <Text style={styles.dateText(item)}> {formatDate(item.createdon) } </Text>
        </View>
        </View>
        <View style={styles.lastMessageView}>
       
-        { showLastMessage && item.lastMessage != "" && ( 
+        { showLastMessage && item.messagebody != "" && ( 
          <View style={styles.flex1}>
         <Text 
         numberOfLines={1}
-        style={styles.lastMessageText(item)}> {item.lastMessage} </Text>
+        style={styles.lastMessageText(item)}> {item.messagebody} </Text>
         </View>
         )} 
-        {item.userChatCount> 0 && ( 
+        {item.unreadcount> 0 && ( 
          <View style={styles.userCountMainView}>
           <Text 
         
-        style={styles.userCountText}> {item.userChatCount >99 ? "99+":"2"}
+        style={styles.userCountText}> {item.unreadcount >99 ? "99+":item.unreadcount}
         {/* item.userChatCount */}
          </Text>
         </View>
@@ -104,5 +104,5 @@ export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = tru
       fontWeight: item.onlinestatus == 'true' ? "500":"normal",
        color: item.onlinestatus == 'true' ? "#000000" : "#777777"}),
     userCountMainView:{backgroundColor:"#DB233D",alignItems:"center",justifyContent:"center", borderRadius:360, height:25,width:25,marginTop:4},
-    userCountText:{fontSize:12, color: "#FFFFFF",fontWeight:"500"}
+    userCountText:{fontSize:12, color: "#FFFFFF",fontWeight:"500",textAlign:"center",left:-1}
   })

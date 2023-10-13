@@ -18,14 +18,21 @@ export const callApi = async (type, param = null, showError = false) => {
         case ServiceConstant.FETCH_CHAT_FRIENDS_LIST:
             try {
             //  const userDatach = await getUser();
-      
+            const headers = {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+            }
               let reqUrlCH = ServiceUrl(type);
-               reqUrlCH = reqUrlCH.replace('{USER_ID}', "2713882");
-               reqUrlCH = reqUrlCH.replace('{AUTH_ID}', "a9892c654fc28f6c5965d769b8a8ca40");
-      
-              const response = await fetch(reqUrlCH);
-      
-              const json = await response.json();
+              // reqUrlCH = reqUrlCH.replace('{USER_ID}', "2713882");
+               //reqUrlCH = reqUrlCH.replace('{AUTH_ID}', "a9892c654fc28f6c5965d769b8a8ca40");
+               if(__DEV__) { console.log(type + " =====>>>>", reqUrlCH, param)}
+          
+               const response = await axios.post(ServiceUrl(type), param, {
+                headers,
+              });
+              if(__DEV__) { console.log(response.data)}
+          
+              const json = await response.data;
       
               return json;
             } catch (error) {

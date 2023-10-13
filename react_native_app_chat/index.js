@@ -1,1 +1,1 @@
-export {default as ChatScreen} from './dist/src'
+export {default as ChatApp} from './dist/ChatApp'

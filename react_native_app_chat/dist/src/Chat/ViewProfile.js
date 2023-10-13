@@ -123,7 +123,7 @@ const ViewProfile = props => {
             <View style={styles.backgroundWhite}>
 <View style={styles.imageMainView}>
 <ImageBackground
-            source={{uri: getImageUrl(props.item.profileImageDtl)}}
+            source={{uri: getImageUrl(props.item.userphotoimageurl)}}
             blurRadius={0
             //   data.basicDetail.isPhotoHide == 1 && data.isPhotoRequest != 1
             //     ? 8
