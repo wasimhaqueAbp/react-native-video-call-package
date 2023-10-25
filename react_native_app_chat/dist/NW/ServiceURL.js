@@ -40,7 +40,8 @@ export const getImageUrl = path => {
     //'/api/jsonws/abpmapp-v2-service-portlet.userchat/get-user-chat-friend-list/user-id/2713882/auth-id/a9892c654fc28f6c5965d769b8a8ca40',
     FETCH_CHAT_HISTORY_URL:
     '/messegingservice/user/chat/usersSpecificChathistory',
-    FETCH_SEND_CHAT_URL:'/message/addmsg'
+    FETCH_SEND_CHAT_URL:'/messegingservice/user/chat/usersFriendListUpdation',
+    UPDATE_UNREAD_CHAT_URL:"/messegingservice/user/chat/updateunreadCount"
 
   }
   export default ServiceApi;
@@ -64,6 +65,9 @@ export const getImageUrl = path => {
       case ServiceConstant.FETCH_SEND_CHAT:
         url = base.BASE_CHAT +ServiceApi.FETCH_SEND_CHAT_URL //base.BASE_URL_SOF + ServiceApi.FETCH_CHAT_FRIENDS_LIST_URL;
         break;
+        case ServiceConstant.UPDATE_UNREAD_CHAT:
+          url = base.BASE_CHAT +ServiceApi.UPDATE_UNREAD_CHAT_URL //base.BASE_URL_SOF + ServiceApi.FETCH_CHAT_FRIENDS_LIST_URL;
+          break;
   }
   return url;
 }

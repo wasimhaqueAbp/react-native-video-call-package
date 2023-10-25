@@ -15,9 +15,12 @@ import {
   Linking,
   Platform,
   Pressable,
-  BackHandler
+  BackHandler,
+  AsyncStorage,
+  ActivityIndicator
 } from 'react-native';
-import { formatChatDateTime,formatTime,formatDate, getCreatedDate } from '../Utility/Utility';
+import { formatChatDateTime,formatTime,formatDate, getCreatedDate,showToast } from '../Utility/Utility';
+
 import { ChatHeaderView } from './ChatHeaderView';
 import { callApi } from '../../NW/APIManager';
 import  { ServiceConstant } from '../../NW/ServiceAPI';
@@ -26,25 +29,35 @@ import {useNetInfo} from "@react-native-community/netinfo";
 import DATE from 'date-and-time';
 import ModalScreen from '../Utility/Modal';
 import ViewProfile from './ViewProfile';
+import{Menu, MenuItem, MenuDivider}  from 'react-native-material-menu';
+import DocumentPicker from "react-native-document-picker";
+import { DefaultView } from '../Utility/DefaultView';
+import { ScreenLoader } from '../Utility/ScreenLoader';
 const ChatConversation = (props) => {
-//console.log("props",props)
+
 // const [socket,setsocket] = useState(props.socket)
-const {socket,item,userCode} = props
-console.log("props",item)
+const {socket,item,userCode,chatuserId} = props
+
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
-  userId:2713882
+  userId:chatuserId
 })
     const [data, setData] = React.useState(
        []);
         const [chatText, setChatText] = React.useState("");
         const [startIndex, setStartIndex] = React.useState(0);
-        const [totalCount, setTotalCount] = React.useState(0);
+        const [pageSize, setPageSize] = React.useState(20); 
+        const [totalCount, setTotalCount] = React.useState(false);
         const [incomeMesage,setIncomeMesage]= React.useState(null);
        const [showEmoji,setShowEmoji] = React.useState(false);
        const [showModal,setShowModal] = useState(false)
        const [modalType,setModalType] = useState("");
        const [openViewProfile,setOpenViewProfile] = useState(false)
+       const [openDocumentPickerMenu,setOpenDocumentPickerMenu] = useState(false)
+       const [isLoadMore, setIsLoadMore] = React.useState(false);
+       const [isLoading, setIsLoading] = React.useState(false);
+       const [chatAsyncData, setChatAsyncData] = React.useState([])
+      const [netConnected,setNetConnected] = React.useState(true);
        const inputRef = useRef();
        
         
@@ -68,54 +81,351 @@ const [userData,setUserData] = useState({
         }, []); 
         useEffect( ()=>{
           
-          if(props.item!=null && item.mappedUserid!=null && userData!=null){
-            chatHistory() 
-          }
-      },[props.item,userData]);
-  const chatHistory = async ()=>{
-    try {
-    //   let obj1={
-    //     from:userData.userId,
-    //     to:item.mappedUserid,
-    // }
-    let obj1= {
-      "userid":userCode,
-      "mappeduserid":item.mappedUserid
-    }
-    const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
-    console.log("response chat history",response)
-  if(response.status != 0){
-    const processedMessages = response.map((message, index) => {
-      const showDate =
-        index === 0 ||
-        new Date(message.createdon).toDateString() !==
-          new Date(response[index - 1].createdon).toDateString();
-      return { ...message, showDate };
-    });
-    console.log("processedMessages",processedMessages)
-    const reversedArray = processedMessages.reverse();
-       // const reversedArray = response.reverse();
-    
-        setData(reversedArray)
-      // setData(processedMessages)
+          
+          setLocalandRemoteData()
+          
+      },[chatuserId,netInfo.isConnected ]);
+
       
+      useEffect( ()=>{
+        if(item.unreadcount > 0){
+          updateUnreadCount()
+        }
+        
+      },[])
+      const updateUnreadCount = async ()=>{
+        let obj1= {
+          "userid":chatuserId,
+          "mappeduserid":item.mappedUserid,
+          
+        }
+        const response =  await callApi(ServiceConstant.UPDATE_UNREAD_CHAT, obj1);
+      
+      }
+
+     const setLocalandRemoteData= async () =>{
+        const value = await AsyncStorage.getItem("chatData")
+        const parsedValue = JSON.parse(value);
+      //  console.log("Parsed result", parsedValue);
+      setChatAsyncData(parsedValue)
+
+
+         for(let i = 0;i< parsedValue.length;i++){
+           if(parsedValue[i].mappedUserid == item.mappedUserid){
+            if(parsedValue[i].userChatHistory.length > 0){
+             
+            //  if(netInfo.isConnected != null && netInfo.isConnected == false ){
+
+            //   setData(parsedValue[i].userChatHistory)
+            //  }
+             // setData(parsedValue[i].userChatHistory)
+       //chatHistory(parsedValue,i,parsedValue[i].userChatHistory,parsedValue[i].userChatHistory[0].createdon) 
+       if( netInfo.isConnected ){
+        chatHistory(parsedValue,i,) 
+       }
+       else if(netInfo.isConnected  == false){
+        showToast("Please check your Internet Connection");
+        const tempData = parsedValue[i].userChatHistory;
+        const processedMessages = tempData.map((message, index) => {
+        
+          let showDate = false;
+  
+          if (index === 0) {
+            // For the first message, set showDate to true
+           // showDate = true;
+          } else {
+            const currentDate = new Date(message.createdon).toDateString();
+            const nextMessage = tempData[index + 1];
+            
+            // If there is a next message and its date is different, set showDate to true
+            if (nextMessage && currentDate !== new Date(nextMessage.createdon).toDateString()) {
+              showDate = true;
+            }
+          }
+        
+          // Set showDate to true for the last item in the list
+          if (index === tempData.length - 1) {
+            showDate = true;
+          }
+       
+          // const showDate =
+          //   index === 0 ||
+          //   new Date(message.createdon).toDateString() !==
+          //     new Date(list[index - 1].createdon).toDateString();
+           return { ...message, showDate };
+        });
+           
+        
+            setData(processedMessages);
+       // setData(parsedValue[i].userChatHistory)
+       }
+       
+
+            }else{
+
+              if(netInfo.isConnected ){
+                if(props.item!=null && item.mappedUserid!=null && userData!=null){
+                  chatHistory(parsedValue,i, )  
+                }
+              }
+              else if(netInfo.isConnected  == false){
+                showToast("Please check your Internet Connection");
+                const tempData = parsedValue[i].userChatHistory;
+                const processedMessages = tempData.map((message, index) => {
+                
+                  let showDate = false;
+          
+                  if (index === 0) {
+                    // For the first message, set showDate to true
+                   // showDate = true;
+                  } else {
+                    const currentDate = new Date(message.createdon).toDateString();
+                    const nextMessage = tempData[index + 1];
+                    
+                    // If there is a next message and its date is different, set showDate to true
+                    if (nextMessage && currentDate !== new Date(nextMessage.createdon).toDateString()) {
+                      showDate = true;
+                    }
+                  }
+                
+                  // Set showDate to true for the last item in the list
+                  if (index === tempData.length - 1) {
+                    showDate = true;
+                  }
+               
+                  // const showDate =
+                  //   index === 0 ||
+                  //   new Date(message.createdon).toDateString() !==
+                  //     new Date(list[index - 1].createdon).toDateString();
+                   return { ...message, showDate };
+                });
+                   
+                
+                    setData(processedMessages);
+               // setData(parsedValue[i].userChatHistory)
+               }
+             
+            }
+           }
+         }
+        
+     }
+  //const chatHistory = async (chatData,index,chathistoryData,timeStamp)=>{
+    const chatHistory = async (chatData,index)=>{
+    try {
+    
+      setIsLoading(true)
+    let obj1= {
+      "userid":chatuserId,
+      "mappeduserid":item.mappedUserid,
+      "timestamp":"0", //chathistoryData.length == 0?"0":timeStamp.toString(), 
+      "start":startIndex,
+      "end":pageSize
+    }
+
+    const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
+    console.log("response",JSON.stringify(response))
+  if(response.status != 0){
+    const list = response.chathistory.chatlist
+    
+
+
+    if( startIndex == 0){
+      console.log("in if start")
+            const tempData = chatData;
+          tempData[index].userChatHistory = list;
+          await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
+
+    }
+    
+    if(startIndex > 0){
+      console.log("in startIndex")
+      const sortedMsg = [...data,...list] //sortMessages([...data, ...unqueData])
+      const processedMessages = sortedMsg.map((message, index) => {
+        
+        let showDate = false;
+
+        if (index === 0) {
+          // For the first message, set showDate to true
+         // showDate = true;
+        } else {
+          const currentDate = new Date(message.createdon).toDateString();
+          const nextMessage = sortedMsg[index + 1];
+          
+          // If there is a next message and its date is different, set showDate to true
+          if (nextMessage && currentDate !== new Date(nextMessage.createdon).toDateString()) {
+            showDate = true;
+          }
+        }
+      
+        // Set showDate to true for the last item in the list
+        if (index === sortedMsg.length - 1) {
+          showDate = true;
+        }
+     
+        // const showDate =
+        //   index === 0 ||
+        //   new Date(message.createdon).toDateString() !==
+        //     new Date(list[index - 1].createdon).toDateString();
+         return { ...message, showDate };
+      });
+         
+      
+          setData(processedMessages);
+
+    }
+    else{
+         const processedMessages = list.map((message, index) => {
+        
+        let showDate = false;
+
+        if (index === 0) {
+          // For the first message, set showDate to true
+         // showDate = true;
+        } else {
+          const currentDate = new Date(message.createdon).toDateString();
+          const nextMessage = list[index + 1];
+          
+          // If there is a next message and its date is different, set showDate to true
+          if (nextMessage && currentDate !== new Date(nextMessage.createdon).toDateString()) {
+            showDate = true;
+          }
+        }
+      
+        // Set showDate to true for the last item in the list
+        if (index === list.length - 1) {
+          showDate = true;
+        }
+     
+        // const showDate =
+        //   index === 0 ||
+        //   new Date(message.createdon).toDateString() !==
+        //     new Date(list[index - 1].createdon).toDateString();
+         return { ...message, showDate };
+      });
+         
+      
+          setData(processedMessages);
+
+    }
+
+
+    
+    // if(chathistoryData.length== 0){
+    //   if(chathistoryData.length > 0){
+      
+    //   const processedMessages = list.map((message, index) => {
+        
+    //     let showDate = false;
+
+    //     if (index === 0) {
+    //       // For the first message, set showDate to true
+    //      // showDate = true;
+    //     } else {
+    //       const currentDate = new Date(message.createdon).toDateString();
+    //       const nextMessage = list[index + 1];
+          
+    //       // If there is a next message and its date is different, set showDate to true
+    //       if (nextMessage && currentDate !== new Date(nextMessage.createdon).toDateString()) {
+    //         showDate = true;
+    //       }
+    //     }
+      
+    //     // Set showDate to true for the last item in the list
+    //     if (index === list.length - 1) {
+    //       showDate = true;
+    //     }
+     
+    //     // const showDate =
+    //     //   index === 0 ||
+    //     //   new Date(message.createdon).toDateString() !==
+    //     //     new Date(list[index - 1].createdon).toDateString();
+    //      return { ...message, showDate };
+    //   });
+         
+      
+    //       setData(processedMessages);
+
+    //       const tempData = chatData;
+    //       tempData[index].userChatHistory = list;
+    //       await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
+
+    // }
+    // else{
+
+      
+    //   const mergedArray = list.concat(chathistoryData);
+    //   const processedMessages = mergedArray.map((message, index) => {
+        
+    //     let showDate = false;
+
+    //     if (index === 0) {
+    //       // For the first message, set showDate to true
+    //      // showDate = true;
+    //     } else {
+    //       const currentDate = new Date(message.createdon).toDateString();
+    //       const nextMessage = mergedArray[index + 1];
+          
+    //       // If there is a next message and its date is different, set showDate to true
+    //       if (nextMessage && currentDate !== new Date(nextMessage.createdon).toDateString()) {
+    //         showDate = true;
+    //       }
+    //     }
+      
+    //     // Set showDate to true for the last item in the list
+    //     if (index === mergedArray.length - 1) {
+    //       showDate = true;
+    //     }
+     
+        
+    //      return { ...message, showDate };
+    //   });
+    //  // setData(processedMessages)
+    //   const tempData = chatData;
+    //   tempData[index].userChatHistory = mergedArray;
+    //  // console.log("tempData",JSON.stringify(tempData));
+    // //  await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
+
+    // }
+  }
+
+  if(response.status == 0 && response.chathistory.chatlist == null){
+    //setTotalCount(startIndex+10)
+    setTotalCount(true)
   }
 
   
+
+  setIsLoading(false)
+  setIsLoadMore(false)
       
     } catch (error) {
       console.log("error Chat history",error)
+      setIsLoading(false)
+         setIsLoadMore(false)
     }
    
   }
+
+  useEffect( () => {
+
+    if(!isLoadMore) {
+     
+      return
+    }
+
+    (async () => {
+      await setLocalandRemoteData() 
+   // await chatHistory()
+    })()
+
+  }, [isLoadMore]);
   useEffect(()=> {
     if(socket!=null && socket!=''){
      
       
         socket.on(userCode, (msg) => {
-        console.log("msg",msg);
-      //  onMessageReceived(msg, data)
-       
+         
         setIncomeMesage(msg);
             })
         
@@ -124,7 +434,6 @@ const [userData,setUserData] = useState({
    }, [socket])
 
    useEffect( () => {
-console.log("incomeMesage",incomeMesage)
     if(incomeMesage == null) return
 
     onMessageReceived(incomeMesage, data)
@@ -135,13 +444,11 @@ console.log("incomeMesage",incomeMesage)
 
   const onMessageReceived = (msg, messages) => {
 
-    // console.log('MESSAGE:' + JSON.stringify(message))
-
+     console.log('MESSAGE:' + JSON.stringify(msg))
+     console.log('MESSAGE:' + JSON.stringify(msg.createdon))
      if(msg == null) return
 
      try {
-
-
       let arr3={}
       let value = true;
       const lastMsgDate= data.length == 0?new Date() :new Date(data[0].createdon);
@@ -149,10 +456,6 @@ console.log("incomeMesage",incomeMesage)
       const currentDate = new Date();
       const formateCurrentDate = DATE.format(currentDate, 'DD/MM/YYYY')
       
-      
-      
-      //console.log(formateDate)
-      //console.log(formateCurrentDate)
       if(data.length == 0 ){
         value = true
       }
@@ -160,32 +463,29 @@ console.log("incomeMesage",incomeMesage)
         value = false;
       }
             if(userCode==msg.senderName){
-              
-       
+              const date =parseInt(msg.createdon)
                 arr3={
-                    fromSelf:true,
-                    message:{
-                        test:msg.message
-                    },
-                    createdon:  getCreatedDate(),
+                    
+                    senderName: msg.senderName,
+                    targetUserName: msg.targetUserName,
+                    message:msg.message,
+                    createdon:date, //getCreatedDate(),
                     "showDate":value,
                 }
-               // arrData.push(arr3);
-             //   setData(arrData)
+               
         setData(addAfter(messages, 0, arr3))
                
             }
             else if(item.mappedUserCode==msg.senderName || userCode==msg.targetUserName){
+              const date =parseInt(msg.createdon)
                 arr3={
-                    fromSelf:false,
-                    message:{
-                        test:msg.message
-                    },
-                   createdon:  getCreatedDate(),
+                    
+                    senderName: msg.senderName,
+                    targetUserName: msg.targetUserName,
+                    message:msg.message,
+                   createdon:date, //formatTime(msg.createdon),//getCreatedDate(),
                    "showDate":value,
                 }
-               // arrData.push(arr3);
-                //setData(arrData)
                 setData(addAfter(messages, 0, arr3))
                
             }
@@ -198,24 +498,33 @@ console.log("incomeMesage",incomeMesage)
  
   }
         const onChangeText = (text) => {
-
-            //  //console.log(text)
-            
+ 
         setChatText(text)
-        
             }
 
       
         const _handleLoadMore = async () => {
-
-            if (startIndex >= totalCount || incomeMesage != null) {
-          
+          try {
+            if(netInfo.isConnected == null || netInfo.isConnected ){
+             
+             if (totalCount  || incomeMesage != null) {
+             
               return;
             }
-          
-           //setStartIndex(startIndex+40)
-           //setIsLoadMore(true)
+           
+           setStartIndex(startIndex+20)
+           setIsLoadMore(true)
+          }
+          else{
+            
+          }
+            
             //setPageSize(40)
+          } catch (error) {
+            console.log("handle more error",error)
+          }
+
+            
           
           }
 
@@ -338,7 +647,6 @@ console.log("incomeMesage",incomeMesage)
             }
 
             const sendAction = async () => {
-              console.log("ksk")
               if(chatText == "") {
           
                 return
@@ -360,18 +668,7 @@ console.log("incomeMesage",incomeMesage)
           
            } 
            const didSendMessage = async (chatText) => {
-           // console.log("chatText",data);
-           // const reverseData =data.reverse()
-            // const processedMessages = data.map((message, index) => {
-            //   const showDate =
-            //     index === 0 ||
-            //     new Date(message.createdon).toDateString() !==
-            //       new Date(data[index - 1].createdon).toDateString();
-            //   return showDate ;
-            // });
-            // console.log("processedMessages",processedMessages)
-//             const lastProcessedMessageValue = revData[revData.length - 1];
-// console.log('Last Processed Message Value:', lastProcessedMessageValue);
+           
 let value = true;
 
 const lastMsgDate= data.length == 0?new Date() :new Date(data[0].createdon);
@@ -381,23 +678,23 @@ const formateCurrentDate = DATE.format(currentDate, 'DD/MM/YYYY')
 
 
 
-//console.log(formateDate )
-//console.log(formateCurrentDate)
 if(data.length == 0 ){
   value = true
 }
 else if (formateDate === formateCurrentDate) {
   value = false;
 }
-//console.log('Value:', value);
+
             const message ={
-              "fromSelf": true,
-              "message": {
-                  "test":chatText
-              },
+              
+              senderName: userCode,
+              targetUserName: item.mappedUserCode,
+              "message":chatText,
+              
               "createdon":  getCreatedDate(),
+              "modifyon":  getCreatedDate(),
               "showDate":value,
-              "readId": netInfo.isConnected ? "send":"pending"
+              "isreadmsg": netInfo.isConnected ? "send":"pending"
           }
            
            setData(addAfter(data, 0, message))
@@ -405,17 +702,20 @@ else if (formateDate === formateCurrentDate) {
               senderName: userCode,
  targetUserName: item.mappedUserCode,
  message: chatText,
- type:'text'
+ "createdon":  getCreatedDate(),
+ "modifyon":  getCreatedDate(),
+ type:'txt'
           }
-          console.log("socket",socket)
+         
             socket.emit("messageSendToUser",arr);
-
+          let arr1= {
+            "userid":chatuserId,
+            "mappeduserid":item.mappedUserid,
+            "message":chatText
+          }
            setChatText("")
-          // const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr);
-         // console.log("response chat history",response)
-        
-        
-           
+          //  const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr1);
+          // console.log("response chat history",response)
           }
 
           function addAfter(array, index, newItem) {
@@ -449,14 +749,11 @@ else if (formateDate === formateCurrentDate) {
           
         //const alignment = 2713882  == item.creatorId ? "left" : "right"; //props.route.params.targetUserId == item.creatorId ? "left" : "right"
         
-        const alignment = item.fromSelf  ==false ? "left" : "right"; 
+        const alignment = item.senderName  ==userCode ? "right" : "left"; 
   
                 const dateVal = () => {
-                  console.log("item.createdon",item)
-                  console.log("item.createdon",item.createdon)
                   return formatTime(item.createdon)
-                 // return formatChatDateTime(item.createdon)
-          
+                 
                 } 
                  
                 return (
@@ -469,26 +766,26 @@ else if (formateDate === formateCurrentDate) {
               
                     <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
                    
-                      <Text style={{ fontSize: 14, color: "black", }} key={index}>{item.message.test}</Text>
+                      <Text style={{ fontSize: 14, color: "black", }} key={index}>{item.message}</Text>
                       <View style={{flexDirection:"row",justifyContent:"flex-end"}}>
                       <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
                       
-                      {item.readId=="send"&& alignment == "right" &&
+                      {item.isreadmsg=="send"&& alignment == "right" &&
                       <Image
         style={{height:10,width:10,marginLeft:6,marginTop:2}}
        source={require('../icons/send_tick.png')} resizeMode="contain" /> 
                       }
-                      {item.readId=="received"&& alignment == "right" && 
+                      {item.isreadmsg=="received"&& alignment == "right" && 
                       <Image
         style={{height:15,width:15,marginLeft:6,}}
        source={require('../icons/received_tick.png')} resizeMode="contain" /> 
                       } 
-                      {item.readId=="read"&& alignment == "right" && 
+                      {item.isreadmsg=="read"&& alignment == "right" && 
                       <Image
         style={{height:15,width:15,marginLeft:6,}}
        source={require('../icons/seen_tick.png')} resizeMode="contain" /> 
                       } 
-                      {item.readId=="pending"&& alignment == "right" && 
+                      {item.isreadmsg=="pending"&& alignment == "right" && 
                       <Image
         style={{height:15,width:15,marginLeft:6,}}
        source={require('../icons/time_left.png')} resizeMode="contain" /> 
@@ -509,37 +806,37 @@ else if (formateDate === formateCurrentDate) {
                       
 
                     <View style={styles.inputMainView}>
-                    <View style={styles.inputInnerView}>
+                    <View style={[styles.inputInnerView,{}]}>
                     <TouchableOpacity style={{paddingLeft:5}} onPress={()=>{ 
-                     // console.log(showEmoji)
                       const emoji = showEmoji
-                      console.log(emoji)
                       setShowEmoji(!showEmoji)
                       
-                     // Keyboard.dismiss()
                       if(emoji){
                         inputRef.current.focus() 
                       }
                       else{
                         Keyboard.dismiss()
                       }
-                      
-                     //inputRef.current.focus()
+                     
                     }}>
                     {/* <RNVectorIcon group='MaterialCommunityIcons' name="emoticon-happy-outline" size={30} color={"gray"} /> */}
                     <Image
         style={{height:25,width:25,marginRight:10}}
        source={showEmoji?require('../icons/mute.png') :require('../icons/smile.png')} resizeMode="contain" /> 
                     </TouchableOpacity>       
+                          
+
                               <TextInput 
                               ref={inputRef}
                               style={styles.mTextfield}
                               value={chatText}
-                              maxLength={78} 
+                              
+                              minHeight={50}  // Set the minimum height
+                              maxHeight={100}  // Set the maximum height
+                             // maxLength={78} 
                               multiline={true}
                               autoCapitalize="none"
                               autoCorrect={false}
-                              // placeholder="Type here ..."
                               placeholder={"Start Conversation"}
                               keyboardType='default'
                               clearButtonMode='always' 
@@ -550,17 +847,26 @@ else if (formateDate === formateCurrentDate) {
                                 setShowEmoji(false)
                               }}
                               /> 
+
+{/* <TouchableOpacity  onPress={()=>{ 
+                     
+                    }}>
+                    <Image
+        style={{height:25,width:25,marginRight:10}}
+       source={showEmoji?require('../icons/mute.png') :require('../icons/smile.png')} resizeMode="contain" /> 
+                    </TouchableOpacity>  */}
+                    {documentMenu()}
                               </View>
                               
-                             <TouchableOpacity disabled={(chatText == null || chatText == "")} 
+                              <TouchableOpacity disabled={(chatText == null || chatText == "")} 
                             //style={styles.sendMainView}
                             style={{alignItems:"center",justifyContent:"center",paddingLeft:4}}
                              onPress={()=>{sendAction()}}>
-                             {/* <RNVectorIcon group='MaterialCommunityIcons' name="send" size={25} color={"white"} /> */}
+                             
                              <Image
-        style={{height:40,width:40,marginRight:10}}
+        style={{height:40,width:40,}}
        source={require('../icons/send.png')} resizeMode="contain" /> 
-                            </TouchableOpacity>
+                            </TouchableOpacity> 
 
                             
                                     </View>
@@ -586,17 +892,81 @@ onEmojiSelected={emoji => {setChatText((prevText) => prevText+emoji);
  
   
 </View>}
+
                                     </View>
 
                   )
                 }
 
 
+const documentMenu=()=>{
+  return(
+    <View>
+       <Menu
+            visible={openDocumentPickerMenu}
+            anchor={
+              <Pressable onPress={() => {setOpenDocumentPickerMenu(true)}}>
+              <Image
+        style={{height:25,width:25,marginRight:10}}
+       source={require('../icons/smile.png')} resizeMode="contain" /> 
+                 </Pressable>
+            }
+            onRequestClose={() => {setOpenDocumentPickerMenu(false)}}
+          style={{width:"80%",
+    marginTop: -20, }}
+            
+            >
+          <MenuItem onPress={() => {
+             
+             }}>
+                <View style={{ flexDirection:"row", alignItems: 'center', marginRight:10 }}>
+      
+      <Image
+      resizeMode="contain"
+  source={require('../icons/block_user.png')}
+  style={{ width: 20, height: 20, marginRight: 10  }}
+/>
+<Text style={{color:"black",  }}> {"Gallery"}</Text>
+     </View>
+    
+            </MenuItem>
+             <MenuItem onPress={() => {
+               
+             }}>
+             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      
+      <Image
+      resizeMode="contain"
+  source={require('../icons/report_abuse.png')}
+  style={{ width: 20, height: 20, marginRight: 10 }}
+/>
+<Text style={{color:"black",  }}> {"Camera"}</Text>
+     </View>
+    
+            </MenuItem> 
+            <MenuItem 
+            onPress={()=>{
+               }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      
+              <Image
+              resizeMode="contain"
+          source={require('../icons/mute.png')}
+          style={{ width: 20, height: 20, marginRight: 10}}
+        />
+        <Text style={{color:"black", }}> {"Document"}</Text>
+             </View>
+            </MenuItem>
+          </Menu>
+ 
+    </View>
+  )
 
+}
     return(
         <View style={styles.container}>
-        {!openViewProfile ?
-        <View style={{flex:1}}>
+         {!openViewProfile ? 
+        <View style={{flex:1}}> 
             <ChatHeaderView 
              item={props.item}
              onSelectProfile={(item,index)=>{
@@ -612,24 +982,34 @@ onEmojiSelected={emoji => {setChatText((prevText) => prevText+emoji);
          }
         
        }
-           />
+           /> 
 
-            
+
+
             <FlatList style={{marginVertical:8}}
+            
         inverted={true}
         data = {data}
         // keyExtractor={(item, index) => (item.creatorId + item.messageId)}
         renderItem={renderRowItem}
         windowSize={30}
         onEndReached={_handleLoadMore}
-        onEndReachedThreshold={0.5}
+        onEndReachedThreshold={0.1}
+       // ListFooterComponent={isLoadMore ? <ActivityIndicator  animating={true} size="large" color="blue" /> : null}
+    
         />
 
       {chatInputView()}
-      </View>
+      
 
-:
-<ViewProfile
+
+      {isLoading && (
+        <ScreenLoader loading={isLoading} topMargin={0} text={"Loading.."} />
+       )}
+       </View>
+
+ :
+  <ViewProfile
 
 goBack={(e)=> {setOpenViewProfile(false)}}
 item={item}
@@ -648,7 +1028,7 @@ item={item}
         }}
       />
        
- 
+  
 
         </View>
     )
@@ -691,13 +1071,13 @@ const styles = StyleSheet.create({
       mTextfield: {
         backgroundColor: 'white',
         color: '#650202',
-        width: "84%",
-        marginLeft: 8,
-        borderRadius:25
-        
+        borderRadius:25,
+        flex:1,
+       
+       
       },
       inputMainView:{flexDirection:'row', justifyContent:'space-between', alignContent:'center',paddingVertical:10,paddingHorizontal:12},
-      inputInnerView:{flexDirection:"row",backgroundColor:"white", alignItems:"center",borderWidth:1,borderRadius:20,borderColor:"#717171",width:"85%"},
+      inputInnerView:{flexDirection:"row",backgroundColor:"white", alignItems:"center",borderWidth:1,borderRadius:20,borderColor:"#717171",flex:1},
       sendMainView:{height:45,width:45, backgroundColor:"#DB233D",alignItems:"center",justifyContent:"center",borderRadius:360,paddingLeft:4},
       dateContainer: {
         flex: 1,

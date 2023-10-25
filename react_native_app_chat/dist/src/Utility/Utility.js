@@ -1,5 +1,6 @@
 import React from 'react';
 import DATE from 'date-and-time';
+import Toast from 'react-native-simple-toast';
 export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
     if (matrimonyUserName == null || matrimonyUserName.trim() == '') {
       return '';
@@ -141,7 +142,7 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
   
         const dateString = new Date(createdAt) //.replace(" GMT", "")
         
-        const formattedDateTime = DATE.format(dateString, 'HH:mm A');
+        const formattedDateTime = DATE.format(dateString, 'hh:mm A');
 
         displayVal = formattedDateTime
         }
@@ -212,11 +213,23 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
 
    // const val = DATE.format(new Date(), 'DD-MM-YYYY HH:mm:ss', true) + " GMT"
    const currentDate = new Date();
-   const val = currentDate.toISOString();
+   const epochDate = currentDate.getTime();  // Get the Unix timestamp (in milliseconds)
+   const val =  epochDate //currentDate.toISOString();
     return val
 }
 
+export const showToast = (
+  message,
+  timeout = 5,
+  length = Toast.LONG,
+  gravity = Toast.CENTER,
+) => {
 
+    setTimeout(() => {
+      Toast.showWithGravity(message, length, gravity);
+    }, timeout)
+
+};
 
   // export default class NavigationState {
 

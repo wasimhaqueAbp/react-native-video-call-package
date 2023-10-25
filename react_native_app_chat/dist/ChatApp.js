@@ -12,7 +12,7 @@ const ChatApp = props => {
         //setsocket(io("http://10.133.14.23:5001"));
           //const socketConnection = io("https://chatqa.abpweddings.com");
     
-          const socketConnection = io('ws://10.133.14.23:8878',{
+          const socketConnection = io('ws://10.132.100.191:8878',{
              "force new connection" : true,
                "reconnectionAttempts": "Infinity", 
             "timeout" : 10000,                  

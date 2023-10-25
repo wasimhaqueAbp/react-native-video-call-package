@@ -104,6 +104,37 @@ export const callApi = async (type, param = null, showError = false) => {
                       return getNWError();
                     }
                     break
-      
+                    case ServiceConstant.UPDATE_UNREAD_CHAT:
+                      try {
+                        //  const user = await getUser()
+                
+                          const headers = {
+                            'Content-Type': 'application/json',
+                            Accept: 'application/json',
+                          }
+                
+                          let url = ServiceUrl(type)
+                
+                          if(__DEV__) { console.log(type + " =====>>>>", url, param)}
+                
+                          const response = await axios.post(ServiceUrl(type), param, {
+                            headers,
+                          });
+                          // const response = await axios.post(url, body, {
+                          //   headers,
+                          //   //timeout: 30000,
+                          // })
+                
+                          const data = await response.data;
+                
+                          return data
+                      }
+                      catch(e){
+                
+                        if(__DEV__)    console.log(type, " ==> ", e);
+                        return getNWError();
+                      }
+                      break
+        
     }
 }

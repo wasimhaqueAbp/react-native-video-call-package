@@ -49,7 +49,7 @@ export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = tru
        
        </View>
        <View style={styles.dateMainView}>
-       <Text style={styles.dateText(item)}> {formatDate(item.createdon) } </Text>
+       <Text style={styles.dateText(item)}> {formatDate(item.modifyon) } </Text>
        </View>
        </View>
        <View style={styles.lastMessageView}>

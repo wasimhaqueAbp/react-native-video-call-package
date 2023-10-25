@@ -9,6 +9,7 @@ import {
   TextInput,
   Image,
   Keyboard,
+  AsyncStorage
   
 } from 'react-native';
 
@@ -22,8 +23,8 @@ import { DefaultView } from '../Utility/DefaultView';
 import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
 import BlockList from './BlockList';
 import PendingRequest from './PendingRequest';
-//import SockJS from 'sockjs-client';
-//import { Client } from '@stomp/stompjs';
+import { getCreatedDate } from '../Utility/Utility';
+//import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
  const ChatUserList = props => {
@@ -51,20 +52,21 @@ const [data, setData] = useState([
   ]);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [pageType,setPageType] = useState(null)
- 
+  const [incomeMesage,setIncomeMesage]= React.useState(null);
 
 
   useEffect(()=>{
+   
       fetchChatFriends()
 
     //const result = await isUserPaidMember(null)
     //setIsPaidMember(result)
    
-  },[])
+  },[openUserDetailPage])
   const fetchChatFriends = async () => {
     
     try {
-
+      
      // startAWEngageTracking(AWEngageEvent.CHAT)
 
     //  trackAWEngageScreen(AWEngageEvent.CHAT)
@@ -74,7 +76,7 @@ const [data, setData] = useState([
           "userid":chatuserId
         }
       const response =  await callApi(ServiceConstant.FETCH_CHAT_FRIENDS_LIST, arr);
-      console.log(response)
+      console.log("response.friendlist",response.friendlist)
       if(response != null && response['friendlist'] != null){
 
         let result = response.friendlist
@@ -85,9 +87,45 @@ const [data, setData] = useState([
         //   result = response.chatFriendList.filter( (item) => { if(item['targetUserId'] != loggedInUserId) { return item}  } )
         //  }
 
-       // console.log(response); 
-        setData(result)
-        setPreviousData(result)
+       // console.log("result",result); 
+       const asyncData = await AsyncStorage.getItem("chatData")
+       const parsedValue = JSON.parse(asyncData);
+       
+     //  console.log("valuse",parsedValue); 
+        
+
+if(asyncData != null){
+  
+ 
+  const updatedFriendlist =  result.map(item => {
+    const asyncUser = parsedValue.find((user) => user.mappedUserid === item.mappedUserid);
+    if (asyncUser ) {
+   return {...item,
+    "userChatHistory":asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
+   }
+    }
+    return item
+  });
+
+//console.log("Updated friendlist:", updatedFriendlist);
+}     
+else{
+ 
+  const asyncData =  result.map(item => ({
+          ...item,
+          "userChatHistory": []
+        }));
+        
+        await AsyncStorage.setItem("chatData", JSON.stringify(asyncData))
+    
+}  
+
+       const sortedFriendList = response.friendlist.sort((a, b) => b.modifyon - a.modifyon);
+
+        setData(sortedFriendList)
+        setPreviousData(sortedFriendList)
+
+        // const value = await AsyncStorage.getItem("chatData")
         //setUserName(response['loggedinUserName'])
       }
 
@@ -109,6 +147,71 @@ const [data, setData] = useState([
 
   }
   
+
+  useEffect(()=> {
+    if(props.socket!=null && props.socket!='' && openUserDetailPage == false){
+     
+      
+      props.socket.on(userCode, (msg) => {
+        console.log("msgsss",msg);
+      //  onMessageReceived(msg, data)
+       
+        setIncomeMesage(msg);
+            })
+        
+    }
+    
+   }, [props.socket])
+
+   useEffect( () => {
+
+    if(incomeMesage == null) return
+    console.log("incomeMesage",incomeMesage)
+    onMessageReceived(incomeMesage, data)
+
+    setIncomeMesage(null)
+
+  }, [incomeMesage]);
+
+
+  const onMessageReceived = (msg, messages) => {
+
+    if (__DEV__) { console.log('MESSAGE:' + JSON.stringify(messages))}
+
+     if(msg == null) return
+
+     try {
+
+      //console.log(messages)
+      
+      const updatedData = messages.map(item => {
+        if (item.mappedUserCode === msg.senderName) {
+          // Update the messagebody for the specified mappedUserCode
+         
+         
+          return {
+            ...item,
+            messagebody: msg.message,
+           modifyon :getCreatedDate(),
+           unreadcount:item.unreadcount+1
+           
+          };
+        }
+        return item;
+      });
+      const sortedFriendList = updatedData.sort((a, b) => {
+        return b.modifyon - a.modifyon;  // Corrected the return order
+      });
+      console.log("updatedData",sortedFriendList)
+      setPreviousData(sortedFriendList);
+      setData(sortedFriendList)     
+     } 
+     catch(e) {
+
+      console.log(e)
+    }
+ 
+  }
  
     const headerView = () => {
         return (
@@ -214,8 +317,8 @@ const [data, setData] = useState([
             onChangeText={e => {
               if(e !=""){
 setSearchText(e)
-                console.log(e  )
-                const filteredData = previousData.filter(item => item.matrimonyUserName.toLowerCase().includes(e.toLowerCase()));
+                console.log(e )
+                const filteredData = previousData.filter(item => item.mappedUserName.toLowerCase().includes(e.toLowerCase()));
                 //props.onChangeText(e)
                 console.log("filteredData",filteredData)
                setData(filteredData)
@@ -290,7 +393,7 @@ setSearchText(e)
       {openUserDetailPage == false? 
         <View style={styles.container}>
         {headerView()}  
-        {netInfo.isConnected ? 
+         {netInfo.isConnected == null || netInfo.isConnected  ?  
           <View  style={{flex:1, paddingHorizontal: 15}}>
        {searchView()} 
         {userListView()} 
@@ -298,7 +401,7 @@ setSearchText(e)
         :
         <DefaultView title ={"You are not connected to internet" } action={fetchChatFriends} />
 
-        }
+        } 
        
       </View>
       : 
@@ -308,6 +411,7 @@ setSearchText(e)
         goBack={()=>onPressGoBack()}
         socket={props.socket}
         userCode={userCode}
+        chatuserId={chatuserId}
       />
       :
       pageType != null && pageType =="block"?
