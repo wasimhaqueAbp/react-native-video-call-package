@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 
 import {Divider, Button, Card, Avatar} from 'react-native-paper';
-import { formatChatDateTimeGMT,formatDate, prepareShortName } from '../Utility/Utility';
+import { formatChatDateTimeGMT,formatDate,formatChatTimestamp, prepareShortName } from '../Utility/Utility';
 import { getImageUrl } from '../../NW/ServiceURL';
 
 import { formatChatDateTime } from '../Utility/Utility';
@@ -48,9 +48,9 @@ export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = tru
        <Text style={styles.userText(item)}> {prepareShortName(item.mappedUserName)}</Text>
        
        </View>
-       <View style={styles.dateMainView}>
-       <Text style={styles.dateText(item)}> {formatDate(item.modifyon) } </Text>
-       </View>
+       {item.messagebody != null && <View style={styles.dateMainView}>
+       <Text style={styles.dateText(item)}> {formatChatTimestamp(item.modifyon) } </Text>
+       </View>}
        </View>
        <View style={styles.lastMessageView}>
       

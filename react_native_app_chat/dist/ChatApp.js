@@ -3,8 +3,8 @@ import { View } from 'react-native';
 import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
 const ChatApp = props => {
- const  {userCode,chatuserId,profileImage,profileName } = props;
- console.log(userCode,"userCode")
+ const  {userCode,chatuserId,profileImage,profileName,pushData } = props;
+ console.log(userCode,pushData,"userCode")
     
       const [socket,setsocket]=useState(null);
     useEffect(()=>{
@@ -38,6 +38,9 @@ const ChatApp = props => {
            // socket.emit('ad-user',chatuserId)
         }
     },[chatuserId,socket]);
+
+    
+
 return(
     <View style={{flex:1}}>
         <ChatUserList
@@ -46,6 +49,7 @@ return(
             chatuserId={chatuserId} 
             profileImage={profileImage}
              profileName={profileName}
+             pushData={pushData}
         />
     </View>
 )

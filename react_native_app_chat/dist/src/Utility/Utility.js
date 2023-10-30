@@ -163,7 +163,7 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
     try {
   
         const dateString = new Date(createdAt) //.replace(" GMT", "")
-       // console.log("dateString",dateString)
+        console.log("dateString",createdAt)
        // const date = DATE.format(dateString, 'DD/MM/YYYY HH:mm:ss');
 
        // displayVal = formattedDateTime
@@ -177,7 +177,7 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
         const diff = (currentDate.getTime() - dateString.getTime())/1000
         
         if(diff < 60){
-         displayVal = "Today"
+         displayVal = "Now"
         }
         else if (dateString.getDate() == yesterDay) {
  
@@ -206,6 +206,32 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
   
        return  displayVal
   
+  }
+
+  export const formatChatTimestamp=(epochTimestamp) =>{
+    const now = Date.now(); // Current timestamp in milliseconds
+  
+    const timeDifference = now - epochTimestamp;
+  
+    const secondsAgo = Math.floor(timeDifference / 1000);
+    const minutesAgo = Math.floor(secondsAgo / 60);
+    const hoursAgo = Math.floor(minutesAgo / 60);
+  
+    if (secondsAgo < 60) {
+      return 'Now';
+    } else if (minutesAgo < 60) {
+      return `${minutesAgo} min${minutesAgo > 1 ? 's' : ''} ago`;
+    } else if (hoursAgo < 24) {
+      return `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
+    } else if (timeDifference < 2 * 24 * 60 * 60 * 1000) {
+      // Within the last 48 hours, show "yesterday"
+      return 'yesterday';
+    } else {
+      // More than 48 hours ago, display the full date
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      const formattedDate = new Date(epochTimestamp).toLocaleDateString('en-US', options);
+      return formattedDate;
+    }
   }
   export const getCreatedDate = () => {
 

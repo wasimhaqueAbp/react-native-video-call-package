@@ -81,8 +81,16 @@ const [userData,setUserData] = useState({
         }, []); 
         useEffect( ()=>{
           
-          
-          setLocalandRemoteData()
+          if( netInfo.isConnected ){
+            chatHistory() 
+           }
+           else if(netInfo.isConnected  == false){
+            showToast("Please check your Internet Connection");
+           
+               
+            
+           }
+         // setLocalandRemoteData()
           
       },[chatuserId,netInfo.isConnected ]);
 
@@ -106,7 +114,7 @@ const [userData,setUserData] = useState({
      const setLocalandRemoteData= async () =>{
         const value = await AsyncStorage.getItem("chatData")
         const parsedValue = JSON.parse(value);
-      //  console.log("Parsed result", parsedValue);
+       // console.log("Parsed result", parsedValue);
       setChatAsyncData(parsedValue)
 
 
@@ -211,7 +219,8 @@ const [userData,setUserData] = useState({
         
      }
   //const chatHistory = async (chatData,index,chathistoryData,timeStamp)=>{
-    const chatHistory = async (chatData,index)=>{
+    //const chatHistory = async (chatData,index)=>{
+      const chatHistory = async ()=>{
     try {
     
       setIsLoading(true)
@@ -224,19 +233,19 @@ const [userData,setUserData] = useState({
     }
 
     const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
-    console.log("response",JSON.stringify(response))
+    console.log("response chat history",JSON.stringify(response))
   if(response.status != 0){
     const list = response.chathistory.chatlist
     
 
 
-    if( startIndex == 0){
-      console.log("in if start")
-            const tempData = chatData;
-          tempData[index].userChatHistory = list;
-          await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
+    // if( startIndex == 0){
+    //   console.log("in if start")
+    //         const tempData = chatData;
+    //       tempData[index].userChatHistory = list;
+    //       await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
 
-    }
+    // }
     
     if(startIndex > 0){
       console.log("in startIndex")
@@ -415,8 +424,8 @@ const [userData,setUserData] = useState({
     }
 
     (async () => {
-      await setLocalandRemoteData() 
-   // await chatHistory()
+     // await setLocalandRemoteData() 
+    await chatHistory()
     })()
 
   }, [isLoadMore]);
@@ -446,9 +455,13 @@ const [userData,setUserData] = useState({
 
      console.log('MESSAGE:' + JSON.stringify(msg))
      console.log('MESSAGE:' + JSON.stringify(msg.createdon))
+     console.log('MESSAGE:' +userCode)
+     
      if(msg == null) return
 
      try {
+
+      
       let arr3={}
       let value = true;
       const lastMsgDate= data.length == 0?new Date() :new Date(data[0].createdon);
@@ -462,21 +475,23 @@ const [userData,setUserData] = useState({
       else if (formateDate === formateCurrentDate) {
         value = false;
       }
-            if(userCode==msg.senderName){
-              const date =parseInt(msg.createdon)
-                arr3={
+        //     if(userCode==msg.senderName){
+        //       const date =parseInt(msg.createdon)
+        //         arr3={
                     
-                    senderName: msg.senderName,
-                    targetUserName: msg.targetUserName,
-                    message:msg.message,
-                    createdon:date, //getCreatedDate(),
-                    "showDate":value,
-                }
+        //             senderName: msg.senderName,
+        //             targetUserName: msg.targetUserName,
+        //             message:msg.message,
+        //             createdon:date, //getCreatedDate(),
+        //             "showDate":value,
+        //         }
                
-        setData(addAfter(messages, 0, arr3))
+        // setData(addAfter(messages, 0, arr3))
                
-            }
-            else if(item.mappedUserCode==msg.senderName || userCode==msg.targetUserName){
+        //     }
+        //     else 
+            
+            if(item.mappedUserCode==msg.senderName ){
               const date =parseInt(msg.createdon)
                 arr3={
                     
@@ -819,10 +834,9 @@ else if (formateDate === formateCurrentDate) {
                       }
                      
                     }}>
-                    {/* <RNVectorIcon group='MaterialCommunityIcons' name="emoticon-happy-outline" size={30} color={"gray"} /> */}
                     <Image
         style={{height:25,width:25,marginRight:10}}
-       source={showEmoji?require('../icons/mute.png') :require('../icons/smile.png')} resizeMode="contain" /> 
+       source={showEmoji?require('../icons/keyboard.png') :require('../icons/smile.png')} resizeMode="contain" /> 
                     </TouchableOpacity>       
                           
 
@@ -848,14 +862,7 @@ else if (formateDate === formateCurrentDate) {
                               }}
                               /> 
 
-{/* <TouchableOpacity  onPress={()=>{ 
-                     
-                    }}>
-                    <Image
-        style={{height:25,width:25,marginRight:10}}
-       source={showEmoji?require('../icons/mute.png') :require('../icons/smile.png')} resizeMode="contain" /> 
-                    </TouchableOpacity>  */}
-                    {documentMenu()}
+                    {/* {documentMenu()} */}
                               </View>
                               
                               <TouchableOpacity disabled={(chatText == null || chatText == "")} 
@@ -970,7 +977,7 @@ const documentMenu=()=>{
             <ChatHeaderView 
              item={props.item}
              onSelectProfile={(item,index)=>{
-               setOpenViewProfile(true);
+              // setOpenViewProfile(true);
              }}
               showLastMessage={false}
               onGoback={(e)=> props.goBack()}

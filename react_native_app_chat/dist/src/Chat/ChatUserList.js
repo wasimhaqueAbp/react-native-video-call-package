@@ -9,7 +9,7 @@ import {
   TextInput,
   Image,
   Keyboard,
-  AsyncStorage
+  //AsyncStorage
   
 } from 'react-native';
 
@@ -23,14 +23,14 @@ import { DefaultView } from '../Utility/DefaultView';
 import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
 import BlockList from './BlockList';
 import PendingRequest from './PendingRequest';
-import { getCreatedDate } from '../Utility/Utility';
-//import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCreatedDate,showToast } from '../Utility/Utility';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
  const ChatUserList = props => {
 //console.log("ChatUserList props",props.route.params.props)
 const newProps = props //props.route.params.props; //props
-const  {userCode,chatuserId,profileImage,profileName } = props;
+const  {userCode,chatuserId,profileImage,profileName,pushData } = props;
  console.log(userCode,"userCodes")
  
 //const navigation = useNavigation();
@@ -43,26 +43,54 @@ const [items,setItems] = useState(null)
 
 const ws = useRef(null);
 let selectItem = null
-const [data, setData] = useState([
-   
-]);
+const [data, setData] = useState([]);
 
-  const [previousData,setPreviousData] = useState([
-   
-  ]);
+  const [previousData,setPreviousData] = useState([]);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [pageType,setPageType] = useState(null)
   const [incomeMesage,setIncomeMesage]= React.useState(null);
 
 
-  useEffect(()=>{
+  useEffect(  ()=>{
    
       fetchChatFriends()
 
     //const result = await isUserPaidMember(null)
     //setIsPaidMember(result)
    
-  },[openUserDetailPage])
+  },[openUserDetailPage,props])
+  useEffect(()=>{
+   if(pushData != null && pushData.from == "push"){
+     console.log("pushData",pushData);
+     if(data.length >0){
+      for (const friend of data) {
+        console.log(friend.mappedUserid,pushData.userId,"data.mappedUserid")
+        if (friend.mappedUserid == pushData.userId) {
+           // foundFriend = friend;
+           console.log("friend",friend)
+           setItems(friend);
+           setTimeout(()=>{
+            setOpenUserDetailPage(true);
+            setPageType("detail")
+          }, 1000)
+           break; // Exit the loop once the item is found
+        }
+    }
+     }
+
+   }
+   
+},[pushData])
+
+ const onRefreshList =()=>{
+  if(netInfo.isConnected == null || netInfo.isConnected  ){
+    fetchChatFriends()
+  }
+  else{
+    showToast("Please check your Internet Connection");
+  }
+
+ }
   const fetchChatFriends = async () => {
     
     try {
@@ -75,8 +103,10 @@ const [data, setData] = useState([
       let arr = {
           "userid":chatuserId
         }
+        
       const response =  await callApi(ServiceConstant.FETCH_CHAT_FRIENDS_LIST, arr);
-      console.log("response.friendlist",response.friendlist)
+      
+      console.log("response.friendlist",response)
       if(response != null && response['friendlist'] != null){
 
         let result = response.friendlist
@@ -88,37 +118,38 @@ const [data, setData] = useState([
         //  }
 
        // console.log("result",result); 
-       const asyncData = await AsyncStorage.getItem("chatData")
-       const parsedValue = JSON.parse(asyncData);
-       
-     //  console.log("valuse",parsedValue); 
+      //  const asyncData = await AsyncStorage.getItem("chatData")
+      //  const parsedValue = JSON.parse(asyncData);
+      
+      //  console.log("valuse",parsedValue); 
         
 
-if(asyncData != null){
+// if(asyncData != null){
   
  
-  const updatedFriendlist =  result.map(item => {
-    const asyncUser = parsedValue.find((user) => user.mappedUserid === item.mappedUserid);
-    if (asyncUser ) {
-   return {...item,
-    "userChatHistory":asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
-   }
-    }
-    return item
-  });
+//   const updatedFriendlist =  result.map(item => {
+//     const asyncUser = parsedValue.find((user) => user.mappedUserid === item.mappedUserid);
+//     if (asyncUser ) {
+//    return {...item,
+//     "userChatHistory":asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
+//    }
+//     }
+//     return item
+//   });
 
-//console.log("Updated friendlist:", updatedFriendlist);
-}     
-else{
+// //console.log("Updated friendlist:", updatedFriendlist);
+// await AsyncStorage.setItem("chatData", JSON.stringify(updatedFriendlist))
+// }     
+// else{
  
-  const asyncData =  result.map(item => ({
-          ...item,
-          "userChatHistory": []
-        }));
+//   const asyncData =  result.map(item => ({
+//           ...item,
+//           "userChatHistory": []
+//         }));
         
-        await AsyncStorage.setItem("chatData", JSON.stringify(asyncData))
+//         await AsyncStorage.setItem("chatData", JSON.stringify(asyncData))
     
-}  
+// }  
 
        const sortedFriendList = response.friendlist.sort((a, b) => b.modifyon - a.modifyon);
 
@@ -139,7 +170,7 @@ else{
     catch(e){
 
        console.log(e)
-
+       alert("userlist "+e)
        //setIsLoading(false)
      
       //trackAWEngageScreen(AWEngageEvent.CHAT, false)
@@ -234,7 +265,7 @@ else{
               <Text style={newProps.headerTitleText? newProps.headerTitleText:styles.headerTitle}>{newProps.headerText?newProps.headerText:"Chat"}</Text>
             </View>
 
-            <View>
+            {/* <View>
             <Menu
             visible={isMenuVisible}
             anchor={
@@ -282,7 +313,7 @@ else{
             </MenuItem> 
                    </Menu>
   
-            </View>
+            </View> */}
            
            </View>
        
@@ -348,6 +379,7 @@ setSearchText(e)
               data={data}
               renderItem={renderRowItem}
               windowSize={15}
+              showsVerticalScrollIndicator={false}
             /> 
          
         );
@@ -365,11 +397,11 @@ setSearchText(e)
       
       const onSelectProfile = (item, index) => {
 
-        //  console.log("onSelectProfile", item)
+          console.log("onSelectProfile", item)
     
           if(item == null) return
     
-          item['chatUserName'] =  "Test"//userName.current
+          item['chatUserName'] =  item.mappedUserName//"Test"//userName.current
          // props.navigation.push("ChatConversation", item)
         // navigation.navigate("ChatConversation",item)
         setItems(item)
@@ -392,14 +424,14 @@ setSearchText(e)
       <View style={styles.container}>
       {openUserDetailPage == false? 
         <View style={styles.container}>
-        {headerView()}  
+        {/* {headerView()}   */}
          {netInfo.isConnected == null || netInfo.isConnected  ?  
           <View  style={{flex:1, paddingHorizontal: 15}}>
        {searchView()} 
         {userListView()} 
         </View> 
         :
-        <DefaultView title ={"You are not connected to internet" } action={fetchChatFriends} />
+        <DefaultView title ={"You are not connected to internet" } action={onRefreshList()} />
 
         } 
        

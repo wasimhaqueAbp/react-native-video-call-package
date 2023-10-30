@@ -10,7 +10,7 @@ import {
     Pressable
   } from 'react-native';
 
-import {useTranslation, withTranslation} from 'react-i18next';
+
 import {Button, IconButton, useTheme } from 'react-native-paper';
 
 
@@ -20,7 +20,7 @@ export const DefaultView = (props)=> {
 
 const {title = 'No Internet Connection', action, style = null} = props
 
-const {t, i18n } = useTranslation();
+
 const theme = useTheme()
 
 return (

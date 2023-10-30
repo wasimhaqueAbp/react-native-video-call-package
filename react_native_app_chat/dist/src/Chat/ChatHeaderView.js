@@ -23,7 +23,6 @@ import { useNavigation } from '@react-navigation/native';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { prepareShortName } from '../Utility/Utility';
 import { RNVectorIcon } from '../Utility/RNVectorIcon';
-import {useTranslation, withTranslation} from 'react-i18next';
 export const ChatHeaderView = ({item, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback, 
   style={borderRadius:0,backgroundColor:"#FFF",elevation:2}
 } 
@@ -34,7 +33,7 @@ export const ChatHeaderView = ({item, index, onSelectProfile, showLastMessage = 
  //const {t, i18n} = useTranslation();
 return(
     <Card style={style}>
-    <View style={{paddingVertical:16, marginHorizontal:10}} >
+    <View style={{paddingVertical:10, marginHorizontal:10}} >
     
          <View style={{flexDirection:'row', alignItems:'center',justifyContent:"space-between"}}>
   <View>
@@ -73,7 +72,7 @@ return(
                  
               </Pressable>
   </View> */}
-  <View>
+  {/* <View>
   <Menu
             visible={isMenuVisible}
             anchor={
@@ -81,13 +80,7 @@ return(
               <Image
         style={{height:25,width:25,marginLeft:10}}
        source={require('../icons/app_menu_black.png')} resizeMode="contain" /> 
-                 {/* <RNVectorIcon
-                  group='MaterialCommunityIcons'
-                  style={{marginLeft: 8}}
-                  name="dots-vertical"
-                  size={30}
-                  color="black"
-                /> */}
+                
               </Pressable>
             }
             onRequestClose={() => setIsMenuVisible(false)}>
@@ -135,7 +128,7 @@ return(
              </View>
             </MenuItem>
           </Menu>
-          </View>
+          </View> */}
 </View>
 </View>
     </Card>

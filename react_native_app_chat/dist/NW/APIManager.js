@@ -2,7 +2,7 @@ import {Platform} from 'react-native';
 import { ServiceConstant } from './ServiceAPI';
 import { ServiceUrl } from './ServiceURL';
 
-import axios from 'axios';
+
 const getNWError = () => {
     //const {t, i18n} = useTranslation();
     //t('lbl-Something-went-wrong-Please-try-again-later')
@@ -20,24 +20,33 @@ export const callApi = async (type, param = null, showError = false) => {
             //  const userDatach = await getUser();
             const headers = {
               'Content-Type': 'application/json',
-              Accept: 'application/json',
+              Accept: "application/json"
+             
             }
+            const body=JSON.stringify(param)
               let reqUrlCH = ServiceUrl(type);
-              // reqUrlCH = reqUrlCH.replace('{USER_ID}', "2713882");
-               //reqUrlCH = reqUrlCH.replace('{AUTH_ID}', "a9892c654fc28f6c5965d769b8a8ca40");
-               if(__DEV__) { console.log(type + " =====>>>>", reqUrlCH, param)}
+              var requestOptions = {
+                method: 'POST',
+                headers: headers,
+                redirect: 'follow',
+                body:body
+            };
+           
+            if(__DEV__) { console.log(type + " =====>>>>", reqUrlCH, param)}
+              
+            const response = await fetch(reqUrlCH, requestOptions)
+           
+               if(__DEV__) { console.log("response",response)}
           
-               const response = await axios.post(ServiceUrl(type), param, {
-                headers,
-              });
-              if(__DEV__) { console.log(response.data)}
+        const data = await response.json();
+
+              if(__DEV__) { console.log("data",data)}
           
-              const json = await response.data;
-      
-              return json;
+             
+              return data;
             } catch (error) {
-              if (__DEV__) console.log(type, ' ==> ', error);
-      
+              if (__DEV__) console.log(type, 'eeroor ==> ', error);
+              
               return getNWError();
             }
             break;
@@ -51,25 +60,26 @@ export const callApi = async (type, param = null, showError = false) => {
                       Accept: 'application/json',
                     }
           
-                    let url = ServiceUrl(type)
+                    const body=JSON.stringify(param)
+                    let reqUrlCH = ServiceUrl(type);
+                    var requestOptions = {
+                      method: 'POST',
+                      headers: headers,
+                      redirect: 'follow',
+                      body:body
+                  };
+                  if(__DEV__) { console.log(type + " =====>>>>", reqUrlCH, param)}
+                    
+                  const response = await fetch(reqUrlCH, requestOptions)
+                   if(__DEV__) { console.log(type + " =====>>>>", response)}
           
-                    if(__DEV__) { console.log(type + " =====>>>>", url, param)}
-          
-                    const response = await axios.post(ServiceUrl(type), param, {
-                      headers,
-                    });
-                    // const response = await axios.post(url, body, {
-                    //   headers,
-                    //   //timeout: 30000,
-                    // })
-          
-                    const data = await response.data;
-          
+                    const data = await response.json();
+            
                     return data
                 }
                 catch(e){
           
-                  if(__DEV__)    console.log(type, " ==> ", e);
+                  if(__DEV__)    console.log(type, "error ==> ", e);
                   return getNWError();
                 }
                 break
@@ -81,21 +91,21 @@ export const callApi = async (type, param = null, showError = false) => {
                           'Content-Type': 'application/json',
                           Accept: 'application/json',
                         }
-              
-                        let url = ServiceUrl(type)
-              
-                        if(__DEV__) { console.log(type + " =====>>>>", url, param)}
-              
-                        const response = await axios.post(ServiceUrl(type), param, {
-                          headers,
-                        });
-                        // const response = await axios.post(url, body, {
-                        //   headers,
-                        //   //timeout: 30000,
-                        // })
-              
-                        const data = await response.data;
-              
+                        const body=JSON.stringify(param)
+                        let reqUrlCH = ServiceUrl(type);
+                        var requestOptions = {
+                          method: 'POST',
+                          headers: headers,
+                          redirect: 'follow',
+                          body:body
+                      };
+                      if(__DEV__) { console.log(type + " =====>>>>", reqUrlCH, param)}
+                        
+                      const response = await fetch(reqUrlCH, requestOptions)
+                   
+                   
+                        const data = await response.json();
+                
                         return data
                     }
                     catch(e){
@@ -113,21 +123,22 @@ export const callApi = async (type, param = null, showError = false) => {
                             Accept: 'application/json',
                           }
                 
-                          let url = ServiceUrl(type)
+                          const body=JSON.stringify(param)
+                          let reqUrlCH = ServiceUrl(type);
+                          var requestOptions = {
+                            method: 'POST',
+                            headers: headers,
+                            redirect: 'follow',
+                            body:body
+                        };
+                        if(__DEV__) { console.log(type + " =====>>>>", reqUrlCH, param)}
+                          
+                        const response = await fetch(reqUrlCH, requestOptions)
+                     
+                     
+                        const data = await response.json();
                 
-                          if(__DEV__) { console.log(type + " =====>>>>", url, param)}
-                
-                          const response = await axios.post(ServiceUrl(type), param, {
-                            headers,
-                          });
-                          // const response = await axios.post(url, body, {
-                          //   headers,
-                          //   //timeout: 30000,
-                          // })
-                
-                          const data = await response.data;
-                
-                          return data
+                        return data
                       }
                       catch(e){
                 
