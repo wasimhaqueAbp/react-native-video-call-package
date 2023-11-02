@@ -1,6 +1,7 @@
 # OSX
 #
 .DS_Store
+*.DS_Store
 
 # Xcode
 #
@@ -52,6 +53,7 @@ buck-out/
 */fastlane/Preview.html
 */fastlane/screenshots
 *.tgz
+.tgz
 # Bundle artifact
 *.jsbundle
 

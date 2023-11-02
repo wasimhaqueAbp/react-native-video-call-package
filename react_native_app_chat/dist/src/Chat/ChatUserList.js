@@ -9,7 +9,7 @@ import {
   TextInput,
   Image,
   Keyboard,
-  //AsyncStorage
+  
   
 } from 'react-native';
 
@@ -31,6 +31,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //console.log("ChatUserList props",props.route.params.props)
 const newProps = props //props.route.params.props; //props
 const  {userCode,chatuserId,profileImage,profileName,pushData } = props;
+//let {pushData} = props
  console.log(userCode,"userCodes")
  
 //const navigation = useNavigation();
@@ -52,16 +53,21 @@ const [data, setData] = useState([]);
 
 
   useEffect(  ()=>{
-   
-      fetchChatFriends()
-
+    
+      localRemortData()
     //const result = await isUserPaidMember(null)
     //setIsPaidMember(result)
    
-  },[openUserDetailPage,props])
+  },[openUserDetailPage,props,netInfo.isConnected])
+
+
   useEffect(()=>{
+    
+    setTimeout(()=>{
+     
+    
    if(pushData != null && pushData.from == "push"){
-     console.log("pushData",pushData);
+    // console.log("pushData",pushData);
      if(data.length >0){
       for (const friend of data) {
         console.log(friend.mappedUserid,pushData.userId,"data.mappedUserid")
@@ -72,25 +78,58 @@ const [data, setData] = useState([]);
            setTimeout(()=>{
             setOpenUserDetailPage(true);
             setPageType("detail")
-          }, 1000)
+          }, 1500)
+          
            break; // Exit the loop once the item is found
         }
     }
      }
 
    }
+
+  }, 1500)
    
 },[pushData])
 
- const onRefreshList =()=>{
-  if(netInfo.isConnected == null || netInfo.isConnected  ){
-    fetchChatFriends()
+const localRemortData = async ()=>{
+  const asyncData = await AsyncStorage.getItem("chatData")
+    const parsedValue = JSON.parse(asyncData);
+ console.log("parsedValue new",parsedValue)
+ if(parsedValue == null){
+  if(netInfo.isConnected){
+    console.log("in null if")
+    fetchChatFriends();
   }
   else{
-    showToast("Please check your Internet Connection");
+    console.log("in null else")
+      setData([]);
+      setPreviousData([]);
+  }
+ }
+ else{
+  if(netInfo.isConnected){
+    fetchChatFriends();
+  }
+  else{
+    setData(parsedValue);
+    setPreviousData(parsedValue);
+      
   }
 
  }
+  
+
+}
+
+//  const onRefreshList =()=>{
+//   if(netInfo.isConnected == null || netInfo.isConnected  ){
+//     fetchChatFriends()
+//   }
+//   else{
+//     showToast("Please check your Internet Connection");
+//   }
+
+//  }
   const fetchChatFriends = async () => {
     
     try {
@@ -111,54 +150,47 @@ const [data, setData] = useState([]);
 
         let result = response.friendlist
 
-        /// Remove self from the list
-        //  const loggedInUserId = response['loggedinUserId']
-        //  if(loggedInUserId != null){
-        //   result = response.chatFriendList.filter( (item) => { if(item['targetUserId'] != loggedInUserId) { return item}  } )
-        //  }
-
-       // console.log("result",result); 
-      //  const asyncData = await AsyncStorage.getItem("chatData")
-      //  const parsedValue = JSON.parse(asyncData);
+        
+        const asyncData = await AsyncStorage.getItem("chatData")
+        const parsedValue = JSON.parse(asyncData);
       
-      //  console.log("valuse",parsedValue); 
+        console.log("valuse",parsedValue); 
         
 
-// if(asyncData != null){
+if(asyncData != null){
   
  
-//   const updatedFriendlist =  result.map(item => {
-//     const asyncUser = parsedValue.find((user) => user.mappedUserid === item.mappedUserid);
-//     if (asyncUser ) {
-//    return {...item,
-//     "userChatHistory":asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
-//    }
-//     }
-//     return item
-//   });
+  const updatedFriendlist =  result.map(item => {
+    const asyncUser = parsedValue.find((user) => user.mappedUserid === item.mappedUserid);
+    if (asyncUser ) {
+      
+   return {...item,
+    "userChatHistory": asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
+   }
+    }
+    return item
+  });
 
-// //console.log("Updated friendlist:", updatedFriendlist);
-// await AsyncStorage.setItem("chatData", JSON.stringify(updatedFriendlist))
-// }     
-// else{
+console.log("Updated friendlist:", updatedFriendlist);
+await AsyncStorage.setItem("chatData", JSON.stringify(updatedFriendlist))
+}     
+else{
  
-//   const asyncData =  result.map(item => ({
-//           ...item,
-//           "userChatHistory": []
-//         }));
+  const asyncData =  result.map(item => ({
+          ...item,
+          "userChatHistory": []
+        }));
         
-//         await AsyncStorage.setItem("chatData", JSON.stringify(asyncData))
+        await AsyncStorage.setItem("chatData", JSON.stringify(asyncData))
     
-// }  
+}  
 
-       const sortedFriendList = response.friendlist.sort((a, b) => b.modifyon - a.modifyon);
+     //  const sortedFriendList = response.friendlist.sort((a, b) => b.modifyon - a.modifyon);
 
-        setData(sortedFriendList)
-        setPreviousData(sortedFriendList)
+        setData(response.friendlist)
+        setPreviousData(response.friendlist)
 
-        // const value = await AsyncStorage.getItem("chatData")
-        //setUserName(response['loggedinUserName'])
-      }
+       }
 
     //  setIsLoading(false)
 
@@ -170,7 +202,7 @@ const [data, setData] = useState([]);
     catch(e){
 
        console.log(e)
-       alert("userlist "+e)
+       
        //setIsLoading(false)
      
       //trackAWEngageScreen(AWEngageEvent.CHAT, false)
@@ -425,15 +457,15 @@ setSearchText(e)
       {openUserDetailPage == false? 
         <View style={styles.container}>
         {/* {headerView()}   */}
-         {netInfo.isConnected == null || netInfo.isConnected  ?  
-          <View  style={{flex:1, paddingHorizontal: 15}}>
+         {/* {netInfo.isConnected == null || netInfo.isConnected  ?   */}
+          <View  style={{flex:1, paddingHorizontal: 15,marginTop:10}}>
        {searchView()} 
         {userListView()} 
         </View> 
-        :
+         {/* {:
         <DefaultView title ={"You are not connected to internet" } action={onRefreshList()} />
-
-        } 
+}
+          */}
        
       </View>
       : 

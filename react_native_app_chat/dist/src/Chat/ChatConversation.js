@@ -16,7 +16,7 @@ import {
   Platform,
   Pressable,
   BackHandler,
-  AsyncStorage,
+  
   ActivityIndicator
 } from 'react-native';
 import { formatChatDateTime,formatTime,formatDate, getCreatedDate,showToast } from '../Utility/Utility';
@@ -33,6 +33,7 @@ import{Menu, MenuItem, MenuDivider}  from 'react-native-material-menu';
 import DocumentPicker from "react-native-document-picker";
 import { DefaultView } from '../Utility/DefaultView';
 import { ScreenLoader } from '../Utility/ScreenLoader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
@@ -81,16 +82,16 @@ const [userData,setUserData] = useState({
         }, []); 
         useEffect( ()=>{
           
-          if( netInfo.isConnected ){
-            chatHistory() 
-           }
-           else if(netInfo.isConnected  == false){
-            showToast("Please check your Internet Connection");
+          // if( netInfo.isConnected ){
+          //   chatHistory() 
+          //  }
+          //  else if(netInfo.isConnected  == false){
+          //   showToast("Please check your Internet Connection");
            
                
             
-           }
-         // setLocalandRemoteData()
+          //  }
+          setLocalandRemoteData()
           
       },[chatuserId,netInfo.isConnected ]);
 
@@ -114,7 +115,7 @@ const [userData,setUserData] = useState({
      const setLocalandRemoteData= async () =>{
         const value = await AsyncStorage.getItem("chatData")
         const parsedValue = JSON.parse(value);
-       // console.log("Parsed result", parsedValue);
+        console.log("Parsed result", parsedValue);
       setChatAsyncData(parsedValue)
 
 
@@ -219,8 +220,8 @@ const [userData,setUserData] = useState({
         
      }
   //const chatHistory = async (chatData,index,chathistoryData,timeStamp)=>{
-    //const chatHistory = async (chatData,index)=>{
-      const chatHistory = async ()=>{
+    const chatHistory = async (chatData,index)=>{
+     // const chatHistory = async ()=>{
     try {
     
       setIsLoading(true)
@@ -250,6 +251,11 @@ const [userData,setUserData] = useState({
     if(startIndex > 0){
       console.log("in startIndex")
       const sortedMsg = [...data,...list] //sortMessages([...data, ...unqueData])
+
+      const tempData = chatData;
+      tempData[index].userChatHistory = sortedMsg;
+      await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
+
       const processedMessages = sortedMsg.map((message, index) => {
         
         let showDate = false;
@@ -284,6 +290,11 @@ const [userData,setUserData] = useState({
 
     }
     else{
+
+               const tempData = chatData;
+           tempData[index].userChatHistory = list;
+           await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
+
          const processedMessages = list.map((message, index) => {
         
         let showDate = false;
@@ -424,8 +435,8 @@ const [userData,setUserData] = useState({
     }
 
     (async () => {
-     // await setLocalandRemoteData() 
-    await chatHistory()
+      await setLocalandRemoteData() 
+   // await chatHistory()
     })()
 
   }, [isLoadMore]);
@@ -501,6 +512,7 @@ const [userData,setUserData] = useState({
                    createdon:date, //formatTime(msg.createdon),//getCreatedDate(),
                    "showDate":value,
                 }
+                setAsyncData(arr3)
                 setData(addAfter(messages, 0, arr3))
                
             }
@@ -676,8 +688,13 @@ const [userData,setUserData] = useState({
           
              
               
-              
+              if( netInfo.isConnected ){
                 didSendMessage(chatText)
+              }
+              else{
+                showToast("Please check your Internet Connection");
+              }
+                
            
             // logAnalyticsEvent()
           
@@ -711,7 +728,7 @@ else if (formateDate === formateCurrentDate) {
               "showDate":value,
               "isreadmsg": netInfo.isConnected ? "send":"pending"
           }
-           
+           setAsyncData(message)
            setData(addAfter(data, 0, message))
             let arr={
               senderName: userCode,
@@ -731,6 +748,30 @@ else if (formateDate === formateCurrentDate) {
            setChatText("")
           //  const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr1);
           // console.log("response chat history",response)
+          }
+          const setAsyncData = async (message)=>{
+            const value = await AsyncStorage.getItem("chatData")
+            const parsedValue = JSON.parse(value);
+           // console.log("Parsed result", parsedValue);
+          setChatAsyncData(parsedValue)
+    
+    
+             for(let i = 0;i< parsedValue.length;i++){
+               if(parsedValue[i].mappedUserid == item.mappedUserid){
+             //  console.log(parsedValue[i],"parsedValue[i]");
+                 let lastmessage = message.message;
+                 parsedValue[i].messagebody =lastmessage
+                let asyData =parsedValue[i].userChatHistory;
+                asyData =addAfter(asyData, 0, message)
+                parsedValue[i].userChatHistory =asyData
+                await AsyncStorage.setItem("chatData", JSON.stringify(parsedValue));
+
+                console.log("asyData",asyData)
+
+               }
+             }
+          
+
           }
 
           function addAfter(array, index, newItem) {

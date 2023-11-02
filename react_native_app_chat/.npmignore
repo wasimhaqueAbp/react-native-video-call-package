@@ -1,7 +1,7 @@
 # OSX
 #
 .DS_Store
-
+*.DS_Store
 # Xcode
 #
 build/
@@ -43,6 +43,7 @@ buck-out/
 *.keystore
 !debug.keystore
 *.tgz
+.tgz
 
 # fastlane
 #
