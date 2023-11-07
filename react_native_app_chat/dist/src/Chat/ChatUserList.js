@@ -200,7 +200,7 @@ if(asyncData != null){
     if (asyncUser ) {
       
    return {...item,
-    "userChatHistory":asyncUser.userChatHistory == undefined?[] :asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
+    "userChatHistory":asyncUser.userChatHistory == undefined ? [] :asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
    }
     }
     return item
