@@ -31,7 +31,7 @@ export const getImageUrl = (path,genderId) => {
     let envVal = getEnvironment(); //ENVIRONMENT.PRODUCTION;
   
     const base = ServiceConfig[envVal];
-    console.log("path??",genderId)
+   // console.log("path??",genderId)
    const defaultUrl =
    path != null
      ? genderId == "male" ||genderId == undefined

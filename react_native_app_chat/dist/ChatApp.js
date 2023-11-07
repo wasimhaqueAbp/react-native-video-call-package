@@ -4,7 +4,7 @@ import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
 import { getEventEmitter } from '../../../src/Utility/Utility';
 const ChatApp = props => {
-  
+  var globalScoketConnection;
  const  {userCode,chatuserId,profileImage,profileName,pushData,genderId,appState,pageFocus } = props;
  //console.log(userCode,pushData,"userCode")
  //const appState = useRef(AppState.currentState);
@@ -20,33 +20,21 @@ const ChatApp = props => {
           //const socketConnection = io("https://chatqa.abpweddings.com");
     //ws://10.132.100.191:8878
     //https://messegingserviceskt.abpweddings.com
+     setSocketConnection();
 
-    setSocketConnection();
+    return () => {
+
+      console.log("Chat-Deinit",globalScoketConnection)
+
+      if(globalScoketConnection) {
+        globalScoketConnection.disconnect();
+      }
+ 
+
+    }
        }, []);
-
-       useEffect(() => {
-        eventEmitter.addListener('REQUEST_FOCUS', (data) => {
-          // Handle the emitted event
-          console.log('Custom event received with data:', data);
-          if(data==true){
-            setSocketConnection()
-  
-           }
-        });
-        eventEmitter.addListener('REQUEST_BLUR', (data) => {
-          if(data==false){
-            //  alert("socket",socket)
-            console.log("socket?????/",socket)
-             if(socket!=null ){
-              console.log("socket?????/",socket.disconnect())
-           
-              socket.disconnect()
-            }
-           }
-        });
-       },[])
-      const setSocketConnection =()=>{
-        const socketConnection = io('ws://10.132.100.191:8878',{
+       const setSocketConnection =()=>{
+        const socketConnection = io('https://messegingserviceskt.abpweddings.com',{
           "force new connection" : true,
             "reconnectionAttempts": "Infinity", 
          "timeout" : 10000,                  
@@ -60,11 +48,48 @@ const ChatApp = props => {
        socketConnection.on('connect', () => {
          console.log('Socket connected');
          //setsocketConneted(true);
- 
+  
        });
        setsocket(socketConnection);
- 
+       globalScoketConnection =socketConnection
+       socketConnection.on('disconnect', () => {
+        console.log('socket disconnected')
+    });
+      // eventEmitter.emit('SOCKET_DATA', socketConnection)
+      
       }
+     
+       useEffect(() => {
+        eventEmitter.addListener('REQUEST_FOCUS', (data) => {
+          // Handle the emitted event
+          console.log('Custom event received with data:', data);
+          if(data==true){
+            setSocketConnection()
+  
+           }
+        });
+        eventEmitter.addListener('REQUEST_BLUR', (data) => {
+          const newData = data;
+          if(newData==false){
+            console.log('Custom event received with data Blur:', data);
+            if(globalScoketConnection) {
+              globalScoketConnection.disconnect();
+            }
+            // eventEmitter.addListener('SOCKET_DATA', (socketData) => {
+            //   // Handle the emitted event
+            //   console.log('Custom event received with data Socket:', socketData);
+            //   console.log("socket?????/",socket)
+            //  if(socketData!=null ){
+            //   //console.log("socket?????/",socket.disconnect())
+           
+            //   socketData.disconnect()
+            // }
+            // });
+           
+           }
+        });
+       },[])
+     
       useEffect(()=>{
         if(socket!=null && chatuserId!=null ){
             console.log("add User")

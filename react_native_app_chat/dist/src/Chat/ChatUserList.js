@@ -32,7 +32,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const newProps = props //props.route.params.props; //props
 const  {userCode,chatuserId,profileImage,profileName,genderId } = props;
 let {pushData} = props
-const appState = useRef(AppState.currentState);
+
  //console.log(userCode,"userCodes")
  const [newPushData, setNewPushData] = useState(pushData);
 //const navigation = useNavigation();
