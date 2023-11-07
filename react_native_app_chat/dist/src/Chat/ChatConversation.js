@@ -16,7 +16,7 @@ import {
   Platform,
   Pressable,
   BackHandler,
-  
+  KeyboardAvoidingView,
   ActivityIndicator
 } from 'react-native';
 import { formatChatDateTime,formatTime,formatDate, getCreatedDate,showToast } from '../Utility/Utility';
@@ -71,7 +71,8 @@ const [userData,setUserData] = useState({
               // Return false to let the default behavior (e.g., exit the app) happen
               // For example:
               // navigateBack(); // Implement your navigation logic
-              props.goBack()
+              props.goBack();
+              props.clearChat()
               return true;
             }
           );
@@ -115,7 +116,7 @@ const [userData,setUserData] = useState({
      const setLocalandRemoteData= async () =>{
         const value = await AsyncStorage.getItem("chatData")
         const parsedValue = JSON.parse(value);
-        console.log("Parsed result", parsedValue);
+       // console.log("Parsed result", parsedValue);
       setChatAsyncData(parsedValue)
 
 
@@ -234,7 +235,7 @@ const [userData,setUserData] = useState({
     }
 
     const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
-    console.log("response chat history",JSON.stringify(response))
+   // console.log("response chat history",JSON.stringify(response))
   if(response.status != 0){
     const list = response.chathistory.chatlist
     
@@ -249,7 +250,7 @@ const [userData,setUserData] = useState({
     // }
     
     if(startIndex > 0){
-      console.log("in startIndex")
+     // console.log("in startIndex")
       const sortedMsg = [...data,...list] //sortMessages([...data, ...unqueData])
 
       const tempData = chatData;
@@ -515,6 +516,7 @@ const [userData,setUserData] = useState({
                 setAsyncData(arr3)
                 setData(addAfter(messages, 0, arr3))
                
+                updateUnreadCount()
             }
           
      } 
@@ -707,14 +709,19 @@ const lastMsgDate= data.length == 0?new Date() :new Date(data[0].createdon);
 const formateDate = DATE.format(lastMsgDate, 'DD/MM/YYYY')
 const currentDate = new Date();
 const formateCurrentDate = DATE.format(currentDate, 'DD/MM/YYYY')
-
-
+const yesterday = new Date();
+  yesterday.setDate(currentDate.getDate() - 1);
+  const formateDate2 = DATE.format(yesterday, 'DD/MM/YYYY')
+  console.log("yesterday",formateDate2)
 
 if(data.length == 0 ){
   value = true
 }
 else if (formateDate === formateCurrentDate) {
   value = false;
+}
+else if(formateDate2 == formateDate){
+  value = true
 }
 
             const message ={
@@ -726,7 +733,7 @@ else if (formateDate === formateCurrentDate) {
               "createdon":  getCreatedDate(),
               "modifyon":  getCreatedDate(),
               "showDate":value,
-              "isreadmsg": netInfo.isConnected ? "send":"pending"
+              "isreadmsg":"f" //netInfo.isConnected ? "send":"pending"
           }
            setAsyncData(message)
            setData(addAfter(data, 0, message))
@@ -736,7 +743,8 @@ else if (formateDate === formateCurrentDate) {
  message: chatText,
  "createdon":  getCreatedDate(),
  "modifyon":  getCreatedDate(),
- type:'txt'
+ type:'txt',
+ "devPlatform":Platform.OS =="android"?"android":"ios"
           }
          
             socket.emit("messageSendToUser",arr);
@@ -766,7 +774,7 @@ else if (formateDate === formateCurrentDate) {
                 parsedValue[i].userChatHistory =asyData
                 await AsyncStorage.setItem("chatData", JSON.stringify(parsedValue));
 
-                console.log("asyData",asyData)
+                //console.log("asyData",asyData)
 
                }
              }
@@ -816,7 +824,11 @@ else if (formateDate === formateCurrentDate) {
                   <View>
                      {item.showDate && (
           <View style={styles.dateContainer}>
+          <View style={{backgroundColor:"#FFFFFF",marginTop:10,padding:8,borderRadius:8,
+          paddingHorizontal:10
+          }}>
             <Text style={styles.dateText}>{formatDate(item.createdon)}</Text>
+            </View>
           </View>
         )}
               
@@ -1014,14 +1026,15 @@ const documentMenu=()=>{
     return(
         <View style={styles.container}>
          {!openViewProfile ? 
-        <View style={{flex:1}}> 
+          <KeyboardAvoidingView  style={ styles.container } behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={ Platform.OS === "ios" ? 65 : 30} enabled>
             <ChatHeaderView 
              item={props.item}
              onSelectProfile={(item,index)=>{
               // setOpenViewProfile(true);
              }}
               showLastMessage={false}
-              onGoback={(e)=> props.goBack()}
+              onGoback={(e)=>{ props.goBack();
+                props.clearChat();}}
             onMenuPress={(e)=> onMenuPress(e)}
             onAudioPress={(e)=> console.log(e)}
        onVideoPress={(e)=>{
@@ -1054,7 +1067,7 @@ const documentMenu=()=>{
       {isLoading && (
         <ScreenLoader loading={isLoading} topMargin={0} text={"Loading.."} />
        )}
-       </View>
+       </KeyboardAvoidingView>
 
  :
   <ViewProfile
@@ -1121,6 +1134,7 @@ const styles = StyleSheet.create({
         color: '#650202',
         borderRadius:25,
         flex:1,
+        marginTop:Platform.OS =="android"?0:15
        
        
       },

@@ -14,7 +14,7 @@ const ModalScreen = (props) => {
       animationType={'none'}
       visible={loading}
       onRequestClose={() => {
-        console.log('close modal');
+       // console.log('close modal');
         
         props.onDismiss()
       }}>

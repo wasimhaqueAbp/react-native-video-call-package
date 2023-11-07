@@ -4,14 +4,15 @@ import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
 const ChatApp = props => {
  const  {userCode,chatuserId,profileImage,profileName,pushData } = props;
- console.log(userCode,pushData,"userCode")
+ //console.log(userCode,pushData,"userCode")
     
       const [socket,setsocket]=useState(null);
     useEffect(()=>{
         //setsocket(io("http://10.132.100.175:5001"));
         //setsocket(io("http://10.133.14.23:5001"));
           //const socketConnection = io("https://chatqa.abpweddings.com");
-    
+    //ws://10.132.100.191:8878
+    //https://messegingserviceskt.abpweddings.com
           const socketConnection = io('ws://10.132.100.191:8878',{
              "force new connection" : true,
                "reconnectionAttempts": "Infinity", 

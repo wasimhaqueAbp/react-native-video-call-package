@@ -107,7 +107,7 @@ const BlockList = props => {
        <TouchableOpacity style={{paddingLeft:8}} onPress={()=>{
            
             inputRef.current.focus()
-            console.log(inputRef.current.focus())
+         //   console.log(inputRef.current.focus())
        }}>
         
         <Image
@@ -132,7 +132,7 @@ const BlockList = props => {
                // console.log(e  )
                 const filteredData = previousData.filter(item => item.matrimonyUserName.toLowerCase().includes(e.toLowerCase()));
                 //props.onChangeText(e)
-                console.log("filteredData",filteredData)
+               // console.log("filteredData",filteredData)
                setData(filteredData)
               }else{
                 setSearchText(e)

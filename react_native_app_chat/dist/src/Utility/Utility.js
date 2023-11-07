@@ -163,7 +163,7 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
     try {
   
         const dateString = new Date(createdAt) //.replace(" GMT", "")
-        console.log("dateString",createdAt)
+        //console.log("dateString",createdAt)
        // const date = DATE.format(dateString, 'DD/MM/YYYY HH:mm:ss');
 
        // displayVal = formattedDateTime
@@ -208,31 +208,31 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
   
   }
 
-  export const formatChatTimestamp=(epochTimestamp) =>{
-    const now = Date.now(); // Current timestamp in milliseconds
+  // export const formatChatTimestamp=(epochTimestamp) =>{
+  //   const now = Date.now(); // Current timestamp in milliseconds
   
-    const timeDifference = now - epochTimestamp;
+  //   const timeDifference = now - epochTimestamp;
   
-    const secondsAgo = Math.floor(timeDifference / 1000);
-    const minutesAgo = Math.floor(secondsAgo / 60);
-    const hoursAgo = Math.floor(minutesAgo / 60);
+  //   const secondsAgo = Math.floor(timeDifference / 1000);
+  //   const minutesAgo = Math.floor(secondsAgo / 60);
+  //   const hoursAgo = Math.floor(minutesAgo / 60);
   
-    if (secondsAgo < 60) {
-      return 'Now';
-    } else if (minutesAgo < 60) {
-      return `${minutesAgo} min${minutesAgo > 1 ? 's' : ''} ago`;
-    } else if (hoursAgo < 24) {
-      return `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
-    } else if (timeDifference < 2 * 24 * 60 * 60 * 1000) {
-      // Within the last 48 hours, show "yesterday"
-      return 'yesterday';
-    } else {
-      // More than 48 hours ago, display the full date
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      const formattedDate = new Date(epochTimestamp).toLocaleDateString('en-US', options);
-      return formattedDate;
-    }
-  }
+  //   if (secondsAgo < 60) {
+  //     return 'Now';
+  //   } else if (minutesAgo < 60) {
+  //     return `${minutesAgo} min${minutesAgo > 1 ? 's' : ''} ago`;
+  //   } else if (hoursAgo < 24) {
+  //     return `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
+  //   } else if (timeDifference < 2 * 24 * 60 * 60 * 1000) {
+  //     // Within the last 48 hours, show "yesterday"
+  //     return 'yesterday';
+  //   } else {
+  //     // More than 48 hours ago, display the full date
+  //     const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  //     const formattedDate = new Date(epochTimestamp).toLocaleDateString('en-US', options);
+  //     return formattedDate;
+  //   }
+  // }
   export const getCreatedDate = () => {
 
     //const val = format(new Date(), 'dd-MM-yyyy hh:mm:ss')
@@ -256,6 +256,84 @@ export const showToast = (
     }, timeout)
 
 };
+
+function isToday(date) {
+  const today = new Date();
+
+  // 👇️ Today's date
+  // console.log(today);
+
+  if (today.toDateString() === date.toDateString()) {
+      return true;
+  }
+
+  return false;
+}
+
+
+function isYesterday(date) {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  // 👇️ Yesterday's date
+  console.log(date);
+
+  if (yesterday.toDateString() === date.toDateString()) {
+      return true;
+  }
+
+  return false;
+}
+
+export function formatChatTimestamp(epochTimestamp){
+
+  let itemDataEpoch='';
+  if( typeof( epochTimestamp )=='string' ){
+      itemDataEpoch = parseInt(epochTimestamp)
+    }else{
+      itemDataEpoch = epochTimestamp
+    }
+    const now = Date.now();
+    const timeDifference = now - itemDataEpoch;
+
+    let itemDate = new Date(itemDataEpoch);
+    let dateOutput = '';
+    //const date =`${itemDate.getDate()}/${itemDate.getMonth() + 1}/${itemDate.getFullYear()}`;
+
+    if( isToday(itemDate) ){
+
+      const secondsAgo = Math.floor(timeDifference / 1000);
+      const minutesAgo = Math.floor(secondsAgo / 60);
+      const hoursAgo = Math.floor(minutesAgo / 60);
+
+      if (secondsAgo < 60) {
+          dateOutput= 'Now';
+      } else if (minutesAgo < 60) {
+          dateOutput= `${minutesAgo} min${minutesAgo > 1 ? 's' : ''} ago`;
+      } else if (hoursAgo < 12) {
+          dateOutput= `${hoursAgo} hour${hoursAgo > 1 ? 's' : ''} ago`;
+      }
+      else{
+          dateOutput = 'Today'
+      }
+
+      
+    }else if( isYesterday(itemDate) ){
+      dateOutput = 'Yesterday'
+    }else{
+      console.log("epochTimestamp",epochTimestamp);
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      let epochTime = undefined;
+      if (typeof epochTimestamp == 'string') {
+          epochTime = parseInt(epochTimestamp)
+      } else {
+          epochTime = epochTimestamp
+      }
+      dateOutput = new Date(epochTime).toLocaleDateString('en-US', options);
+     
+    }
+    return dateOutput;
+}
 
   // export default class NavigationState {
 

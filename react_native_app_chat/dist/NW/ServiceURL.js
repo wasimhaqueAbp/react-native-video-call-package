@@ -23,7 +23,7 @@ export const ServiceConfig = {
       BASE_URL_SOF: 'https://sof.abpweddings.com',
       BASE_URL_FILE_UPLOAD: 'https://dl.abpweddings.com',
       BASE_URL_IMAGE: 'https://media.abpweddings.com',
-      BASE_CHAT :"http://10.132.100.191:8083"
+      BASE_CHAT :"https://messegingservice.abpweddings.com"
      },
   };
 export const getImageUrl = path => {

@@ -7,7 +7,7 @@ import ChatConversation from './Chat/ChatConversation'
 const Stack = createNativeStackNavigator();
 
  const ChatScreen = (props) => {
-     console.log("in App Screen",props)
+    // console.log("in App Screen",props)
      const headerStyle = {
         animation: "slide_from_right",
         headerStyle: {
