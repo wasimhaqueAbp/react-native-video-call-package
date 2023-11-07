@@ -26,7 +26,7 @@ export const Circle = ({size, color}) => {
 
 };
 
-export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = true, style={marginHorizontal:16, marginVertical:8, elevation:2}}) => {
+export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMessage = true, style={marginHorizontal:16, marginVertical:8, elevation:2}}) => {
  
  
     
@@ -38,7 +38,7 @@ export const ChatUserRow = ({item, index, onSelectProfile, showLastMessage = tru
     
        <View style={styles.imageMainView}>
   
-       <Avatar.Image style={{backgroundColor:'white'}} size={55} source={{uri: getImageUrl(item.userphotoimageurl)}} /> 
+       <Avatar.Image style={{backgroundColor:'white'}} size={55} source={{uri: getImageUrl(item.userphotoimageurl,genderId)}} /> 
   
        <View style={styles.textMainView}>
        

@@ -26,12 +26,22 @@ export const ServiceConfig = {
       BASE_CHAT :"https://messegingservice.abpweddings.com"
      },
   };
-export const getImageUrl = path => {
+export const getImageUrl = (path,genderId) => {
+  
     let envVal = getEnvironment(); //ENVIRONMENT.PRODUCTION;
   
     const base = ServiceConfig[envVal];
-  
-    return base.BASE_URL_IMAGE + path;
+    console.log("path??",genderId)
+   const defaultUrl =
+   path != null
+     ? genderId == "male" ||genderId == undefined
+       ?base.BASE_URL_IMAGE + '/documents/images/image-Female.jpg'//getImageUrl('/documents/images/image-Female.jpg')
+       : base.BASE_URL_IMAGE +  '/documents/images/image-Male.jpg'///getImageUrl('/documents/images/image-Male.jpg')
+     : '';
+
+ const imageUrl = path != null ? base.BASE_URL_IMAGE + path : defaultUrl;
+
+    return imageUrl //base.BASE_URL_IMAGE + path;
   };
 
   const ServiceApi = {

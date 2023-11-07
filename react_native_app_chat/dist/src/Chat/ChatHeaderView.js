@@ -23,7 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { prepareShortName } from '../Utility/Utility';
 import { RNVectorIcon } from '../Utility/RNVectorIcon';
-export const ChatHeaderView = ({item, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback, 
+export const ChatHeaderView = ({item,genderId, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback, 
   style={borderRadius:0,backgroundColor:"#FFF",elevation:2}
 } 
   ) => {
@@ -48,12 +48,12 @@ return(
               </Pressable>
   </View>
   <Pressable onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}>
-  <Avatar.Image style={{backgroundColor:'white',}} size={45} source={{uri: getImageUrl(item.userphotoimageurl)}} />
+  <Avatar.Image style={{backgroundColor:'white',}} size={45} source={{uri: getImageUrl(item.userphotoimageurl,genderId)}} />
   </Pressable>
   <Pressable style={{marginHorizontal:8,flex:1,}}
   onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}
   >
-       <Text style={{color:"black",fontWeight:"500"  }}> {prepareShortName(item.mappedUserName)} </Text>
+       <Text style={{color:"black",fontWeight:"500"  }}> {item.mappedUserName} </Text>
        <Text style={{color:"#DB233D",fontWeight:"500" }}> {item.mappedUserCode } </Text>
   </Pressable>
   {/* <View>

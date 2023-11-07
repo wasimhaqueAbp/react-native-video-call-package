@@ -9,7 +9,7 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
     let finalStr = '';
   
     try {
-      const arrOfStr = matrimonyUserName.split(' ');
+      const arrOfStr = matrimonyUserName.trim().split(' ');
   
       if (arrOfStr.length > 1) {
         finalStr = arrOfStr[0].substring(0, 1).toUpperCase() + ' ';
@@ -276,7 +276,7 @@ function isYesterday(date) {
   yesterday.setDate(yesterday.getDate() - 1);
 
   // 👇️ Yesterday's date
-  console.log(date);
+  
 
   if (yesterday.toDateString() === date.toDateString()) {
       return true;
@@ -321,7 +321,7 @@ export function formatChatTimestamp(epochTimestamp){
     }else if( isYesterday(itemDate) ){
       dateOutput = 'Yesterday'
     }else{
-      console.log("epochTimestamp",epochTimestamp);
+      
       const options = { year: 'numeric', month: 'short', day: 'numeric' };
       let epochTime = undefined;
       if (typeof epochTimestamp == 'string') {

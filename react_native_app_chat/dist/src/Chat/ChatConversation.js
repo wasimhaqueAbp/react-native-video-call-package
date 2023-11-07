@@ -37,7 +37,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
-const {socket,item,userCode,chatuserId} = props
+const {socket,item,userCode,chatuserId,genderId} = props
 
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
@@ -1032,6 +1032,7 @@ const documentMenu=()=>{
              onSelectProfile={(item,index)=>{
               // setOpenViewProfile(true);
              }}
+             genderId={genderId}
               showLastMessage={false}
               onGoback={(e)=>{ props.goBack();
                 props.clearChat();}}

@@ -9,7 +9,7 @@ import {
   TextInput,
   Image,
   Keyboard,
-  
+  AppState
   
 } from 'react-native';
 
@@ -30,8 +30,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  const ChatUserList = props => {
 //console.log("ChatUserList props",props)
 const newProps = props //props.route.params.props; //props
-const  {userCode,chatuserId,profileImage,profileName, } = props;
+const  {userCode,chatuserId,profileImage,profileName,genderId } = props;
 let {pushData} = props
+const appState = useRef(AppState.currentState);
  //console.log(userCode,"userCodes")
  const [newPushData, setNewPushData] = useState(pushData);
 //const navigation = useNavigation();
@@ -79,6 +80,7 @@ const [data, setData] = useState([]);
            // foundFriend = friend;
            //console.log("friend",friend)
            setItems(friend);
+           setNewPushData(null);
            pushData= null;
            setTimeout(()=>{
             setOpenUserDetailPage(true);
@@ -200,7 +202,7 @@ if(asyncData != null){
     if (asyncUser ) {
       
    return {...item,
-    "userChatHistory":asyncUser.userChatHistory == undefined ? [] :asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
+    "userChatHistory":asyncUser.userChatHistory == undefined?[] :asyncUser.userChatHistory.length > 0? asyncUser.userChatHistory:[]
    }
     }
     return item
@@ -458,6 +460,7 @@ setSearchText(e)
             item={item}
             index={index}
              onSelectProfile={onSelectProfile}
+             genderId={genderId}
           />
         );
       };
@@ -485,6 +488,8 @@ setSearchText(e)
         const onPressGoBack=()=>{
           setOpenUserDetailPage(false);
           setPageType(null)
+          pushData = null;
+
         }
         const onPressClearChat=()=>{
           setNewPushData(null);
@@ -515,6 +520,7 @@ setSearchText(e)
         userCode={userCode}
         chatuserId={chatuserId}
         clearChat={()=>onPressClearChat()}
+        genderId={genderId}
       />
       :
       pageType != null && pageType =="block"?
