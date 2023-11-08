@@ -41,6 +41,7 @@ const inputRef = useRef(null);
 const [searchText,setSearchText] = useState("")
 const [openUserDetailPage,setOpenUserDetailPage] = useState(false)
 const [items,setItems] = useState(null)
+const [types,setTypes] = useState(null)
 //const [socket,setsocket]=useState(props.socket);
 
 const ws = useRef(null);
@@ -79,12 +80,15 @@ const [data, setData] = useState([]);
         if (friend.mappedUserid == newPushData.userId) {
            // foundFriend = friend;
            //console.log("friend",friend)
+           setTypes(newPushData.from)
            setItems(friend);
            setNewPushData(null);
            pushData= null;
+           
            setTimeout(()=>{
             setOpenUserDetailPage(true);
             setPageType("detail")
+            setTypes(null);
           }, 1500)
            break; // Exit the loop once the item is found
         }
@@ -521,6 +525,7 @@ setSearchText(e)
         chatuserId={chatuserId}
         clearChat={()=>onPressClearChat()}
         genderId={genderId}
+        type={types}
       />
       :
       pageType != null && pageType =="block"?

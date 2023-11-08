@@ -38,7 +38,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
-const {socket,item,userCode,chatuserId,genderId} = props
+const {socket,item,userCode,chatuserId,genderId,type} = props
 
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
@@ -115,6 +115,9 @@ const [userData,setUserData] = useState({
       
       useEffect( ()=>{
         if(item.unreadcount > 0){
+          updateUnreadCount()
+        }
+        else if(type != null && type == "push"){
           updateUnreadCount()
         }
         
