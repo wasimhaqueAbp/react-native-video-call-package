@@ -2,7 +2,8 @@ import React, {useState, useEffect, createRef, useRef,AppState} from 'react';
 import { View } from 'react-native';
 import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
-import { getEventEmitter } from '../../../src/Utility/Utility';
+import { getEventEmitter } from './src/Utility/Utility';
+
 const ChatApp = props => {
   var globalScoketConnection;
  const  {userCode,chatuserId,profileImage,profileName,pushData,genderId,appState,pageFocus } = props;
@@ -75,16 +76,7 @@ const ChatApp = props => {
             if(globalScoketConnection) {
               globalScoketConnection.disconnect();
             }
-            // eventEmitter.addListener('SOCKET_DATA', (socketData) => {
-            //   // Handle the emitted event
-            //   console.log('Custom event received with data Socket:', socketData);
-            //   console.log("socket?????/",socket)
-            //  if(socketData!=null ){
-            //   //console.log("socket?????/",socket.disconnect())
-           
-            //   socketData.disconnect()
-            // }
-            // });
+            
            
            }
         });

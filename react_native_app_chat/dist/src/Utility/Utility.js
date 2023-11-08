@@ -1,6 +1,7 @@
 import React from 'react';
 import DATE from 'date-and-time';
 import Toast from 'react-native-simple-toast';
+import { NativeEventEmitter, Platform } from 'react-native';
 export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
     if (matrimonyUserName == null || matrimonyUserName.trim() == '') {
       return '';
@@ -163,7 +164,7 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
     try {
   
         const dateString = new Date(createdAt) //.replace(" GMT", "")
-        //console.log("dateString",createdAt)
+        
        // const date = DATE.format(dateString, 'DD/MM/YYYY HH:mm:ss');
 
        // displayVal = formattedDateTime
@@ -261,7 +262,7 @@ function isToday(date) {
   const today = new Date();
 
   // 👇️ Today's date
-  // console.log(today);
+  
 
   if (today.toDateString() === date.toDateString()) {
       return true;
@@ -334,7 +335,22 @@ export function formatChatTimestamp(epochTimestamp){
     }
     return dateOutput;
 }
+export class Utility {
 
+  static  eventEmitter = null
+}
+export const getEventEmitter = () => {
+
+  let eventEmitter = Utility.eventEmitter
+
+  if(eventEmitter == null){
+    eventEmitter = Platform.OS === 'ios' ?  new NativeEventEmitter("") : new NativeEventEmitter()
+    Utility.eventEmitter = eventEmitter
+  }
+
+  return eventEmitter
+
+}
   // export default class NavigationState {
 
   //   static navigation = {}

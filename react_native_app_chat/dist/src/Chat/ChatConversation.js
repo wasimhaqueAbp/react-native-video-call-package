@@ -19,7 +19,7 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator
 } from 'react-native';
-import { formatChatDateTime,formatTime,formatDate, getCreatedDate,showToast } from '../Utility/Utility';
+import { formatChatDateTime,formatTime,formatDate, getCreatedDate,showToast, getEventEmitter } from '../Utility/Utility';
 
 import { ChatHeaderView } from './ChatHeaderView';
 import { callApi } from '../../NW/APIManager';
@@ -34,6 +34,7 @@ import DocumentPicker from "react-native-document-picker";
 import { DefaultView } from '../Utility/DefaultView';
 import { ScreenLoader } from '../Utility/ScreenLoader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
@@ -60,7 +61,7 @@ const [userData,setUserData] = useState({
        const [chatAsyncData, setChatAsyncData] = React.useState([])
       const [netConnected,setNetConnected] = React.useState(true);
        const inputRef = useRef();
-       
+       const eventEmitter = getEventEmitter()
         
         useEffect(() => {
           const backHandler = BackHandler.addEventListener(
@@ -81,6 +82,21 @@ const [userData,setUserData] = useState({
             backHandler.remove(); // Unsubscribe from the event when the component is unmounted
           };
         }, []); 
+
+        useEffect(() => {
+          
+          eventEmitter.addListener('REQUEST_BLUR', (data) => {
+            const newData = data;
+            if(newData==false){
+              console.log('Custom event received with data Blur Conversation:', data);
+             
+              props.goBack();
+              props.clearChat()
+             
+             }
+          });
+         },[])
+       
         useEffect( ()=>{
           
           // if( netInfo.isConnected ){
