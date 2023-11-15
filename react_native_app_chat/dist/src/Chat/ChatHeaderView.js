@@ -15,7 +15,7 @@ import {
 
 } from 'react-native';
 import {Menu, MenuItem, MenuDivider} from 'react-native-material-menu';
-import {Divider, Button, Card, Avatar} from 'react-native-paper';
+import {Divider, Button, Card, Avatar,IconButton} from 'react-native-paper';
 
 
 
@@ -56,22 +56,23 @@ return(
        <Text style={{color:"black",fontWeight:"500"  }}> {item.mappedUserName} </Text>
        <Text style={{color:"#DB233D",fontWeight:"500" }}> {item.mappedUserCode } </Text>
   </Pressable>
-  {/* <View>
+   <View>
   <Pressable onPress={() => onAudioPress()}>
   <Image
         style={{height:25,width:25,marginLeft: 8,paddingRight:10,}}
-       source={require('../icons/smile.png')} resizeMode="contain" /> 
+       source={require('../icons/phone_call.png')} resizeMode="contain" /> 
                  
               </Pressable>
   </View>
   <View>
+  
   <Pressable onPress={() => onVideoPress()}>
   <Image
         style={{height:25,width:25,marginLeft:10}}
-       source={require('../icons/smile.png')} resizeMode="contain" /> 
+       source={require('../icons/video.png')} resizeMode="contain" /> 
                  
               </Pressable>
-  </View> */}
+  </View> 
   {/* <View>
   <Menu
             visible={isMenuVisible}

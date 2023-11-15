@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React, {useEffect, useState } from 'react';
 import ChatUserList from './Chat/ChatUserList'
 import ChatConversation from './Chat/ChatConversation'
+import { VideoChatCall } from './Chat/VideoCall';
 const Stack = createNativeStackNavigator();
 
  const ChatScreen = (props) => {
@@ -32,14 +33,22 @@ const Stack = createNativeStackNavigator();
           initialParams={{props:props}}
          // initialParams={{props:props,sockets: socket,registerUserToSocket_:registerUserToSocket,socketConneted:socketConneted}}
           />
-            <Stack.Screen name="ChatConversation" component={ChatConversation} 
+            {/* <Stack.Screen name="VideoCall" component={VideoChatCall} 
+              options={{
+            headerShown: false,
+            title: '',
+          }} 
+          initialParams={{props:props}}
+         
+            /> */}
+            {/* <Stack.Screen name="ChatConversation" component={ChatConversation} 
               options={{
             headerShown: false,
             title: '',
           }} 
           initialParams={{props:props}}
          // initialParams={{props:props,sockets: socket,registerUserToSocket_:registerUserToSocket,socketConneted:socketConneted}}
-            />
+            /> */}
              
           </Stack.Navigator>
         </NavigationContainer>

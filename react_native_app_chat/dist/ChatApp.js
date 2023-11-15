@@ -3,6 +3,10 @@ import { View } from 'react-native';
 import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
 import { getEventEmitter } from './src/Utility/Utility';
+import ChatScreen from './src';
+import { getEnvironment } from './NW/ServiceAPI';
+//import RNCallKeep from 'react-native-callkeep';
+
 
 const ChatApp = props => {
   var globalScoketConnection;
@@ -11,7 +15,9 @@ const ChatApp = props => {
  //const appState = useRef(AppState.currentState);
       const [socket,setsocket]=useState(null);
       const eventEmitter = getEventEmitter()
-
+      const [socketConneted,setsocketConneted]=useState(false);
+ 
+      const [registerUserToSocket, setregisterUserToSocket] = useState(null);
 
    
       useEffect(() => {
@@ -29,13 +35,17 @@ const ChatApp = props => {
 
       if(globalScoketConnection) {
         globalScoketConnection.disconnect();
+        setsocketConneted(false);
       }
  
 
     }
        }, []);
        const setSocketConnection =()=>{
-        const socketConnection = io('https://messegingserviceskt.abpweddings.com',{
+        const envType =getEnvironment()
+        console.log(envType)
+        const url = envType =="TEST"? "ws://10.132.100.191:8878":"https://messegingserviceskt.abpweddings.com"
+        const socketConnection = io(url,{
           "force new connection" : true,
             "reconnectionAttempts": "Infinity", 
          "timeout" : 10000,                  
@@ -48,18 +58,62 @@ const ChatApp = props => {
        //console.log("socketConnection",socketConnection)
        socketConnection.on('connect', () => {
          console.log('Socket connected');
-         //setsocketConneted(true);
+         setsocketConneted(true);
   
        });
        setsocket(socketConnection);
        globalScoketConnection =socketConnection
+
+      //  RNCallKeep.setup({
+      //   ios: {
+      //     appName: 'Chat',
+      //   },
+      //   android: {
+      //     alertTitle: 'Permissions required',
+      //     alertDescription: 'This application needs to access your phone accounts',
+      //     cancelButton: 'Cancel',
+      //     okButton: 'OK',
+      //   },
+      // });
+
+      //  const uuid = generateUniqueNumber();
+      //  RNCallKeep.displayIncomingCall(uuid, 'John Doe', 'John Doe', 'number', true);
        socketConnection.on('disconnect', () => {
         console.log('socket disconnected')
     });
-      // eventEmitter.emit('SOCKET_DATA', socketConnection)
       
       }
-     
+
+
+      useEffect(  ()=>{
+        
+        console.log("chatuserId???",socket,chatuserId,socketConneted)
+         if(socket!=null && chatuserId!=null && socketConneted){
+           console.log("registerUser emit",chatuserId)
+           socket.emit('registerUser', {from:chatuserId});
+       
+           try {
+             socket.on("registerUserComplete", handleregisterUserComplete);
+             return () => {
+                 socket.off("registerUserComplete", handleregisterUserComplete);
+             }
+       
+           } catch (error) {
+             console.error("Error setting up socket listener:", error);
+           }
+         }
+         
+        },[socket,chatuserId,socketConneted])
+        const handleregisterUserComplete = () =>{
+          setregisterUserToSocket(true);
+         }
+     const generateUniqueNumber=()=> {      
+                const timestamp = new Date().getTime(); // Get current timestamp in milliseconds  
+                const randomDigits = Math.floor(Math.random() * 100000000000); // Generate 11 random digits   
+                   
+             return randomDigits;   
+            }
+
        useEffect(() => {
         eventEmitter.addListener('REQUEST_FOCUS', (data) => {
           // Handle the emitted event
@@ -75,6 +129,7 @@ const ChatApp = props => {
             console.log('Custom event received with data Blur:', data);
             if(globalScoketConnection) {
               globalScoketConnection.disconnect();
+              setsocketConneted(false);
             }
             
            
@@ -104,10 +159,9 @@ const ChatApp = props => {
 
    
 
-
 return(
     <View style={{flex:1}}>
-        <ChatUserList
+         <ChatUserList
             socket={socket}
             userCode={userCode} 
             chatuserId={chatuserId} 
@@ -115,7 +169,13 @@ return(
              profileName={profileName}
              pushData={pushData}
              genderId={genderId}
-        />
+           
+             socketConneted={socketConneted}
+             onClickVideoCall={(data)=> props.onClickVideoCall(data)}
+          onClickAudioCall={(data)=> props.onClickAudioCall(data)}
+          registerUserToSocket_={registerUserToSocket}
+        /> 
+       
     </View>
 )
 }

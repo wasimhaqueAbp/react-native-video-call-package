@@ -35,10 +35,12 @@ import { DefaultView } from '../Utility/DefaultView';
 import { ScreenLoader } from '../Utility/ScreenLoader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
-const {socket,item,userCode,chatuserId,genderId,type} = props
+const {socket,item,userCode,chatuserId,genderId,type,socketConneted} = props
 
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
@@ -54,12 +56,16 @@ const [userData,setUserData] = useState({
        const [showEmoji,setShowEmoji] = React.useState(false);
        const [showModal,setShowModal] = useState(false)
        const [modalType,setModalType] = useState("");
-       const [openViewProfile,setOpenViewProfile] = useState(false)
+       const [openChatVideoViewProfile,setOpenChatVideoViewProfile] = useState(false)
        const [openDocumentPickerMenu,setOpenDocumentPickerMenu] = useState(false)
        const [isLoadMore, setIsLoadMore] = React.useState(false);
        const [isLoading, setIsLoading] = React.useState(false);
        const [chatAsyncData, setChatAsyncData] = React.useState([])
       const [netConnected,setNetConnected] = React.useState(true);
+      const [roomNo,setRoomNo] = React.useState(true);
+      const [audioVideoType,setAudioVideoType] = React.useState(null);
+      const [callinitiateByothers,setCallinitiateByothers] = React.useState("own");
+      const [callaccept,setcallaccept] =  React.useState("N");
        const inputRef = useRef();
        const eventEmitter = getEventEmitter()
         
@@ -576,7 +582,7 @@ const [userData,setUserData] = useState({
           
           }
 
-          const checkPermissions= async ()=>{
+          const checkPermissions= async (type)=>{
         
             if(Platform.OS ="android"){
     
@@ -594,7 +600,7 @@ const [userData,setUserData] = useState({
                   granted['android.permission.RECORD_AUDIO'] === PermissionsAndroid.RESULTS.GRANTED 
                   // Check for other permissions here
                 ) {
-                  handleCallVideo();
+                  handleCallVideo(type);
                   console.log('All permissions granted');
                   // You can now use the requested features that require these permissions
                 } else {
@@ -637,7 +643,7 @@ const [userData,setUserData] = useState({
                 
                 if (status === 'granted' && statusMicroPhone === 'granted') {
                   console.log('Camera permission is granted.');
-                  handleCallVideo();
+                  handleCallVideo(type);
                 }  else {
                   Alert.alert(
                     '',
@@ -676,9 +682,31 @@ const [userData,setUserData] = useState({
            
           }
 
-          const handleCallVideo =()=>{
+          const handleCallVideo =(type)=>{
 
             let roomNo =generateUniqueNumber();
+            setRoomNo(roomNo)
+           // setOpenChatVideoViewProfile(true)
+            setAudioVideoType(type)
+            setCallinitiateByothers("own");
+            setcallaccept("N")
+              const data = {roomno: item.mappedUserid,rooms :roomNo,
+                audio:true,video:true,
+                callinitiateByothers:"own",
+                item:props.item,
+                callType:type,
+              //   socket:socket,
+                userData:userData,
+                 socketConneted:socketConneted,
+                callaccept:"N"
+                }
+                if(type =="audio"){
+                  props.onClickAudioCall(data)
+                }
+                else{
+                  props.onClickVideoCall(data)
+                }
+                
               //  props.navigation.navigate("VideoChatCall",
               //  {roomno: item.mappedUserid,rooms :roomNo,
               //  audio:true,video:true,
@@ -1044,22 +1072,25 @@ const documentMenu=()=>{
 }
     return(
         <View style={styles.container}>
-         {!openViewProfile ? 
+         {!openChatVideoViewProfile ? 
           <KeyboardAvoidingView  style={ styles.container } behavior={Platform.OS === "ios" ? "padding" : "height"} keyboardVerticalOffset={ Platform.OS === "ios" ? 65 : 30} enabled>
             <ChatHeaderView 
              item={props.item}
              onSelectProfile={(item,index)=>{
-              // setOpenViewProfile(true);
+              // setOpenChatVideoViewProfile(true);
              }}
              genderId={genderId}
               showLastMessage={false}
               onGoback={(e)=>{ props.goBack();
                 props.clearChat();}}
             onMenuPress={(e)=> onMenuPress(e)}
-            onAudioPress={(e)=> console.log(e)}
+            onAudioPress={(e)=> 
+           
+            checkPermissions("audio")
+            }
        onVideoPress={(e)=>{
         
-        checkPermissions()
+        checkPermissions("video")
          }
         
        }
@@ -1087,15 +1118,19 @@ const documentMenu=()=>{
       {isLoading && (
         <ScreenLoader loading={isLoading} topMargin={0} text={"Loading.."} />
        )}
+       
        </KeyboardAvoidingView>
 
  :
-  <ViewProfile
 
-goBack={(e)=> {setOpenViewProfile(false)}}
+       
+   <ViewProfile
+
+goBack={(e)=> {setOpenChatVideoViewProfile(false)}}
 item={item}
-/>
-    }
+/> 
+}
+  
       <ModalScreen
         text1={modalType}
         loading={showModal}

@@ -30,10 +30,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  const ChatUserList = props => {
 //console.log("ChatUserList props",props)
 const newProps = props //props.route.params.props; //props
-const  {userCode,chatuserId,profileImage,profileName,genderId } = props;
+const  {userCode,chatuserId,profileImage,profileName,genderId,socketConneted } = props;
 let {pushData} = props
 
- //console.log(userCode,"userCodes")
+ 
  const [newPushData, setNewPushData] = useState(pushData);
 //const navigation = useNavigation();
 const netInfo = useNetInfo();
@@ -526,6 +526,11 @@ setSearchText(e)
         clearChat={()=>onPressClearChat()}
         genderId={genderId}
         type={types}
+             socketConneted={socketConneted}
+             onClickVideoCall={(data)=> props.onClickVideoCall(data)}
+          onClickAudioCall={(data)=> props.onClickAudioCall(data)}
+         
+        
       />
       :
       pageType != null && pageType =="block"?
