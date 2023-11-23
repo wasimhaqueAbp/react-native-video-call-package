@@ -702,7 +702,9 @@ const [userData,setUserData] = useState({
               //   socket:socket,
                 userData:userData,
                  socketConneted:socketConneted,
-                callaccept:"N"
+                callaccept:"N",
+                userCode:userCode,
+                mappedUserCode:item.mappedUserCode
                 }
                 if(type =="audio"){
                   props.onClickAudioCall(data)
@@ -883,7 +885,7 @@ else if(formateDate2 == formateDate){
           </View>
         )}
               
-                    <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
+                    {item.type =="txt"?<View style={alignment == "right" ?  styles.rightView : styles.leftView}>
                    
                       <Text style={{ fontSize: 14, color: "black", }} key={index}>{item.message}</Text>
                       <View style={{flexDirection:"row",justifyContent:"flex-end"}}>
@@ -911,6 +913,24 @@ else if(formateDate2 == formateDate){
                       } 
                       </View>
                     </View> 
+                    :
+                    item.type =="video"?
+                    <View style={{alignItems:"center",margin:5,}}>
+                    <View style={{backgroundColor:"#FFF",paddingHorizontal:15,paddingVertical:8, borderRadius:10}}>
+                    <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Missed Video Call "}</Text>
+                    <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
+                     
+                      </View>
+                    </View>
+                    :
+                    <View style={{alignItems:"center",margin:5,}}>
+                    <View style={{backgroundColor:"#FFF",paddingHorizontal:15,paddingVertical:8, borderRadius:10}}>
+                    <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Missed Voice Call "}</Text>
+                    <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
+                     
+                      </View>
+                    </View>
+                    }
                   
                     
                     </View>

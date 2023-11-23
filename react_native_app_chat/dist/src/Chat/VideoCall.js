@@ -33,7 +33,7 @@ import io from 'socket.io-client';
 import InCallManager from 'react-native-incall-manager';
 import { useTranslation } from 'react-i18next';
 import peer from '../Utility/peer';
-import { prepareShortName } from '../Utility/Utility';
+import { prepareShortName,getCreatedDate } from '../Utility/Utility';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
 
@@ -56,10 +56,12 @@ const VideoChatCall = props => {
     item,
     socketConneted,
     UserData,
-    audioVideoType
+    audioVideoType,
+    userCode,
+    mappedUserCode
   } = props.props;
   
-  console.log('item video call',props.props,
+  console.log('item video call',sockets //props.props,
   // registerUserToSocket_,
   // roomno,
   // rooms,
@@ -152,6 +154,23 @@ const VideoChatCall = props => {
   // }
   // }, []);
 
+  // useEffect(() => {
+  //   // Set up an interval that runs every 1000 milliseconds (1 second)
+  //   if(callOn){
+  //     let time = 0;
+  //     const intervalId = setInterval(() => {
+  //       // Code to be executed at each interval
+       
+  //       time = time+1
+  //       console.log('Interval triggered!',time);
+  //     }, 1000);
+  
+  //   }
+    
+  //   // Clean up the interval when the component is unmounted
+  //   return () => clearInterval(intervalId);
+  // }, []);
+
   useEffect(() => {
     //let realmObj;
 
@@ -237,7 +256,7 @@ setAudioORVideo(callTypes)
 //alert(audioVideoType+audioORVideo)
       // socket.emit('initCall', {from: fromUser, to: remoteSocketId, room: room,fromname:userData.username,calltype:audioVideoType});
       var devPlat = Platform.OS=="android"?"android":"ios" 
-      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:userData.username,devplatform:devPlat});
+      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:userData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode});
       console.log("initCall??? ",{from: fromUser, to: remoteSocketId, room: room,})
       //socket.emit("startCall", { from:fromUser, to: remoteSocketId, offer });
       
@@ -283,7 +302,8 @@ setAudioORVideo(callTypes)
       console.log('Tapas In incomingCall.from', incomingCall.from);
       console.log('Tapas In fromUser', fromUser);
       var devPlat = Platform.OS=="android"?"android":"ios" 
-      socket.emit("acceptCall", { to: incomingCall.from, from: fromUser, ans: ans, room: room,devplatform:devPlat });
+      //socket.emit("acceptCall", { to: incomingCall.from, from: fromUser, ans: ans, room: room,devplatform:devPlat });
+      socket.emit("acceptCall", { to: roomno, from: fromUser, ans: ans, room: room,devplatform:devPlat });
       console.log('stream????', stream, incomingCall.from, fromUser);
     } catch (error) {
       console.log('errorrr acceptCall', error);
@@ -300,15 +320,15 @@ setAudioORVideo(callTypes)
   };
 
   const handleIncommingCall = useCallback(
-    async ({ from, offer }) => {
+    async ({ from, offer,calltype,fromname }) => {
 
-        //console.log("Tapas Incomming",from, offer);
+        console.log("Tapas Incomming",from, offer);
         //setRemoteSocketId(from);
-        setIncomingCall({ from, offer,calltype });
+        setIncomingCall({ from, offer,calltype,fromname });
         //////console.log(`Incoming Call`, from, offer);
 
     },
-    [socket]
+    [sockets]
 );
 
 const handleCallAccepted = useCallback(
@@ -510,7 +530,7 @@ useEffect(() => {
   
   useEffect(() => {
   //  alert(incomingCall)
-    if (incomingCall != null) {
+    if (incomingCall != null ) {
         setcallOn(true);
         acceptCall();
     }
@@ -547,11 +567,11 @@ useEffect(() => {
     if (remoteStream) {
       remoteStream.getTracks().forEach(track => track.stop());
     }
-   // peer.peer.close();
+    peer.peer.close();
     setcallOn(false);
     setRemoteStream();
     setcallended(true);
-   // await peer.reconnectPeerConnection();
+    await peer.reconnectPeerConnection();
   };
 
   useEffect(() => {
@@ -584,9 +604,20 @@ useEffect(() => {
   };
 
   const EndCall = () => {
-    console.log('remoteSocketId', remoteSocketId, fromUser);
+    console.log('remoteSocketId',item, remoteSocketId, fromUser);
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
-  //  setRemoteStream('')
+    setRemoteStream('')
+  let arr={
+    senderName:userCode,
+targetUserName: mappedUserCode,
+message: 'duration: '+ "50" + ' : ' +"00",
+"createdon":  getCreatedDate(),
+"modifyon":  getCreatedDate(),
+type:'txt',
+"devPlatform":Platform.OS =="android"?"android":"ios"
+}
+console.log("arr",arr)
+  socket.emit("messageSendToUser",arr);
     InCallManager.stopRingback();
     props.goBack()
   };

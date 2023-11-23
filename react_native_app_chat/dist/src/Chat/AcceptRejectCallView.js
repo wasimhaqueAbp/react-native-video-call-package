@@ -34,7 +34,8 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     const [showNotificationIncomingCall, setshowNotificationIncomingCall] = useState(false);
     const moreRef = useRef();
     const [userData, setUserData] = useState(null);
-    
+    const [targetUserName,setTargetUserName] = useState(null);
+    const [callTypes,setCallTypes] = useState(null)
     console.log("Accept Reject ",name,socket,item,socketConneted,currentItem)
     useEffect(() => {
         //let realmObj;
@@ -55,14 +56,15 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
 
 
     const IncommingCallNotification = useCallback(
-        async ({ from,room,calltype }) => {
+        async ({ from,room,calltype,fromname,userCode, mappedUserCode}) => {
 
             
-            console.log("IncommingCallNotification",room,from)
+            console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
             setshowNotificationIncomingCall(true);
             //handleremoteSocketId(from);
-            setIncomingCall({ from,room,calltype });
-           
+            setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
+            setTargetUserName(fromname)
+            setCallTypes(calltype)
             //console.log(`Incoming Call`, from, offer);
         },
         [socket]
@@ -219,13 +221,13 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
   
    if(currentItem != null){
     
-  let uri =currentItem.LINK+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
+  let uri =currentItem.LINK+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype+"&userCode="+incomingCall.userCode+"&mappedUserCode"+incomingCall.mappedUserCode //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
    console.log("Accepted call",uri)
    Linking.openURL(uri);
   }
   else{
     
-    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
+    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype+"&userCode="+incomingCall.userCode+"&mappedUserCode"+incomingCall.mappedUserCode //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
     Linking.openURL(uri);
   }
   
@@ -248,7 +250,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
            // socket.on('endCall', handleEndCall);
             return () => {
                 socket.off("IncommingCallNotification", IncommingCallNotification);
-             //   socket.off("endCall", handleEndCall);
+               // socket.off("endCall", handleEndCall);
             }
         }       
 
@@ -256,6 +258,12 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
 
 
  
+    const handleEndCall = async ({from}) => {
+      // Stop the streams
+      setshowNotificationIncomingCall(false);
+      InCallManager.stopRingtone();
+    
+    };
    
     const onCancelHandler = () =>{
          // remoteSocketId 2713882 2702140
@@ -267,7 +275,8 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
       
       //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
       socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
-       // InCallManager.stopRingback();
+      socket.emit("misesdcall", { from: UserData.userId, to: incomingCall.from });
+       
         
 
     }
@@ -296,7 +305,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
          }}>
      
         <View style={{ flex:1,alignItems:"center",}}>
-        <Text style={{fontSize:20,fontWeight:"bold"}}>{prepareShortName("Test User") }</Text>     
+        <Text style={{fontSize:20,fontWeight:"bold"}}>{ prepareShortName(targetUserName) }</Text>     
         <Text style={{fontSize:16,}}>Calling....</Text>     
         </View>
         <View style={{flexDirection:"row",flex:0.6, justifyContent:'space-between',alignItems:'center',margin:10}}>
@@ -314,7 +323,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
             <IconButton
               padding={6}
               backgroundColor="white"
-              icon="phone-hangup-outline"
+              icon={callTypes=="video"?"video": "phone-hangup-outline"}
               color="white"
               size={30}
               onPress={() => acceptCall()} />
