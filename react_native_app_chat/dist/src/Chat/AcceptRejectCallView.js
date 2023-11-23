@@ -55,13 +55,13 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
 
 
     const IncommingCallNotification = useCallback(
-        async ({ from,room }) => {
+        async ({ from,room,calltype }) => {
 
             
             console.log("IncommingCallNotification",room,from)
             setshowNotificationIncomingCall(true);
             //handleremoteSocketId(from);
-            setIncomingCall({ from,room });
+            setIncomingCall({ from,room,calltype });
            
             //console.log(`Incoming Call`, from, offer);
         },
@@ -219,13 +219,13 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
   
    if(currentItem != null){
     
-  let uri =currentItem.LINK+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
+  let uri =currentItem.LINK+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
    console.log("Accepted call",uri)
    Linking.openURL(uri);
   }
   else{
     
-    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
+    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
     Linking.openURL(uri);
   }
   
@@ -260,12 +260,13 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     const onCancelHandler = () =>{
          // remoteSocketId 2713882 2702140
        //  setVideoCallEvent("cancel")// un comment
-        console.log('remoteSocketId', incomingCall);
+        console.log('remoteSocketId', incomingCall,UserData.userId);
      //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
      setshowNotificationIncomingCall(false);
      InCallManager.stopRingtone();
-      // socket.emit('endCall', {to: item.targetUserId, from: incomingCall.from});
-      socket.emit('endCall', {to: "12345", from: incomingCall.from});
+      
+      //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
+      socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
        // InCallManager.stopRingback();
         
 

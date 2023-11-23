@@ -690,6 +690,10 @@ const [userData,setUserData] = useState({
             setAudioVideoType(type)
             setCallinitiateByothers("own");
             setcallaccept("N")
+
+  // eventEmitter.emit('SOCKET_CONNECT', socket)
+    //         eventEmitter.emit('REGISTER_USER_VIDEO_CALL', true)
+         
               const data = {roomno: item.mappedUserid,rooms :roomNo,
                 audio:true,video:true,
                 callinitiateByothers:"own",
@@ -1086,7 +1090,7 @@ const documentMenu=()=>{
             onMenuPress={(e)=> onMenuPress(e)}
             onAudioPress={(e)=> 
            
-            checkPermissions("audio")
+            checkPermissions("voice")
             }
        onVideoPress={(e)=>{
         

@@ -103,7 +103,7 @@ const VideoChatCall = props => {
   const [userData, setUserData] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
-
+  const [audioORVideo,setAudioORVideo] = useState(true)  
 
 
 
@@ -219,22 +219,28 @@ const VideoChatCall = props => {
 
   const handleCallUser = async () => {
     try {
+
+      const callTypes =audioVideoType == "video"? true: false
       const stream = await mediaDevices.getUserMedia({
         audio: {
           mandatory: {
             googEchoCancellation: true, // Enable echo cancellation
           },
         },
-        video: true//audioVideoType == "video"? true: false
+        video:callTypes //audioVideoType == "video"? true: false
         // audio: true,
       });
+      setMyStream(stream);
+      console.log('stream??', callTypes);
 
-      console.log('stream??', userData);
-
-      socket.emit('initCall', {from: fromUser, to: remoteSocketId, room: room,fromname:userData.username});
+setAudioORVideo(callTypes)
+//alert(audioVideoType+audioORVideo)
+      // socket.emit('initCall', {from: fromUser, to: remoteSocketId, room: room,fromname:userData.username,calltype:audioVideoType});
+      var devPlat = Platform.OS=="android"?"android":"ios" 
+      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:userData.username,devplatform:devPlat});
       console.log("initCall??? ",{from: fromUser, to: remoteSocketId, room: room,})
       //socket.emit("startCall", { from:fromUser, to: remoteSocketId, offer });
-      setMyStream(stream);
+      
     } catch (error) {
 
       console.log('errorrr handleCallUser', error);
@@ -246,22 +252,18 @@ const VideoChatCall = props => {
 
   useEffect(() => {
     async function userJoined() {
-      if (userRoomJoined) {
-        setcallOn(true);
-        const sdpOffer = await peer.getOffer();
-        const offer = sdpOffer;
-        console.log("sdpOffer startCall",sdpOffer,offer,room)
-        socket.emit('startCall', {
-          from: fromUser,
-          to: remoteSocketId,
-          offer,
-          room: room,
-        });
-      }
+        if (userRoomJoined) {
+            setcallOn(true);
+            const sdpOffer = await peer.getOffer();
+            const offer = sdpOffer;
+
+            console.log("Tapas Start call");
+
+            socket.emit("startCall", { from: fromUser, to: remoteSocketId, offer: offer, room: room });
+        }
     }
     userJoined();
-  }, [userRoomJoined, room]);
-
+}, [userRoomJoined, room])
   const acceptCall = async () => {
     try {
       InCallManager.stopRingback();
@@ -280,12 +282,8 @@ const VideoChatCall = props => {
       console.log('Tapas In', ans);
       console.log('Tapas In incomingCall.from', incomingCall.from);
       console.log('Tapas In fromUser', fromUser);
-      socket.emit('acceptCall', {
-        to: incomingCall.from,
-        from: fromUser,
-        ans,
-        room: room,
-      });
+      var devPlat = Platform.OS=="android"?"android":"ios" 
+      socket.emit("acceptCall", { to: incomingCall.from, from: fromUser, ans: ans, room: room,devplatform:devPlat });
       console.log('stream????', stream, incomingCall.from, fromUser);
     } catch (error) {
       console.log('errorrr acceptCall', error);
@@ -302,153 +300,178 @@ const VideoChatCall = props => {
   };
 
   const handleIncommingCall = useCallback(
-    async ({from, offer}) => {
-      console.log('Tapas Incomming', from, offer);
-      //setRemoteSocketId(from);
-      setIncomingCall({from, offer});
-      console.log(`Incoming Call`, from, offer);
+    async ({ from, offer }) => {
+
+        //console.log("Tapas Incomming",from, offer);
+        //setRemoteSocketId(from);
+        setIncomingCall({ from, offer,calltype });
+        //////console.log(`Incoming Call`, from, offer);
+
     },
-    [socket],
-  );
+    [socket]
+);
 
-  const handleCallAccepted = useCallback(
-    ({from, ans}) => {
-      peer.setLocalDescription(ans);
-      console.log('Call Accepted!', ans);
-      let a = sendStreamFlag;
-      setsendStreamFlag(a++);
-      //setcallOn(true);
-      //sendStreams();
-    },
-    [sendStreams],
-  );
+const handleCallAccepted = useCallback(
+  ({ from, ans }) => {
 
-  const sendStreams = () => {
-    for (const track of myStream.getTracks()) {
-      peer.peer.addTrack(track, myStream);
-    }
-  };
+      console.log("Tapas Accepted", from, ans);
 
-  const handleICECandidateEvent = useCallback(
-    async event => {
-      if (event.candidate) {
-        console.log('event.candidate', userData.userId, roomno);
-
-        socket.emit('iceCandidate', {
-          from: fromUser, //userData.userId,
-          to: remoteSocketId,//roomno,
-          candidate: event.candidate,
-          room: room,
-        });
+      if (ans != null && ans != undefined) {
+          peer.setLocalDescription(ans);
+          //console.log("Call Accepted!",ans); 
+          let a = sendStreamFlag;
+          setsendStreamFlag(a++);
+          //setcallOn(true);
+          //sendStreams();
       }
-    },
-    [remoteSocketId, socket, room],
-  );
+  },
+  [sendStreams]
+);
+
+const sendStreams = () => {
+
+  for (const track of myStream.getTracks()) {
+      peer.peer.addTrack(track, myStream);
+  }
+}
+
+const handleICECandidateEvent = useCallback(
+  async (event) => {
+      if (event.candidate && remoteSocketId && room && fromUser) {
+          console.log("event.candidate", fromUser, remoteSocketId, event.candidate);
+          socket.emit('iceCandidate', { from: fromUser, to: remoteSocketId, candidate: event.candidate, room: room });
+      }
+
+  },
+  [remoteSocketId, socket, room, fromUser]
+);
 
   useEffect(() => {
     if (myStream) {
-      sendStreams();
+        sendStreams();
     }
-  }, [myStream, sendStreamFlag]);
+}, [myStream, sendStreamFlag]);
 
-  const handleNegoNeedIncomming = useCallback(
-    async ({from, offer}) => {
+
+const handleNegoNeedIncomming = useCallback(
+  async ({ from, offer }) => {
+      console.log("handleNegoNeedIncomming", "from :", from, "fromUser:", fromUser, offer);
       try {
-        if (userData != null) {
-          if (offer) {
-            const ans = await peer.getAnswer(offer);
-            console.log('handleNegoNeedIncomming-ANS', ans);
-
-            console.log('TTTTTTTT');
-            console.log('handleNegoNeedIncomming', offer);
-            socket.emit('negotiationDone', {
-              to: from,
-              from: fromUser, // userData.userId,
-              ans,
-              room: room,
-            });
+          if (offer && fromUser != null) {
+              const ans = await peer.getAnswer(offer);
+              console.log("handleNegoNeedIncomming-ANS", ans)
+              if (ans != null && ans != undefined) {
+                  socket.emit("negotiationDone", { to: from, from: fromUser, ans: ans, room: room });
+              }
           }
-        }
       } catch (error) {
-        console.log('errorrr handleNegoNeedIncomming', error);
+          //console.log("errorrr handleNegoNeedIncomming",error);
       }
-    },
-    [socket, userData, room],
-  );
+
+  },
+  [socket, room, fromUser]
+);
+
+  // const handleNegoNeeded = useCallback(async () => {
+  //   try {
+  //     if (userData != null) {
+  //       const offer2 = await peer.getOffer();
+  //       let offer = offer2;
+  //       console.log('offer2???', offer2);
+  //       console.log('offer2???', fromUser,userData.userId,room);
+  //       console.log('New', offer, remoteSocketId);
+  //       if(offer2){
+  //         setTimeout(() => {
+  //           console.log('offer2 from???', userData.userId);
+  //           socket.emit('negotiationneeded', {
+  //             offer:offer,
+  //             to: remoteSocketId,
+  //             from: fromUser,
+  //             room: room,
+  //           });
+  //         }, 1500);
+  //       }
+       
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, [remoteSocketId, socket, userData,fromUser, room]);
 
   const handleNegoNeeded = useCallback(async () => {
     try {
-      if (userData != null) {
+
+        console.log("remoteSocketId", remoteSocketId, "fromUser", fromUser);
+        if(remoteSocketId!=null && fromUser!=null){
         const offer2 = await peer.getOffer();
         let offer = offer2;
-        console.log('offer2???', offer2);
-        console.log('offer2???', fromUser);
-        console.log('New', offer, remoteSocketId);
-        setTimeout(() => {
-          console.log('offer2 from???', userData.userId);
-          socket.emit('negotiationneeded', {
-            offer,
-            to: remoteSocketId,
-            from: userData.userId,
-            room: room,
-          });
-        }, 1500);
-      }
+        console.log("New",offer,remoteSocketId);
+        socket.emit("negotiationneeded", { offer: offer, to: remoteSocketId, from: fromUser, room: room });
+         }
+
     } catch (error) {
-      console.log(error);
+        //console.log(error);
     }
-  }, [remoteSocketId, socket, userData, room]);
+}, [remoteSocketId, socket, room,fromUser]);
 
-  useEffect(() => {
-    peer.peer.addEventListener('negotiationneeded', handleNegoNeeded);
-    return () => {
-      peer.peer.removeEventListener('negotiationneeded', handleNegoNeeded);
-    };
-  }, [handleNegoNeeded]);
-  useEffect(() => {
-    peer.peer.addEventListener('icecandidate', handleICECandidateEvent);
-    return () => {
-      peer.peer.removeEventListener('icecandidate', handleICECandidateEvent);
-    };
-  }, [handleICECandidateEvent]);
-
-  const handleNegoNeedFinal = useCallback(
-    async ({ans}) => {
-      console.log('setLocalDescription handle', ans);
-      try {
-        await peer.setLocalDescription(ans);
-      } catch (error) {
-        console.log('errorrr handleNegoNeedFinal', error);
-      }
-    },
-    [handleNegoNeedFinal],
-  );
-
-  const handleRemoteICECandidate = data => {
-    console.log('Received remote ICE candidate:', data.candidate);
-    try {
-      const candidate = new RTCIceCandidate(data.candidate);
-      //console.log("candidate",candidate);
-      peer.peer.addIceCandidate(candidate).catch(error => {
-        console.error('Error adding ICE candidate:', error);
-      });
-    } catch (error) {
-      console.log('errorrr handleRemoteICECandidate', error);
-    }
+useEffect(() => {
+  peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
+  return () => {
+      peer.peer.removeEventListener("negotiationneeded", handleNegoNeeded);
   };
+}, [handleNegoNeeded]);
 
   useEffect(() => {
-    try {
-      peer.peer.addEventListener('track', async ev => {
-        const remoteStream = ev.streams;
-        // console.log('GOT TRACKS!!', remoteStream[0].onaddtrack);
+    peer.peer.addEventListener("icecandidate", handleICECandidateEvent);
+    return () => {
+        peer.peer.removeEventListener("icecandidate", handleICECandidateEvent);
+    };
+}, [handleICECandidateEvent]);
 
-        setRemoteStream(remoteStream[0]);
-      });
+const handleNegoNeedFinal = useCallback(async ({ ans }) => {
+  console.log("setLocalDescription",ans);
+  try {
+      if (ans != null && ans != undefined) {
+          await peer.setLocalDescription(ans);
+      }
+
+  } catch (error) {
+      //console.log("errorrr handleNegoNeedFinal",error);
+  }
+
+}, [handleNegoNeedFinal]);
+
+  const handleRemoteICECandidate = (data) => {
+    console.log('Received remote ICE candidate:', data);
+    try {
+        if (data.from != fromUser && data.candidate != null) {
+            const candidate = new RTCIceCandidate(data.candidate);
+            console.log("candidate", candidate);
+
+            peer.peer.addIceCandidate(candidate).catch((error) => {
+                console.error('Error adding ICE candidate:', error);
+                console.log('Error name:', error.name);
+                console.log('Error message:', error.message);
+            });
+        }
+
     } catch (error) {
-      console.log('errorrr useEffect ', error);
+        //console.log("errorrr handleRemoteICECandidate",error);
     }
-  }, []);
+};
+
+useEffect(() => {
+  try {
+      peer.peer.addEventListener("track", async (ev) => {
+          const remoteStream = ev.streams;
+          console.log("GOT TRACKS!!Remote", remoteStream[0]);
+          setRemoteStream(remoteStream[0]);
+      });
+  } catch (error) {
+      //console.log("errorrr useEffect ",error);
+  }
+
+}, []);
 
   useEffect(() => {
     console.log("handleCallUser",fromUser,registerUserToSocket,toUser,incomingCall,callinitiateByothers, socket)
@@ -469,25 +492,29 @@ const VideoChatCall = props => {
       'getCallDetails123',
       callaccepted,
       remoteSocketId,
-      registerUserToSocket
+      registerUserToSocket,
+      room
     );
     if (
       callaccepted == 'Y' &&
       remoteSocketId != null &&
       socket &&
       registerUserToSocket
+      && room != ''
     ) {
       getCallDetails();
       //startCall
     }
-  }, [callaccepted, remoteSocketId,registerUserToSocket, socket]);
+  }, [callaccepted, remoteSocketId,registerUserToSocket, socket,room]);
 
+  
   useEffect(() => {
+  //  alert(incomingCall)
     if (incomingCall != null) {
-      setcallOn(true);
-      acceptCall();
+        setcallOn(true);
+        acceptCall();
     }
-  }, [incomingCall]);
+}, [incomingCall])
 
   useEffect(() => {
     //console.log("mmmmm",audioElement,incomingCall,callinitiateByothers,userRoomJoined);
@@ -520,18 +547,18 @@ const VideoChatCall = props => {
     if (remoteStream) {
       remoteStream.getTracks().forEach(track => track.stop());
     }
-    peer.peer.close();
+   // peer.peer.close();
     setcallOn(false);
     setRemoteStream();
     setcallended(true);
-    await peer.reconnectPeerConnection();
+   // await peer.reconnectPeerConnection();
   };
 
   useEffect(() => {
     if (remoteStream && remoteStream != null) {
-      handleRemoteStream(remoteStream);
+        handleRemoteStream(remoteStream);
     }
-  }, [remoteStream]);
+}, [remoteStream]);
 
   const handleRemoteStream = remoteStream => {
     // Attach the remote stream to the remote video element
@@ -559,6 +586,7 @@ const VideoChatCall = props => {
   const EndCall = () => {
     console.log('remoteSocketId', remoteSocketId, fromUser);
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
+  //  setRemoteStream('')
     InCallManager.stopRingback();
     props.goBack()
   };
@@ -573,7 +601,14 @@ const VideoChatCall = props => {
   }, [audioEnabled]);
 
   const toggleAudio = () => {
-    setAudioEnabled(!audioEnabled);
+    setMyStream((prevStream) => {
+      prevStream.getAudioTracks().forEach((track) => {
+          track.enabled = audioEnabled;
+      });
+      setAudioEnabled(!audioEnabled);
+      return prevStream;
+  });
+   
   };
 
   const toggleSpeaker = () => {
@@ -585,17 +620,17 @@ const VideoChatCall = props => {
     InCallManager.setForceSpeakerphoneOn(isSpeakerOn);
   };
 
-  useEffect(() => {
-    if (callended) {
-      console.log('TEnd');
-        socket.emit('clearRoomandSockets', {
-          to: remoteSocketId,
-          from: fromUser,
-          room: room,
-        });
+  // useEffect(() => {
+  //   if (callended) {
+  //     console.log('TEnd');
+  //       socket.emit('clearRoomandSockets', {
+  //         to: remoteSocketId,
+  //         from: fromUser,
+  //         room: room,
+  //       });
      
-    }
-  }, [callended]);
+  //   }
+  // }, [callended]);
 
   useEffect(() => {
     if (socket != null) {
@@ -647,7 +682,7 @@ const VideoChatCall = props => {
             //paddingRight: 10,
             padding: 10,
           }}>
-          <View
+          {/* <View
             style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
             <IconButton
               padding={6}
@@ -659,7 +694,41 @@ const VideoChatCall = props => {
                 toggleSpeaker();
               }}
             />
-          </View>
+          </View> */}
+          {audioVideoType== "video"&&<View
+            style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
+            <IconButton
+              padding={6}
+              backgroundColor="white"
+              icon={audioORVideo ? 'camera' : 'camera-off'}
+              color="white"
+              size={30}
+              onPress={async () => {
+               // toggleSpeaker();
+             
+      //          const stream = await mediaDevices.getUserMedia({
+      //   audio: {
+      //     mandatory: {
+      //       googEchoCancellation: true, // Enable echo cancellation
+      //     },
+      //   },
+        
+      //   video:audioORVideo== true?false:true  //true//audioVideoType == "video"? true: false
+      //   // audio: true,
+      // });
+      // setMyStream(stream)
+      setMyStream((prevStream) => {
+            // prevStream.getVideoTracks().forEach((track) => {
+            //     track.enabled = !isVideoMuted;
+            // });
+            prevStream.getVideoTracks()[0].enabled = !prevStream.getVideoTracks()[0].enabled
+
+            return prevStream;
+        });
+      setAudioORVideo(!audioORVideo)
+              }}
+            />
+          </View>}
           <View
             style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
             <IconButton
@@ -687,21 +756,33 @@ const VideoChatCall = props => {
             />
           </View>
         </View>
-        <RTCView
+
+       {audioVideoType== "video"?
+         audioORVideo? <RTCView
           streamURL={myStream?.toURL()}
           objectFit={'cover'}
           style={{width: 120, height: 200}}
           volume={1.5}
           mirror={false} // Adjust this based on your requirements
           // audioOutput={'output-speaker'} // This controls the audio output
-        />
+        /> :
+        <View style={{borderWidth:1,borderColor:"#FFF"}}>
+         <Image
+               source={require('../icons/dummy_user.png')}
+               style={{width: 120, height: 200,borderColor:"#FFF", resizeMode:"contain"}}
+            /> 
+            </View>
+            :
+            <View style={{width: 120, height: 200}} />
+            }
       </View>
     );
   };
+  //console.log("remoteStream && callOn && !callended",remoteStream , callOn , callended)
   return (
     <View style={{flex: 1}}>
-      {remoteStream && callOn && !callended ? (
-        <View style={{flex: 1, backgroundColor: 'red'}}>
+      {remoteStream && callOn && !callended  ? (
+       <View style={{flex: 1, backgroundColor: 'red'}}>
           <RTCView
             streamURL={remoteStream?.toURL()}
             objectFit={'cover'}
@@ -727,12 +808,12 @@ const VideoChatCall = props => {
               style={styles.circularImg}
             /> 
             <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
-              {prepareShortName('Test User')}
+              {prepareShortName(item.mappedUserName)}
             </Text>
             <Text style={{fontSize: 16, color: '#FFF'}}>
               {!callOn && callended
                 ? 'Call ended by ' + endedBy
-                : 'Calling....'}
+                :callOn?'' :'Calling....'}
             </Text>
           </View>
           {LocalStreamView()}

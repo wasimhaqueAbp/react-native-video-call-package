@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { getEventEmitter } from './src/Utility/Utility';
 import ChatScreen from './src';
 import { getEnvironment } from './NW/ServiceAPI';
-//import RNCallKeep from 'react-native-callkeep';
+
 
 
 const ChatApp = props => {
@@ -58,26 +58,17 @@ const ChatApp = props => {
        //console.log("socketConnection",socketConnection)
        socketConnection.on('connect', () => {
          console.log('Socket connected');
+         
          setsocketConneted(true);
+         
   
        });
        setsocket(socketConnection);
        globalScoketConnection =socketConnection
 
-      //  RNCallKeep.setup({
-      //   ios: {
-      //     appName: 'Chat',
-      //   },
-      //   android: {
-      //     alertTitle: 'Permissions required',
-      //     alertDescription: 'This application needs to access your phone accounts',
-      //     cancelButton: 'Cancel',
-      //     okButton: 'OK',
-      //   },
-      // });
+     
 
-      //  const uuid = generateUniqueNumber();
-      //  RNCallKeep.displayIncomingCall(uuid, 'John Doe', 'John Doe', 'number', true);
+    
        socketConnection.on('disconnect', () => {
         console.log('socket disconnected')
     });
