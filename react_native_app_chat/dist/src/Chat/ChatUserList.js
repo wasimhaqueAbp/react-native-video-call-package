@@ -525,6 +525,7 @@ setSearchText(e)
         chatuserId={chatuserId}
         clearChat={()=>onPressClearChat()}
         genderId={genderId}
+        profileName={profileName}
         type={types}
              socketConneted={socketConneted}
              onClickVideoCall={(data)=> props.onClickVideoCall(data)}

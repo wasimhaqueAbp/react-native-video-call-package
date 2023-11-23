@@ -34,7 +34,7 @@ const ChatApp = props => {
       console.log("Chat-Deinit",globalScoketConnection)
 
       if(globalScoketConnection) {
-        globalScoketConnection.disconnect();
+       globalScoketConnection.disconnect();
         setsocketConneted(false);
       }
  
@@ -119,7 +119,7 @@ const ChatApp = props => {
           if(newData==false){
             console.log('Custom event received with data Blur:', data);
             if(globalScoketConnection) {
-              globalScoketConnection.disconnect();
+             globalScoketConnection.disconnect();
               setsocketConneted(false);
             }
             
@@ -138,7 +138,7 @@ const ChatApp = props => {
     useEffect(() => {
       
       if(socket!=null && appState=="background" || socket!=null && appState== "inactive" ){
-        
+        console.log("in background disconect")
         socket.disconnect()
       }
       // else if (appState == "active"){

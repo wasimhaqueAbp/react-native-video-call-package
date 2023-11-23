@@ -40,11 +40,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
-const {socket,item,userCode,chatuserId,genderId,type,socketConneted} = props
+const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted} = props
 
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
-  userId:chatuserId
+  userId:chatuserId,
+  username:profileName
 })
     const [data, setData] = React.useState(
        []);

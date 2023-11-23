@@ -107,6 +107,7 @@ const VideoChatCall = props => {
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [audioORVideo,setAudioORVideo] = useState(true)  
 
+  const [timer, setTimer] = useState(0);
 
 
 
@@ -157,20 +158,26 @@ const VideoChatCall = props => {
   // useEffect(() => {
   //   // Set up an interval that runs every 1000 milliseconds (1 second)
   //   if(callOn){
-  //     let time = 0;
   //     const intervalId = setInterval(() => {
-  //       // Code to be executed at each interval
-       
-  //       time = time+1
-  //       console.log('Interval triggered!',time);
-  //     }, 1000);
+  //       setTimer((prevTimer) => prevTimer + 1);
+  //     }, 1000); // Update the timer every second
+  
+  //     // Clean up the interval when the component is unmounted
+  //     return () => clearInterval(intervalId);
   
   //   }
     
   //   // Clean up the interval when the component is unmounted
-  //   return () => clearInterval(intervalId);
+  //  // return () => clearInterval(intervalId);
   // }, []);
 
+  const formatTime = (timeInSeconds) => {
+    const hours = Math.floor(timeInSeconds / 3600);
+    const minutes = Math.floor((timeInSeconds % 3600) / 60);
+    const seconds = timeInSeconds % 60;
+
+    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
   useEffect(() => {
     //let realmObj;
 
@@ -256,8 +263,8 @@ setAudioORVideo(callTypes)
 //alert(audioVideoType+audioORVideo)
       // socket.emit('initCall', {from: fromUser, to: remoteSocketId, room: room,fromname:userData.username,calltype:audioVideoType});
       var devPlat = Platform.OS=="android"?"android":"ios" 
-      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:userData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode});
-      console.log("initCall??? ",{from: fromUser, to: remoteSocketId, room: room,})
+      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:UserData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode});
+      console.log("initCall??? ", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:UserData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode})
       //socket.emit("startCall", { from:fromUser, to: remoteSocketId, offer });
       
     } catch (error) {
@@ -505,7 +512,7 @@ useEffect(() => {
     ) {
       handleCallUser();
     }
-  }, [toUser, fromUser, socket, registerUserToSocket, callinitiateByothers]);
+  }, [toUser, fromUser, socket, registerUserToSocket, callinitiateByothers,UserData]);
 
   useEffect(() => {
     console.log(
@@ -822,6 +829,10 @@ console.log("arr",arr)
             mirror={false} // Adjust this based on your requirements
             // audioOutput={'output-speaker'} // This controls the audio output
           />
+          {/* <View>
+          <Text style={styles.timerText}>{formatTime(timer)}</Text>
+    
+          </View> */}
           <View style={{zIndex: 1}}>{LocalStreamView()}</View>
         </View>
       ) : (
@@ -843,7 +854,7 @@ console.log("arr",arr)
             </Text>
             <Text style={{fontSize: 16, color: '#FFF'}}>
               {!callOn && callended
-                ? 'Call ended by ' + endedBy
+                ? 'Call ended ' 
                 :callOn?'' :'Calling....'}
             </Text>
           </View>
@@ -864,6 +875,11 @@ const styles = StyleSheet.create({
     // borderWidth: 4,
     // alignSelf: 'center',
     //borderColor: '#D69C14',
+  },
+  timerText: {
+    fontSize: 24,
+    marginBottom: 20,
+    color:"red"
   },
 });
 
