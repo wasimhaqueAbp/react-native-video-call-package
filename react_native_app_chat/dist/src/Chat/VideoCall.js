@@ -73,7 +73,7 @@ const VideoChatCall = props => {
   // socketConneted,
   );
   
-  
+  let autoDisconectBit= false
   const [socket,setsocket]=useState(sockets);
   
   const [registerUserToSocket, setregisterUserToSocket] = useState(
@@ -242,11 +242,12 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   useEffect(() => {
     setTimeout(() => {
       console.log("remoteStream",remoteStream)
-     console.log("Callon",callOn);
-     console.log("callended",callended);
-      if(remoteAcceptCall == false && remoteStream == undefined){
+     console.log("Callon",autoDisconectBit);
+     console.log("remoteAcceptCall",remoteAcceptCall);
+      if(autoDisconectBit == false && remoteStream == undefined){
      InCallManager.stop();
     //alert("hiii")
+    console.log("in auto dis")
         EndCall();
       }
       
@@ -274,7 +275,7 @@ setAudioORVideo(callTypes)
 //alert(audioVideoType+audioORVideo)
       // socket.emit('initCall', {from: fromUser, to: remoteSocketId, room: room,fromname:userData.username,calltype:audioVideoType});
       var devPlat = Platform.OS=="android"?"android":"ios" 
-      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:UserData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode});
+      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:"",devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode});
       console.log("initCall??? ", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:UserData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode})
       //socket.emit("startCall", { from:fromUser, to: remoteSocketId, offer });
       
@@ -322,7 +323,7 @@ setAudioORVideo(callTypes)
       var devPlat = Platform.OS=="android"?"android":"ios" 
       //socket.emit("acceptCall", { to: incomingCall.from, from: fromUser, ans: ans, room: room,devplatform:devPlat });
       socket.emit("acceptCall", { to: roomno, from: fromUser, ans: ans, room: room,devplatform:devPlat });
-     
+      autoDisconectBit = true
       console.log('stream????', stream, incomingCall.from, fromUser);
     } catch (error) {
       console.log('errorrr acceptCall', error);
@@ -504,11 +505,16 @@ useEffect(() => {
       peer.peer.addEventListener("track", async (ev) => {
           const remoteStream = ev.streams;
           console.log("GOT TRACKS!!Remote", remoteStream[0]);
-          //setRemoteStream(remoteStream[0]);
+         // setRemoteStream(remoteStream[0]);
+         autoDisconectBit=  true;
           if( audioVideoType == "video"){
-            setRemoteStream(remoteStream[0]);
+            console.log("video call")
+            
+              setRemoteStream(remoteStream[0]);
+            
           }
           else if(audioVideoType == "voice"){
+            console.log("audio call")
             remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
 
         setRemoteStream(remoteStream[0]);
@@ -573,6 +579,7 @@ useEffect(() => {
       userRoomJoined
     ) {
       //  pause(audioElement,0);
+      autoDisconectBit= true
       setRemoteAcceptCall(true);
       InCallManager.stop();
     }
@@ -604,7 +611,7 @@ useEffect(() => {
       remoteStream.getTracks().forEach(track => track.stop());
       setRemoteStream();
     }
-    
+    InCallManager.stop();
   };
 
   useEffect(() => {
@@ -639,12 +646,17 @@ useEffect(() => {
   const EndCall = async () => {
     InCallManager.stop();
     setcallOn(false);
-    setRemoteStream();
+    
     setcallended(true);
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
       setMyStream()
     }
+    if (remoteStream) {
+      remoteStream.getTracks().forEach(track => track.stop());
+      
+    }
+    setRemoteStream();
     console.log('remoteSocketId',item, remoteSocketId, fromUser);
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
     

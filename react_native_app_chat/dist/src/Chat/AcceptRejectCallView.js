@@ -270,7 +270,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
        // InCallManager.stop();
     // alert("hiii")
     console.log("in income")
-       onCancelHandler();
+     //  onCancelHandler();
         }
        //
       }, 20000);
@@ -285,7 +285,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     
     };
    
-    const onCancelHandler = () =>{
+    const onCancelHandler = async () =>{
      // setRemoteAcceptCall(true)
      remoteAcceptCall = true;
      incomingData= null;
@@ -299,7 +299,10 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
       //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
       socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
       socket.emit("misesdcall", { from: UserData.userId, to: incomingCall.from });
-       
+      peer.peer.close();
+
+      
+      await peer.reconnectPeerConnection();
         
 
     }
