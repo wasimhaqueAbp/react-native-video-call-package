@@ -106,8 +106,9 @@ const VideoChatCall = props => {
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [isSpeakerOn, setIsSpeakerOn] = useState(false);
   const [audioORVideo,setAudioORVideo] = useState(true)  
-
+const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   const [timer, setTimer] = useState(0);
+  
 
 
 
@@ -115,8 +116,7 @@ const VideoChatCall = props => {
   
   
   //InCallManager.start({media: 'audio'}); // audio/video, default: audioElement
-  InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or _DTMF_
-
+  
   // useEffect(() => {
   //   console.log("Tapas in videos",sockets);
   //   if(sockets== undefined || sockets.id == null){
@@ -180,6 +180,9 @@ const VideoChatCall = props => {
   };
   useEffect(() => {
     //let realmObj;
+   // InCallManager.stop();
+    console.log("incoming")
+    InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or _DTMF_
 
     (async () => {
       const obj = UserData //await getUser();
@@ -237,10 +240,18 @@ const VideoChatCall = props => {
   }, [toUser]);
 
   useEffect(() => {
-    setInterval(() => {
-      // EndCall();
-      InCallManager.stopRingback();
-    }, 9000);
+    setTimeout(() => {
+      console.log("remoteStream",remoteStream)
+     console.log("Callon",callOn);
+     console.log("callended",callended);
+      if(remoteAcceptCall == false && remoteStream == undefined){
+     InCallManager.stop();
+    //alert("hiii")
+        EndCall();
+      }
+      
+     //
+    }, 20000);
   }, []);
 
   const handleCallUser = async () => {
@@ -292,7 +303,7 @@ setAudioORVideo(callTypes)
 }, [userRoomJoined, room])
   const acceptCall = async () => {
     try {
-      InCallManager.stopRingback();
+      InCallManager.stop();
       const stream = await mediaDevices.getUserMedia({
         video: true,
         audio: {
@@ -311,6 +322,7 @@ setAudioORVideo(callTypes)
       var devPlat = Platform.OS=="android"?"android":"ios" 
       //socket.emit("acceptCall", { to: incomingCall.from, from: fromUser, ans: ans, room: room,devplatform:devPlat });
       socket.emit("acceptCall", { to: roomno, from: fromUser, ans: ans, room: room,devplatform:devPlat });
+     
       console.log('stream????', stream, incomingCall.from, fromUser);
     } catch (error) {
       console.log('errorrr acceptCall', error);
@@ -492,7 +504,16 @@ useEffect(() => {
       peer.peer.addEventListener("track", async (ev) => {
           const remoteStream = ev.streams;
           console.log("GOT TRACKS!!Remote", remoteStream[0]);
-          setRemoteStream(remoteStream[0]);
+          //setRemoteStream(remoteStream[0]);
+          if( audioVideoType == "video"){
+            setRemoteStream(remoteStream[0]);
+          }
+          else if(audioVideoType == "voice"){
+            remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
+
+        setRemoteStream(remoteStream[0]);
+          }
+          
       });
   } catch (error) {
       //console.log("errorrr useEffect ",error);
@@ -536,7 +557,7 @@ useEffect(() => {
 
   
   useEffect(() => {
-  //  alert(incomingCall)
+
     if (incomingCall != null ) {
         setcallOn(true);
         acceptCall();
@@ -552,6 +573,8 @@ useEffect(() => {
       userRoomJoined
     ) {
       //  pause(audioElement,0);
+      setRemoteAcceptCall(true);
+      InCallManager.stop();
     }
   }, [
     incomingCall,
@@ -567,18 +590,21 @@ useEffect(() => {
       fromname = 'You';
     }
     setendedBy(fromname);
-
+    peer.peer.close();
+    setcallOn(false);
+   
+    
+    setcallended(true);
+    await peer.reconnectPeerConnection();
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
+      setMyStream();
     }
     if (remoteStream) {
       remoteStream.getTracks().forEach(track => track.stop());
+      setRemoteStream();
     }
-    peer.peer.close();
-    setcallOn(false);
-    setRemoteStream();
-    setcallended(true);
-    await peer.reconnectPeerConnection();
+    
   };
 
   useEffect(() => {
@@ -610,10 +636,18 @@ useEffect(() => {
     }
   };
 
-  const EndCall = () => {
+  const EndCall = async () => {
+    InCallManager.stop();
+    setcallOn(false);
+    setRemoteStream();
+    setcallended(true);
+    if (myStream) {
+      myStream.getTracks().forEach(track => track.stop());
+      setMyStream()
+    }
     console.log('remoteSocketId',item, remoteSocketId, fromUser);
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
-    setRemoteStream('')
+    
   let arr={
     senderName:userCode,
 targetUserName: mappedUserCode,
@@ -625,7 +659,8 @@ type:'txt',
 }
 console.log("arr",arr)
   socket.emit("messageSendToUser",arr);
-    InCallManager.stopRingback();
+ // peer.peer.close();
+ // await peer.reconnectPeerConnection();
     props.goBack()
   };
 
@@ -819,6 +854,7 @@ console.log("arr",arr)
   //console.log("remoteStream && callOn && !callended",remoteStream , callOn , callended)
   return (
     <View style={{flex: 1}}>
+      
       {remoteStream && callOn && !callended  ? (
        <View style={{flex: 1, backgroundColor: 'red'}}>
           <RTCView
@@ -858,7 +894,8 @@ console.log("arr",arr)
                 :callOn?'' :'Calling....'}
             </Text>
           </View>
-          {LocalStreamView()}
+          {!callended &&
+          LocalStreamView()}
         </View>
       )}
     </View>

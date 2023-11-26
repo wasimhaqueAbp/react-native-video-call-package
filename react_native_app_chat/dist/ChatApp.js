@@ -44,7 +44,7 @@ const ChatApp = props => {
        const setSocketConnection =()=>{
         const envType =getEnvironment()
         console.log(envType)
-        const url = envType =="TEST"? "ws://10.132.100.191:8878":"https://messegingserviceskt.abpweddings.com"
+        const url = envType =="TEST"? "wss://messageserviceqaapi.abpweddings.com":"https://messegingserviceskt.abpweddings.com"
         const socketConnection = io(url,{
           "force new connection" : true,
             "reconnectionAttempts": "Infinity", 

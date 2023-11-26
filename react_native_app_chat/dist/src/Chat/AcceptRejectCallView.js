@@ -28,7 +28,8 @@ import { propTypes } from 'react-native-page-control';
 const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserData,onNavigate } ) => {
   // const navigation = useNavigation();
  // const navigation = React.useContext(NavigationContext);
-  
+  let incomingData = null;
+  let remoteAcceptCall = false
     const [incomingCall, setIncomingCall] = useState(null);
     
     const [showNotificationIncomingCall, setshowNotificationIncomingCall] = useState(false);
@@ -36,6 +37,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     const [userData, setUserData] = useState(null);
     const [targetUserName,setTargetUserName] = useState(null);
     const [callTypes,setCallTypes] = useState(null)
+   // const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     console.log("Accept Reject ",name,socket,item,socketConneted,currentItem)
     useEffect(() => {
         //let realmObj;
@@ -62,9 +64,12 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
             console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
             setshowNotificationIncomingCall(true);
             //handleremoteSocketId(from);
+            remoteAcceptCall = false;
+            incomingData = { from,room,calltype,fromname,userCode, mappedUserCode};
             setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
             setTargetUserName(fromname)
             setCallTypes(calltype)
+
             //console.log(`Incoming Call`, from, offer);
         },
         [socket]
@@ -77,15 +82,16 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
             console.log("audioElement??? ");
            // outGoingRing(audioElement);
           // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
-          InCallManager.startRingtone('_BUNDLE_'); // or _DEFAULT_ or system filename with extension
+          InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or system filename with extension
         }
     },[incomingCall])
 
     const acceptCall = async () => {
       
-        InCallManager.stopRingtone();
-       
-
+        InCallManager.stop();
+        remoteAcceptCall = true;
+        incomingData= null
+       // setRemoteAcceptCall(true)
        // handleAcceptButton();
        checkPermissions();
 
@@ -247,31 +253,48 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
         if(socket){
            
             socket.on("IncommingCallNotification", IncommingCallNotification);
-           // socket.on('endCall', handleEndCall);
+            socket.on('endCall', handleEndCall);
             return () => {
                 socket.off("IncommingCallNotification", IncommingCallNotification);
-               // socket.off("endCall", handleEndCall);
+                socket.off('endCall', handleEndCall);
             }
         }       
 
     }, [socket, IncommingCallNotification]);
 
-
+    useEffect(() => {
+      const disconnectTimeout =   setTimeout(() => {
+       console.log("sockettss????",remoteAcceptCall)
+       console.log("UserData????",incomingCall)
+        if(remoteAcceptCall == false && incomingCall != null && UserData != null){
+       // InCallManager.stop();
+    // alert("hiii")
+    console.log("in income")
+       onCancelHandler();
+        }
+       //
+      }, 20000);
+      return () => clearTimeout(disconnectTimeout);
+    }, [UserData,incomingCall,socket]);
  
     const handleEndCall = async ({from}) => {
       // Stop the streams
+     console.log("handleEndCall")
       setshowNotificationIncomingCall(false);
-      InCallManager.stopRingtone();
+      InCallManager.stop();
     
     };
    
     const onCancelHandler = () =>{
+     // setRemoteAcceptCall(true)
+     remoteAcceptCall = true;
+     incomingData= null;
          // remoteSocketId 2713882 2702140
        //  setVideoCallEvent("cancel")// un comment
         console.log('remoteSocketId', incomingCall,UserData.userId);
      //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
      setshowNotificationIncomingCall(false);
-     InCallManager.stopRingtone();
+     InCallManager.stop();
       
       //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
       socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
