@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
 import { getEventEmitter } from './src/Utility/Utility';
-import ChatScreen from './src';
+
 import { getEnvironment } from './NW/ServiceAPI';
 
 

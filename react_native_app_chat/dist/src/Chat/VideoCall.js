@@ -61,7 +61,7 @@ const VideoChatCall = props => {
     mappedUserCode
   } = props.props;
   
-  console.log('item video call',sockets //props.props,
+ // console.log('item video call',sockets //props.props,
   // registerUserToSocket_,
   // roomno,
   // rooms,
@@ -71,7 +71,7 @@ const VideoChatCall = props => {
   // callaccept,
   // item,
   // socketConneted,
-  );
+ // );
   
   let autoDisconectBit= false
   const [socket,setsocket]=useState(sockets);
@@ -160,6 +160,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   //   if(callOn){
   //     const intervalId = setInterval(() => {
   //       setTimer((prevTimer) => prevTimer + 1);
+  //      // console.log("timer",timer)
   //     }, 1000); // Update the timer every second
   
   //     // Clean up the interval when the component is unmounted
@@ -169,7 +170,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     
   //   // Clean up the interval when the component is unmounted
   //  // return () => clearInterval(intervalId);
-  // }, []);
+  // }, [callOn]);
 
   const formatTime = (timeInSeconds) => {
     const hours = Math.floor(timeInSeconds / 3600);
@@ -239,21 +240,21 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     setRemoteSocketId(toUser);
   }, [toUser]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      console.log("remoteStream",remoteStream)
-     console.log("Callon",autoDisconectBit);
-     console.log("remoteAcceptCall",remoteAcceptCall);
-      if(autoDisconectBit == false && remoteStream == undefined){
-     InCallManager.stop();
-    //alert("hiii")
-    console.log("in auto dis")
-        EndCall();
-      }
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     console.log("remoteStream",remoteStream)
+  //    console.log("Callon",autoDisconectBit);
+    
+  //     if(autoDisconectBit == false && remoteStream == undefined){
+  //    InCallManager.stop();
+  //   //alert("hiii")
+  //   console.log("in auto dis")
+  //       EndCall();
+  //     }
       
-     //
-    }, 20000);
-  }, []);
+  //    //
+  //   }, 20000);
+  // }, []);
 
   const handleCallUser = async () => {
     try {
@@ -275,7 +276,7 @@ setAudioORVideo(callTypes)
 //alert(audioVideoType+audioORVideo)
       // socket.emit('initCall', {from: fromUser, to: remoteSocketId, room: room,fromname:userData.username,calltype:audioVideoType});
       var devPlat = Platform.OS=="android"?"android":"ios" 
-      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:"",devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode});
+      socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:userData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode});
       console.log("initCall??? ", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:UserData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode})
       //socket.emit("startCall", { from:fromUser, to: remoteSocketId, offer });
       
@@ -290,18 +291,21 @@ setAudioORVideo(callTypes)
 
   useEffect(() => {
     async function userJoined() {
-        if (userRoomJoined) {
-            setcallOn(true);
-            const sdpOffer = await peer.getOffer();
-            const offer = sdpOffer;
-
-            console.log("Tapas Start call");
-
-            socket.emit("startCall", { from: fromUser, to: remoteSocketId, offer: offer, room: room });
-        }
+      if (userRoomJoined) {
+        setcallOn(true);
+        const sdpOffer = await peer.getOffer();
+        const offer = sdpOffer;
+        console.log("sdpOffer startCall",sdpOffer,offer,room)
+        socket.emit('startCall', {
+          from: fromUser,
+          to: remoteSocketId,
+          offer,
+          room: room,
+        });
+      }
     }
     userJoined();
-}, [userRoomJoined, room])
+  }, [userRoomJoined, room]);
   const acceptCall = async () => {
     try {
       InCallManager.stop();
@@ -322,7 +326,13 @@ setAudioORVideo(callTypes)
       console.log('Tapas In fromUser', fromUser);
       var devPlat = Platform.OS=="android"?"android":"ios" 
       //socket.emit("acceptCall", { to: incomingCall.from, from: fromUser, ans: ans, room: room,devplatform:devPlat });
-      socket.emit("acceptCall", { to: roomno, from: fromUser, ans: ans, room: room,devplatform:devPlat });
+     // socket.emit("acceptCall", { to: roomno, from: fromUser, ans: ans, room: room,devplatform:devPlat });
+      socket.emit('acceptCall', {
+        to: incomingCall.from,
+        from: fromUser,
+        ans,
+        room: room,
+      });
       autoDisconectBit = true
       console.log('stream????', stream, incomingCall.from, fromUser);
     } catch (error) {
@@ -340,15 +350,15 @@ setAudioORVideo(callTypes)
   };
 
   const handleIncommingCall = useCallback(
-    async ({ from, offer,calltype,fromname }) => {
+    async ({ from, offer }) => {
 
         console.log("Tapas Incomming",from, offer);
         //setRemoteSocketId(from);
-        setIncomingCall({ from, offer,calltype,fromname });
+        setIncomingCall({ from, offer});
         //////console.log(`Incoming Call`, from, offer);
 
     },
-    [sockets]
+    [socket]
 );
 
 const handleCallAccepted = useCallback(
@@ -357,23 +367,22 @@ const handleCallAccepted = useCallback(
       console.log("Tapas Accepted", from, ans);
 
       if (ans != null && ans != undefined) {
-          peer.setLocalDescription(ans);
-          //console.log("Call Accepted!",ans); 
-          let a = sendStreamFlag;
-          setsendStreamFlag(a++);
-          //setcallOn(true);
-          //sendStreams();
+        peer.setLocalDescription(ans);
+        console.log('Call Accepted!', ans);
+        let a = sendStreamFlag;
+        setsendStreamFlag(a++);
+        //setcallOn(true);
+        //sendStreams();
       }
   },
   [sendStreams]
 );
 
 const sendStreams = () => {
-
   for (const track of myStream.getTracks()) {
-      peer.peer.addTrack(track, myStream);
+    peer.peer.addTrack(track, myStream);
   }
-}
+};
 
 const handleICECandidateEvent = useCallback(
   async (event) => {
@@ -394,172 +403,175 @@ const handleICECandidateEvent = useCallback(
 
 
 const handleNegoNeedIncomming = useCallback(
-  async ({ from, offer }) => {
-      console.log("handleNegoNeedIncomming", "from :", from, "fromUser:", fromUser, offer);
-      try {
-          if (offer && fromUser != null) {
-              const ans = await peer.getAnswer(offer);
-              console.log("handleNegoNeedIncomming-ANS", ans)
-              if (ans != null && ans != undefined) {
-                  socket.emit("negotiationDone", { to: from, from: fromUser, ans: ans, room: room });
-              }
-          }
-      } catch (error) {
-          //console.log("errorrr handleNegoNeedIncomming",error);
-      }
-
-  },
-  [socket, room, fromUser]
-);
-
-  // const handleNegoNeeded = useCallback(async () => {
-  //   try {
-  //     if (userData != null) {
-  //       const offer2 = await peer.getOffer();
-  //       let offer = offer2;
-  //       console.log('offer2???', offer2);
-  //       console.log('offer2???', fromUser,userData.userId,room);
-  //       console.log('New', offer, remoteSocketId);
-  //       if(offer2){
-  //         setTimeout(() => {
-  //           console.log('offer2 from???', userData.userId);
-  //           socket.emit('negotiationneeded', {
-  //             offer:offer,
-  //             to: remoteSocketId,
-  //             from: fromUser,
-  //             room: room,
-  //           });
-  //         }, 1500);
-  //       }
-       
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, [remoteSocketId, socket, userData,fromUser, room]);
-
-  const handleNegoNeeded = useCallback(async () => {
+  async ({from, offer}) => {
     try {
+      if (userData != null) {
+        if (offer) {
+          const ans = await peer.getAnswer(offer);
+          console.log('handleNegoNeedIncomming-ANS', ans);
 
-        console.log("remoteSocketId", remoteSocketId, "fromUser", fromUser);
-        if(remoteSocketId!=null && fromUser!=null){
-        const offer2 = await peer.getOffer();
-        let offer = offer2;
-        console.log("New",offer,remoteSocketId);
-        socket.emit("negotiationneeded", { offer: offer, to: remoteSocketId, from: fromUser, room: room });
-         }
-
+          console.log('TTTTTTTT');
+          console.log('handleNegoNeedIncomming', offer);
+          socket.emit('negotiationDone', {
+            to: from,
+            from: fromUser, // userData.userId,
+            ans,
+            room: room,
+          });
+        }
+      }
     } catch (error) {
-        //console.log(error);
+      console.log('errorrr handleNegoNeedIncomming', error);
     }
-}, [remoteSocketId, socket, room,fromUser]);
+  },
+  [socket, userData, room],
+)
+
+const handleNegoNeeded = useCallback(async () => {
+  try {
+    if (userData != null) {
+      const offer2 = await peer.getOffer();
+      let offer = offer2;
+      console.log('offer2???', offer2);
+      console.log('offer2???', fromUser);
+      console.log('New', offer, remoteSocketId);
+      setTimeout(() => {
+        console.log('offer2 from???', userData.userId);
+        socket.emit('negotiationneeded', {
+          offer,
+          to: remoteSocketId,
+          from: userData.userId,
+          room: room,
+        });
+      }, 1500);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}, [remoteSocketId, socket, userData, room]);
+//   const handleNegoNeeded = useCallback(async () => {
+//     try {
+
+//         console.log("remoteSocketId", remoteSocketId, "fromUser", fromUser);
+//         if(remoteSocketId!=null && fromUser!=null){
+//         const offer2 = await peer.getOffer();
+//         let offer = offer2;
+//         console.log("New handleNegoNeeded",offer,remoteSocketId);
+//         socket.emit("negotiationneeded", { offer: offer, to: remoteSocketId, from: fromUser, room: room });
+//          }
+
+//     } catch (error) {
+//         //console.log(error);
+//     }
+// }, [remoteSocketId, socket, room,fromUser]);
 
 useEffect(() => {
-  peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
+  peer.peer.addEventListener('negotiationneeded', handleNegoNeeded);
   return () => {
-      peer.peer.removeEventListener("negotiationneeded", handleNegoNeeded);
+    peer.peer.removeEventListener('negotiationneeded', handleNegoNeeded);
   };
 }, [handleNegoNeeded]);
-
-  useEffect(() => {
-    peer.peer.addEventListener("icecandidate", handleICECandidateEvent);
-    return () => {
-        peer.peer.removeEventListener("icecandidate", handleICECandidateEvent);
-    };
+useEffect(() => {
+  peer.peer.addEventListener('icecandidate', handleICECandidateEvent);
+  return () => {
+    peer.peer.removeEventListener('icecandidate', handleICECandidateEvent);
+  };
 }, [handleICECandidateEvent]);
 
-const handleNegoNeedFinal = useCallback(async ({ ans }) => {
-  console.log("setLocalDescription",ans);
-  try {
-      if (ans != null && ans != undefined) {
-          await peer.setLocalDescription(ans);
-      }
-
-  } catch (error) {
-      //console.log("errorrr handleNegoNeedFinal",error);
-  }
-
-}, [handleNegoNeedFinal]);
-
-  const handleRemoteICECandidate = (data) => {
-    console.log('Received remote ICE candidate:', data);
+const handleNegoNeedFinal = useCallback(
+  async ({ans}) => {
+    console.log('setLocalDescription handle', ans);
     try {
-        if (data.from != fromUser && data.candidate != null) {
-            const candidate = new RTCIceCandidate(data.candidate);
-            console.log("candidate", candidate);
-
-            peer.peer.addIceCandidate(candidate).catch((error) => {
-                console.error('Error adding ICE candidate:', error);
-                console.log('Error name:', error.name);
-                console.log('Error message:', error.message);
-            });
-        }
-
+      await peer.setLocalDescription(ans);
     } catch (error) {
-        //console.log("errorrr handleRemoteICECandidate",error);
+      console.log('errorrr handleNegoNeedFinal', error);
     }
-};
+  },
+  [handleNegoNeedFinal],
+);
 
+const handleRemoteICECandidate = data => {
+  console.log('Received remote ICE candidate:', data.candidate);
+  try {
+    const candidate = new RTCIceCandidate(data.candidate);
+    //console.log("candidate",candidate);
+    peer.peer.addIceCandidate(candidate).catch(error => {
+      console.error('Error adding ICE candidate:', error);
+    });
+  } catch (error) {
+    console.log('errorrr handleRemoteICECandidate', error);
+  }
+};
 useEffect(() => {
   try {
-      peer.peer.addEventListener("track", async (ev) => {
-          const remoteStream = ev.streams;
-          console.log("GOT TRACKS!!Remote", remoteStream[0]);
-         // setRemoteStream(remoteStream[0]);
-         autoDisconectBit=  true;
-          if( audioVideoType == "video"){
-            console.log("video call")
-            
-              setRemoteStream(remoteStream[0]);
-            
-          }
-          else if(audioVideoType == "voice"){
-            console.log("audio call")
-            remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
-
-        setRemoteStream(remoteStream[0]);
-          }
-          
-      });
+    peer.peer.addEventListener('track', async ev => {
+      const remoteStream = ev.streams;
+       console.log('GOT TRACKS!!', remoteStream[0]);
+      autoDisconectBit=  true;
+      setRemoteStream(remoteStream[0]);
+    });
   } catch (error) {
-      //console.log("errorrr useEffect ",error);
+    console.log('errorrr useEffect ', error);
   }
-
 }, []);
 
-  useEffect(() => {
-    console.log("handleCallUser",fromUser,registerUserToSocket,toUser,incomingCall,callinitiateByothers, socket)
-    if (
-      fromUser != '' &&
-      toUser != '' &&
-      incomingCall == null &&
-      socket &&
-      registerUserToSocket &&
-      callinitiateByothers == 'own'
-    ) {
-      handleCallUser();
-    }
-  }, [toUser, fromUser, socket, registerUserToSocket, callinitiateByothers,UserData]);
+// useEffect(() => {
+//   try {
+//       peer.peer.addEventListener("track", async (ev) => {
+//           const remoteStream = ev.streams;
+//           console.log("GOT TRACKS!!Remote", remoteStream[0]);
+//           setRemoteStream(remoteStream[0]);
+//          autoDisconectBit=  true;
+//         //   if( audioVideoType == "video"){
+//         //     console.log("video call")
+            
+//         //       setRemoteStream(remoteStream[0]);
+            
+//         //   }
+//         //   else if(audioVideoType == "voice"){
+//         //     console.log("audio call")
+//         //     remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
 
-  useEffect(() => {
-    console.log(
-      'getCallDetails123',
-      callaccepted,
-      remoteSocketId,
-      registerUserToSocket,
-      room
-    );
-    if (
-      callaccepted == 'Y' &&
-      remoteSocketId != null &&
-      socket &&
-      registerUserToSocket
-      && room != ''
-    ) {
-      getCallDetails();
-      //startCall
-    }
-  }, [callaccepted, remoteSocketId,registerUserToSocket, socket,room]);
+//         // setRemoteStream(remoteStream[0]);
+//         //   }
+          
+//       });
+//   } catch (error) {
+//       //console.log("errorrr useEffect ",error);
+//   }
+
+// }, []);
+
+useEffect(() => {
+  if (
+    fromUser != '' &&
+    toUser != '' &&
+    incomingCall == null &&
+    socket &&
+    registerUserToSocket &&
+    callinitiateByothers == 'own'
+  ) {
+    handleCallUser();
+  }
+}, [toUser, fromUser, socket, registerUserToSocket, callinitiateByothers]);
+
+useEffect(() => {
+  console.log(
+    'getCallDetails123',
+    callaccepted,
+    remoteSocketId,
+    registerUserToSocket,
+  );
+  if (
+    callaccepted == 'Y' &&
+    remoteSocketId != null &&
+    socket &&
+    registerUserToSocket
+  ) {
+    getCallDetails();
+    //startCall
+  }
+}, [callaccepted, remoteSocketId, socket, registerUserToSocket]);
 
   
   useEffect(() => {
@@ -580,7 +592,7 @@ useEffect(() => {
     ) {
       //  pause(audioElement,0);
       autoDisconectBit= true
-      setRemoteAcceptCall(true);
+     // setRemoteAcceptCall(true);
       InCallManager.stop();
     }
   }, [
@@ -597,21 +609,19 @@ useEffect(() => {
       fromname = 'You';
     }
     setendedBy(fromname);
-    peer.peer.close();
-    setcallOn(false);
-   
-    
-    setcallended(true);
-    await peer.reconnectPeerConnection();
+
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
-      setMyStream();
     }
     if (remoteStream) {
       remoteStream.getTracks().forEach(track => track.stop());
-      setRemoteStream();
     }
-    InCallManager.stop();
+    peer.peer.close();
+    setcallOn(false);
+    setMyStream()
+    setRemoteStream();
+    setcallended(true);
+    await peer.reconnectPeerConnection();
   };
 
   useEffect(() => {
@@ -643,6 +653,7 @@ useEffect(() => {
     }
   };
 
+ 
   const EndCall = async () => {
     InCallManager.stop();
     setcallOn(false);
@@ -673,7 +684,7 @@ console.log("arr",arr)
   socket.emit("messageSendToUser",arr);
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
-    props.goBack()
+   // props.goBack()
   };
 
   useEffect(() => {
@@ -705,17 +716,17 @@ console.log("arr",arr)
     InCallManager.setForceSpeakerphoneOn(isSpeakerOn);
   };
 
-  // useEffect(() => {
-  //   if (callended) {
-  //     console.log('TEnd');
-  //       socket.emit('clearRoomandSockets', {
-  //         to: remoteSocketId,
-  //         from: fromUser,
-  //         room: room,
-  //       });
+  useEffect(() => {
+    if (callended) {
+      console.log('TEnd');
+        socket.emit('clearRoomandSockets', {
+          to: remoteSocketId,
+          from: fromUser,
+          room: room,
+        });
      
-  //   }
-  // }, [callended]);
+    }
+  }, [callended]);
 
   useEffect(() => {
     if (socket != null) {
@@ -734,7 +745,7 @@ console.log("arr",arr)
           socket.off('negotiationneeded', handleNegoNeedIncomming);
           socket.off('negotiationFinal', handleNegoNeedFinal);
           socket.off('iceCandidate', handleRemoteICECandidate);
-          socket.off('endCall', handleEndCall);
+         // socket.off('endCall', handleEndCall);
         };
       } catch (error) {
         console.error('Error setting up socket listener:', error);
@@ -755,17 +766,39 @@ console.log("arr",arr)
       <View
         style={{
           position: 'absolute',
-          flexDirection: 'row',
+          //flexDirection: 'row',
           right: 10,
           bottom: 10,
+          alignItems:"flex-end"
         }}>
+         {audioVideoType== "video"?
+         audioORVideo? <RTCView
+          streamURL={myStream?.toURL()}
+          objectFit={'cover'}
+          style={{width: 120, height: 200,}}
+          volume={1.5}
+          mirror={false} // Adjust this based on your requirements
+          // audioOutput={'output-speaker'} // This controls the audio output
+        /> :
+        <View style={{borderWidth:1,borderColor:"#FFF"}}>
+         <Image
+               source={require('../icons/dummy_user.png')}
+               style={{width: 120, height: 200,borderColor:"#FFF", resizeMode:"contain"}}
+            /> 
+            </View>
+            :
+            <View style={{width: 120, height: 200}} />
+            }
+     
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
             alignItems: 'center',
             //paddingRight: 10,
+            justifyContent:"center",
             padding: 10,
+            width:"100%"
           }}>
           {/* <View
             style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
@@ -780,6 +813,10 @@ console.log("arr",arr)
               }}
             />
           </View> */}
+          {callOn && <View >
+          <Text style={styles.timerText}>{formatTime(timer)}</Text>
+    
+          </View>}
           {audioVideoType== "video"&&<View
             style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
             <IconButton
@@ -842,25 +879,7 @@ console.log("arr",arr)
           </View>
         </View>
 
-       {audioVideoType== "video"?
-         audioORVideo? <RTCView
-          streamURL={myStream?.toURL()}
-          objectFit={'cover'}
-          style={{width: 120, height: 200}}
-          volume={1.5}
-          mirror={false} // Adjust this based on your requirements
-          // audioOutput={'output-speaker'} // This controls the audio output
-        /> :
-        <View style={{borderWidth:1,borderColor:"#FFF"}}>
-         <Image
-               source={require('../icons/dummy_user.png')}
-               style={{width: 120, height: 200,borderColor:"#FFF", resizeMode:"contain"}}
-            /> 
-            </View>
-            :
-            <View style={{width: 120, height: 200}} />
-            }
-      </View>
+       </View>
     );
   };
   //console.log("remoteStream && callOn && !callended",remoteStream , callOn , callended)
@@ -868,7 +887,7 @@ console.log("arr",arr)
     <View style={{flex: 1}}>
       
       {remoteStream && callOn && !callended  ? (
-       <View style={{flex: 1, backgroundColor: 'red'}}>
+       <View style={{flex: 1,}}>
           <RTCView
             streamURL={remoteStream?.toURL()}
             objectFit={'cover'}
