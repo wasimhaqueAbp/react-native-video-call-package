@@ -240,21 +240,21 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     setRemoteSocketId(toUser);
   }, [toUser]);
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     console.log("remoteStream",remoteStream)
-  //    console.log("Callon",autoDisconectBit);
+  useEffect(() => {
+    setTimeout(() => {
+      console.log("remoteStream",remoteStream)
+     console.log("Callon",autoDisconectBit);
     
-  //     if(autoDisconectBit == false && remoteStream == undefined){
-  //    InCallManager.stop();
-  //   //alert("hiii")
-  //   console.log("in auto dis")
-  //       EndCall();
-  //     }
+      if(autoDisconectBit == false && remoteStream == undefined){
+     InCallManager.stop();
+    //alert("hiii")
+    console.log("in auto dis")
+        EndCall();
+      }
       
-  //    //
-  //   }, 20000);
-  // }, []);
+     //
+    }, 20000);
+  }, []);
 
   const handleCallUser = async () => {
     try {
@@ -286,6 +286,7 @@ setAudioORVideo(callTypes)
     }
   };
   const handleuserInRoom = async () => {
+    console.log("handle User in room")
     setuserRoomJoined(true);
   };
 
@@ -427,43 +428,43 @@ const handleNegoNeedIncomming = useCallback(
   [socket, userData, room],
 )
 
-const handleNegoNeeded = useCallback(async () => {
-  try {
-    if (userData != null) {
-      const offer2 = await peer.getOffer();
-      let offer = offer2;
-      console.log('offer2???', offer2);
-      console.log('offer2???', fromUser);
-      console.log('New', offer, remoteSocketId);
-      setTimeout(() => {
-        console.log('offer2 from???', userData.userId);
-        socket.emit('negotiationneeded', {
-          offer,
-          to: remoteSocketId,
-          from: userData.userId,
-          room: room,
-        });
-      }, 1500);
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}, [remoteSocketId, socket, userData, room]);
-//   const handleNegoNeeded = useCallback(async () => {
-//     try {
-
-//         console.log("remoteSocketId", remoteSocketId, "fromUser", fromUser);
-//         if(remoteSocketId!=null && fromUser!=null){
-//         const offer2 = await peer.getOffer();
-//         let offer = offer2;
-//         console.log("New handleNegoNeeded",offer,remoteSocketId);
-//         socket.emit("negotiationneeded", { offer: offer, to: remoteSocketId, from: fromUser, room: room });
-//          }
-
-//     } catch (error) {
-//         //console.log(error);
+// const handleNegoNeeded = useCallback(async () => {
+//   try {
+//     if (userData != null) {
+//       const offer2 = await peer.getOffer();
+//       let offer = offer2;
+//       console.log('offer2???', offer2);
+//       console.log('offer2???', fromUser);
+//       console.log('New', offer, remoteSocketId);
+//       setTimeout(() => {
+//         console.log('offer2 from???', userData.userId);
+//         socket.emit('negotiationneeded', {
+//           offer,
+//           to: remoteSocketId,
+//           from: userData.userId,
+//           room: room,
+//         });
+//       }, 1500);
 //     }
-// }, [remoteSocketId, socket, room,fromUser]);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }, [remoteSocketId, socket, userData, room]);
+  const handleNegoNeeded = useCallback(async () => {
+    try {
+
+        console.log("remoteSocketId", remoteSocketId, "fromUser", fromUser);
+        if(remoteSocketId!=null && fromUser!=null){
+        const offer2 = await peer.getOffer();
+        let offer = offer2;
+        console.log("New handleNegoNeeded",offer,remoteSocketId);
+        socket.emit("negotiationneeded", { offer: offer, to: remoteSocketId, from: fromUser, room: room });
+         }
+
+    } catch (error) {
+        //console.log(error);
+    }
+}, [remoteSocketId, socket, room,fromUser]);
 
 useEffect(() => {
   peer.peer.addEventListener('negotiationneeded', handleNegoNeeded);
@@ -508,7 +509,19 @@ useEffect(() => {
       const remoteStream = ev.streams;
        console.log('GOT TRACKS!!', remoteStream[0]);
       autoDisconectBit=  true;
-      setRemoteStream(remoteStream[0]);
+     // setRemoteStream(remoteStream[0]);
+      if( audioVideoType == "video"){
+        console.log("video call")
+        
+          setRemoteStream(remoteStream[0]);
+        
+      }
+      else if(audioVideoType == "voice"){
+        console.log("audio call")
+        remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
+
+    setRemoteStream(remoteStream[0]);
+      }
     });
   } catch (error) {
     console.log('errorrr useEffect ', error);
@@ -522,18 +535,18 @@ useEffect(() => {
 //           console.log("GOT TRACKS!!Remote", remoteStream[0]);
 //           setRemoteStream(remoteStream[0]);
 //          autoDisconectBit=  true;
-//         //   if( audioVideoType == "video"){
-//         //     console.log("video call")
+        //   if( audioVideoType == "video"){
+        //     console.log("video call")
             
-//         //       setRemoteStream(remoteStream[0]);
+        //       setRemoteStream(remoteStream[0]);
             
-//         //   }
-//         //   else if(audioVideoType == "voice"){
-//         //     console.log("audio call")
-//         //     remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
+        //   }
+        //   else if(audioVideoType == "voice"){
+        //     console.log("audio call")
+        //     remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
 
-//         // setRemoteStream(remoteStream[0]);
-//         //   }
+        // setRemoteStream(remoteStream[0]);
+        //   }
           
 //       });
 //   } catch (error) {
@@ -622,6 +635,7 @@ useEffect(() => {
     setRemoteStream();
     setcallended(true);
     await peer.reconnectPeerConnection();
+    InCallManager.stop();
   };
 
   useEffect(() => {
@@ -697,6 +711,22 @@ console.log("arr",arr)
   }, [audioEnabled]);
 
   const toggleAudio = () => {
+    //console.log("audioEnabled",audioEnabled,remoteSocketId,fromUser);
+
+    if(audioEnabled){
+      socket.emit('disableaudio', {
+        to: remoteSocketId,
+        from: fromUser,
+       
+      });
+    }
+    else{
+      socket.emit('enbleaudio', {
+        to: remoteSocketId,
+        from: fromUser,
+        
+      });
+    }
     setMyStream((prevStream) => {
       prevStream.getAudioTracks().forEach((track) => {
           track.enabled = audioEnabled;
@@ -716,6 +746,22 @@ console.log("arr",arr)
     InCallManager.setForceSpeakerphoneOn(isSpeakerOn);
   };
 
+  const handleEnableAudio = async ({event}) => { 
+    console.log("event",event)
+
+  }
+  const handleDisableAudio = async ({event}) => { 
+    console.log("event",event)
+
+  }
+  const handleEnableVideo = async ({event}) => { 
+    console.log("event",event)
+
+  }
+  const handleDisableVideo = async ({event}) => { 
+    console.log("event",event)
+
+  }
   useEffect(() => {
     if (callended) {
       console.log('TEnd');
@@ -734,18 +780,26 @@ console.log("arr",arr)
         socket.on('userInRoom', handleuserInRoom);
         socket.on('incommingcall', handleIncommingCall);
         socket.on('callAccepted', handleCallAccepted);
-        socket.on('negotiationneeded', handleNegoNeedIncomming);
-        socket.on('negotiationFinal', handleNegoNeedFinal);
-        socket.on('iceCandidate', handleRemoteICECandidate);
-        socket.on('endCall', handleEndCall);
+         socket.on('negotiationneeded', handleNegoNeedIncomming);
+         socket.on('negotiationFinal', handleNegoNeedFinal);
+         socket.on('iceCandidate', handleRemoteICECandidate);
+         socket.on('endCall', handleEndCall);
+         socket.on('enbleaudio',handleEnableAudio)
+         socket.on('disableaudio',handleDisableAudio)
+         socket.on('enblevideo',handleEnableVideo)
+         socket.on('disablevideo',handleDisableVideo)
         return () => {
-          socket.off('userInRoom', handleuserInRoom);
-          socket.off('incommingcall', handleIncommingCall);
-          socket.off('callAccepted', handleCallAccepted);
-          socket.off('negotiationneeded', handleNegoNeedIncomming);
-          socket.off('negotiationFinal', handleNegoNeedFinal);
-          socket.off('iceCandidate', handleRemoteICECandidate);
-         // socket.off('endCall', handleEndCall);
+           socket.off('userInRoom', handleuserInRoom);
+           socket.off('incommingcall', handleIncommingCall);
+           socket.off('callAccepted', handleCallAccepted);
+           socket.off('negotiationneeded', handleNegoNeedIncomming);
+           socket.off('negotiationFinal', handleNegoNeedFinal);
+           socket.off('iceCandidate', handleRemoteICECandidate);
+          socket.off('endCall', handleEndCall);
+          socket.off('enbleaudio',handleEnableAudio)
+          socket.off('disableaudio',handleDisableAudio)
+          socket.off('enblevideo',handleEnableVideo)
+          socket.off('disablevideo',handleDisableVideo)
         };
       } catch (error) {
         console.error('Error setting up socket listener:', error);
@@ -769,18 +823,19 @@ console.log("arr",arr)
           //flexDirection: 'row',
           right: 10,
           bottom: 10,
-          alignItems:"flex-end"
+          alignItems:"flex-end",
+          width:"100%",
         }}>
          {audioVideoType== "video"?
          audioORVideo? <RTCView
           streamURL={myStream?.toURL()}
           objectFit={'cover'}
-          style={{width: 120, height: 200,}}
+          style={{width: 80, height: 120,top:20, borderRadius:10}}
           volume={1.5}
           mirror={false} // Adjust this based on your requirements
           // audioOutput={'output-speaker'} // This controls the audio output
         /> :
-        <View style={{borderWidth:1,borderColor:"#FFF"}}>
+        <View style={{borderWidth:1,borderColor:"#FFF",bottom:10}}>
          <Image
                source={require('../icons/dummy_user.png')}
                style={{width: 120, height: 200,borderColor:"#FFF", resizeMode:"contain"}}
@@ -798,25 +853,15 @@ console.log("arr",arr)
             //paddingRight: 10,
             justifyContent:"center",
             padding: 10,
-            width:"100%"
+            width:"100%",
+            alignSelf:"center",
+            flex:1
           }}>
-          {/* <View
-            style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
-            <IconButton
-              padding={6}
-              backgroundColor="white"
-              icon={isSpeakerOn ? 'volume-off' : 'volume-high'}
-              color="white"
-              size={30}
-              onPress={() => {
-                toggleSpeaker();
-              }}
-            />
-          </View> */}
-          {callOn && <View >
+         
+          {/* {callOn && <View >
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
     
-          </View>}
+          </View>} */}
           {audioVideoType== "video"&&<View
             style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
             <IconButton
@@ -824,25 +869,26 @@ console.log("arr",arr)
               backgroundColor="white"
               icon={audioORVideo ? 'camera' : 'camera-off'}
               color="white"
-              size={30}
+              size={25}
               onPress={async () => {
-               // toggleSpeaker();
-             
-      //          const stream = await mediaDevices.getUserMedia({
-      //   audio: {
-      //     mandatory: {
-      //       googEchoCancellation: true, // Enable echo cancellation
-      //     },
-      //   },
+               console.log("audioORVideo",audioORVideo)
+               if(audioORVideo){
+      socket.emit('disablevideo', {
+        to: remoteSocketId,
+        from: fromUser,
+       
+      });
+    }
+    else{
+      socket.emit('enblevideo', {
+        to: remoteSocketId,
+        from: fromUser,
         
-      //   video:audioORVideo== true?false:true  //true//audioVideoType == "video"? true: false
-      //   // audio: true,
-      // });
-      // setMyStream(stream)
+      });
+    }
+      
       setMyStream((prevStream) => {
-            // prevStream.getVideoTracks().forEach((track) => {
-            //     track.enabled = !isVideoMuted;
-            // });
+            
             prevStream.getVideoTracks()[0].enabled = !prevStream.getVideoTracks()[0].enabled
 
             return prevStream;
@@ -858,7 +904,7 @@ console.log("arr",arr)
               backgroundColor="white"
               icon={audioEnabled ? 'microphone' : 'microphone-off'}
               color="white"
-              size={30}
+              size={25}
               onPress={() => {
                 toggleAudio();
               }}
@@ -871,7 +917,7 @@ console.log("arr",arr)
               backgroundColor="white"
               icon="phone-hangup-outline"
               color="white"
-              size={30}
+              size={25}
               onPress={() => {
                 EndCall();
               }}
@@ -896,10 +942,22 @@ console.log("arr",arr)
             mirror={false} // Adjust this based on your requirements
             // audioOutput={'output-speaker'} // This controls the audio output
           />
-          {/* <View>
+          
+          {audioVideoType == "voice"&&
+            <View style={{zIndex:1, flex:1, alignItems:"center",justifyContent:"center"}}>
+            <Image
+              source={{uri: getImageUrl(item.userphotoimageurl)}}
+              style={styles.circularImg}
+            /> 
+            <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
+              {prepareShortName(item.mappedUserName)}
+            </Text>
+           { callOn && <View >
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
     
-          </View> */}
+          </View>}
+             </View>
+          }
           <View style={{zIndex: 1}}>{LocalStreamView()}</View>
         </View>
       ) : (
@@ -919,6 +977,10 @@ console.log("arr",arr)
             <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
               {prepareShortName(item.mappedUserName)}
             </Text>
+            { callOn && <View >
+          <Text style={styles.timerText}>{formatTime(timer)}</Text>
+    
+          </View>}
             <Text style={{fontSize: 16, color: '#FFF'}}>
               {!callOn && callended
                 ? 'Call ended ' 

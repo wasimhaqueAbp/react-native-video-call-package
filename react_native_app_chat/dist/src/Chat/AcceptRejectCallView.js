@@ -253,10 +253,10 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
         if(socket){
            
             socket.on("IncommingCallNotification", IncommingCallNotification);
-            socket.on('endCall', handleEndCall);
+           // socket.on('endCall', handleEndCall);
             return () => {
                 socket.off("IncommingCallNotification", IncommingCallNotification);
-                socket.off('endCall', handleEndCall);
+               // socket.off('endCall', handleEndCall);
             }
         }       
 
