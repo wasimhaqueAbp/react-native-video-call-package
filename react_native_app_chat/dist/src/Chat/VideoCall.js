@@ -355,6 +355,7 @@ setAudioORVideo(callTypes)
       from: remoteSocketId,
       to: fromUser,
       room: room,
+      socketid:socket.id
     });
   };
 
@@ -697,10 +698,10 @@ useEffect(() => {
   let arr={
     senderName:userCode,
 targetUserName: mappedUserCode,
-message: 'duration: '+ duration,
+message: duration,
 "createdon":  getCreatedDate(),
 "modifyon":  getCreatedDate(),
-type:'txt',
+type:audioVideoType == "video"? "video":"audio",
 "devPlatform":Platform.OS =="android"?"android":"ios"
 }
 console.log("arr",arr)

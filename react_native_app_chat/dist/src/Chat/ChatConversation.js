@@ -916,21 +916,68 @@ else if(formateDate2 == formateDate){
                     </View> 
                     :
                     item.type =="video"?
-                    <View style={{alignItems:"center",margin:5,}}>
+                    <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
+                    <View style={{flexDirection:"row"}}>
+                      {item.message == "" ? 
+                        <View style={{backgroundColor:"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
+                        <Image
+        style={{height:25,width:25,marginLeft:6,}}
+       source={require('../icons/video_call_rejected.png')} resizeMode="contain" /> 
+                    
+                        </View>
+                      :
+                      <View style={{backgroundColor:"#A8A8A8",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
+                         <Image
+        style={{height:25,width:25,marginLeft:6,}}
+       source={require('../icons/video_call_accept.png')} resizeMode="contain" /> 
+                    
+                        </View>
+                      }
+                      <View style={{ paddingLeft:5}}>
+                      <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Video Call"}</Text>
+                      <Text style={{ fontSize: 10, color: "black", }} key={index}>{item.message== "" ?"Missed Call": item.message +" min"}</Text>
+                      </View>
+                      </View>
+                      <View style={{flexDirection:"row",justifyContent:"flex-end",top:5}}>
+                      <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
+                     </View>
+                    {/* <View style={{alignItems:"center",margin:5,}}>
                     <View style={{backgroundColor:"#FFF",paddingHorizontal:15,paddingVertical:8, borderRadius:10}}>
                     <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Missed Video Call "}</Text>
                     <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
                      
                       </View>
+                    </View> */}
                     </View>
                     :
-                    <View style={{alignItems:"center",margin:5,}}>
-                    <View style={{backgroundColor:"#FFF",paddingHorizontal:15,paddingVertical:8, borderRadius:10}}>
-                    <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Missed Voice Call "}</Text>
-                    <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
-                     
+                    <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
+                    <View style={{flexDirection:"row"}}>
+                      {item.message == "" ? 
+                        <View style={{backgroundColor:"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
+                        <Image
+        style={{height:22,width:22,}}
+       source={require('../icons/audio_call_rejected.png')} resizeMode="contain" /> 
+                    
+                        </View>
+                      :
+                      <View style={{backgroundColor:"#A8A8A8",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
+                         <Image
+        style={{height:22,width:22,}}
+       source={require('../icons/audio_call_accept.png')} resizeMode="contain" /> 
+                    
+                        </View>
+                      }
+                      <View style={{ paddingLeft:5}}>
+                      <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Audio Call"}</Text>
+                      <Text style={{ fontSize: 10, color: "black", }} key={index}>{item.message== "" ?"Missed Call": item.message +" min"}</Text>
                       </View>
+                      </View>
+                      <View style={{flexDirection:"row",justifyContent:"flex-end",top:5}}>
+                      <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
+                     </View>
+                   
                     </View>
+                   
                     }
                   
                     

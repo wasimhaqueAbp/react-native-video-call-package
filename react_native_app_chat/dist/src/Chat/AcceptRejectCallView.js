@@ -332,7 +332,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
      
         <View style={{ flex:1,alignItems:"center",}}>
         <Text style={{fontSize:20,fontWeight:"bold"}}>{ prepareShortName(targetUserName) }</Text>     
-        <Text style={{fontSize:16,}}>Calling....</Text>     
+        <Text style={{fontSize:16,}}>Incoming Call</Text>     
         </View>
         <View style={{flexDirection:"row",flex:0.6, justifyContent:'space-between',alignItems:'center',margin:10}}>
         <View style={{ backgroundColor: "#FF1C16", borderRadius: 360,}}>
