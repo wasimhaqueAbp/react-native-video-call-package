@@ -158,7 +158,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 
   useEffect(() => {
     // Set up an interval that runs every 1000 milliseconds (1 second)
-    if(callOn && audioVideoType == "voice"){
+    if(callOn ){
       const intervalId = setInterval(() => {
         setTimer((prevTimer) => prevTimer + 1);
        // console.log("timer",timer)
@@ -767,9 +767,38 @@ console.log("arr",arr)
     setRemoteAudioEnableDisable(audio)
   }
   const handleEnableVideo = async ({video}) => { 
-    console.log("event Video Enable",{video})
+    console.log("event Video Enable",{video}, audioORVideo)
+    let videoDisble =audioORVideo;
     setRemoteVideoEnableDisable("")
+   
+      setMyStream((prevStream) => {
+            
+        prevStream.getVideoTracks()[0].enabled = prevStream.getVideoTracks()[0].enabled
+  
+        return prevStream;
+    });
+    videoDisble = !audioORVideo
+setAudioORVideo(videoDisble)
 
+
+setTimeout(()=>{
+  videoDisble = !videoDisble
+  setAudioORVideo(videoDisble)
+},5000)
+    
+    // setTimeout(()=>{
+    //   console.log("in timeout")
+    //   setMyStream((prevStream) => {
+    //     console.log("in timeout",prevStream.getVideoTracks()[0].enabled,audioORVideo )
+    //     prevStream.getVideoTracks()[0].enabled = !prevStream.getVideoTracks()[0].enabled
+  
+    //     return prevStream;
+    // });
+  
+
+    
+   // },3500)
+   
   }
   const handleDisableVideo = async ({video}) => { 
     console.log("event Video  disable",video)
@@ -950,21 +979,27 @@ console.log("arr",arr)
       
       {remoteStream && callOn && !callended  ? (
        <View style={{flex: 1,}}>
-          {remoteVideoEnableDisable == ""? <RTCView
+          {remoteVideoEnableDisable == ""?
+         
+           <RTCView
             streamURL={remoteStream?.toURL()}
             objectFit={'cover'}
             style={{height: '100%'}}
             volume={1.5}
             mirror={false} // Adjust this based on your requirements
             // audioOutput={'output-speaker'} // This controls the audio output
-          /> 
+          />
+           
+          
           :
-          <View style={{zIndex:1, flex:1,position: 'absolute',
-          //flexDirection: 'row',
-          right: 10,
-          bottom: 0,
-          top:0,
-          left:0,}}>
+          <View style={{ //position: 'absolute',
+          
+          flex:1,
+          width:"100%",
+          height:"100%",
+
+          alignItems:"center",justifyContent:"center",
+          backgroundColor: '#000000',}}>
             <Image
               source={{uri: getImageUrl(item.userphotoimageurl)}}
               style={styles.circularImg}
@@ -972,12 +1007,13 @@ console.log("arr",arr)
             <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
               {prepareShortName(item.mappedUserName)}
             </Text>
+           
             </View>
           }
-           {remoteAudioEnableDisable == "disable" &&  
+           {remoteVideoEnableDisable == "" && remoteAudioEnableDisable == "disable" &&  
           <View  style={{zIndex:1, flex:1,position: 'absolute',
           //flexDirection: 'row',
-          right: 10,
+          right: 0,
           bottom: 0,
           top:0,
           left:0,
@@ -986,13 +1022,13 @@ console.log("arr",arr)
           width:"100%",}}>
           <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
           <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
-              {prepareShortName(item.mappedUserName)+" is Muted"}
+              {prepareShortName(item.mappedUserName)+" muted this call"}
             </Text>
             </View>
           </View>
           } 
 
-          {audioVideoType == "voice"&&
+          {/* {audioVideoType == "voice"&&
             <View style={{zIndex:1, flex:1, alignItems:"center",justifyContent:"center"}}>
             <Image
               source={{uri: getImageUrl(item.userphotoimageurl)}}
@@ -1006,9 +1042,9 @@ console.log("arr",arr)
     
           </View>}
              </View>
-          }
+          } */}
 
-          <View style={{zIndex: 1}}>{LocalStreamView()}</View>
+          <View style={{zIndex: 1}}>{LocalStreamView()}</View> 
         </View>
       ) : (
         <View style={{flex: 1}}>
@@ -1027,6 +1063,19 @@ console.log("arr",arr)
             <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
               {prepareShortName(item.mappedUserName)}
             </Text>
+
+            {remoteVideoEnableDisable == "" && remoteAudioEnableDisable == "disable" &&  
+          <View  style={{
+          alignItems:"center",
+          justifyContent:"center",
+          width:"100%",}}>
+          <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
+          <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
+              {prepareShortName(item.mappedUserName)+" muted this call"}
+            </Text>
+            </View>
+          </View>
+          } 
             { callOn && <View >
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
     
