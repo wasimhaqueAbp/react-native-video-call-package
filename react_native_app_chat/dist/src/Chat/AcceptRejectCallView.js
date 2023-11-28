@@ -12,6 +12,7 @@ import {
     Alert,
     PermissionsAndroid,
     Permissions,
+    Image
     
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
@@ -25,11 +26,10 @@ import InCallManager from 'react-native-incall-manager';
 import { prepareShortName, showToast } from '../Utility/Utility';
 import { propTypes } from 'react-native-page-control';
 
-const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserData,onNavigate } ) => {
+const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserData,onNavigate ,organizationName,organizationImage} ) => {
   // const navigation = useNavigation();
  // const navigation = React.useContext(NavigationContext);
-  let incomingData = null;
-  let remoteAcceptCall = false
+  
     const [incomingCall, setIncomingCall] = useState(null);
     
     const [showNotificationIncomingCall, setshowNotificationIncomingCall] = useState(false);
@@ -37,7 +37,8 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     const [userData, setUserData] = useState(null);
     const [targetUserName,setTargetUserName] = useState(null);
     const [callTypes,setCallTypes] = useState(null)
-   // const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
+    const [autoDisconnectTimeOutEvent,setautoDisconnectTimeOutEvent] = useState()
+   
     console.log("Accept Reject ",name,socket,item,socketConneted,currentItem)
     useEffect(() => {
         //let realmObj;
@@ -64,12 +65,17 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
             console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
             setshowNotificationIncomingCall(true);
             //handleremoteSocketId(from);
-            remoteAcceptCall = false;
-            incomingData = { from,room,calltype,fromname,userCode, mappedUserCode};
+            
+            
             setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
             setTargetUserName(fromname)
             setCallTypes(calltype)
-
+          //   setautoDisconnectTimeOutEvent(()=>{
+          //     return setTimeout(()=>{
+          //         console.log('call auto disconnected')
+          //         callCancelHandler(event)
+          //     },20*1000)
+          // })
             //console.log(`Incoming Call`, from, offer);
         },
         [socket]
@@ -89,9 +95,8 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     const acceptCall = async () => {
       
         InCallManager.stop();
-        remoteAcceptCall = true;
-        incomingData= null
-       // setRemoteAcceptCall(true)
+       
+       
        // handleAcceptButton();
        checkPermissions();
 
@@ -254,6 +259,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
            
             socket.on("IncommingCallNotification", IncommingCallNotification);
            // socket.on('endCall', handleEndCall);
+           socket.on("callalreadyreceived", handlealreadyreceived);
             return () => {
                 socket.off("IncommingCallNotification", IncommingCallNotification);
                // socket.off('endCall', handleEndCall);
@@ -262,20 +268,11 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
 
     }, [socket, IncommingCallNotification]);
 
-    useEffect(() => {
-      const disconnectTimeout =   setTimeout(() => {
-       console.log("sockettss????",remoteAcceptCall)
-       console.log("UserData????",incomingCall)
-        if(remoteAcceptCall == false && incomingCall != null && UserData != null){
-       // InCallManager.stop();
-    // alert("hiii")
-    console.log("in income")
-     //  onCancelHandler();
-        }
-       //
-      }, 20000);
-      return () => clearTimeout(disconnectTimeout);
-    }, [UserData,incomingCall,socket]);
+    const handlealreadyreceived = useCallback(
+      async ({ event}) => {
+
+      }
+    )
  
     const handleEndCall = async ({from}) => {
       // Stop the streams
@@ -286,9 +283,10 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     };
    
     const onCancelHandler = async () =>{
-     // setRemoteAcceptCall(true)
-     remoteAcceptCall = true;
-     incomingData= null;
+    //   if( autoDisconnectTimeOutEvent ) {
+    //     console.log('if autoDisconnectTimeOutEvent')
+    //     clearTimeout(autoDisconnectTimeOutEvent)
+    // }
          // remoteSocketId 2713882 2702140
        //  setVideoCallEvent("cancel")// un comment
         console.log('remoteSocketId', incomingCall,UserData.userId);
@@ -297,8 +295,8 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
      InCallManager.stop();
       
       //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
-      socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
-      socket.emit("misesdcall", { from: UserData.userId, to: incomingCall.from });
+     // socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
+      socket.emit("misesdcall", { from: UserData.userId, to: incomingCall.from,call: 'missedCall' });
       //peer.peer.close();
 
 
@@ -327,21 +325,28 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
             shadowRadius: 15,
             elevation: 5,
             flexDirection:'row',
-            alignItems:"center",justifyContent:"space-between"
+            alignItems:"center",justifyContent:"space-between",
+            padding:10
          }}>
-     
-        <View style={{ flex:1,alignItems:"center",}}>
-        <Text style={{fontSize:20,fontWeight:"bold"}}>{ prepareShortName(targetUserName) }</Text>     
-        <Text style={{fontSize:16,}}>Incoming Call</Text>     
+         <View style={{paddingLeft:10}}>
+   <Image source={{uri:organizationImage}} resizeMode="contain"
+     style={{height:40,width:40,borderRadius:360}}
+      /> 
+    </View>    
+        <View style={{ flex:1,paddingLeft:10}}>
+        <Text style={{fontSize:18,fontWeight:"500"}}>{ prepareShortName(targetUserName) }</Text>     
+            
+        <Text style={{fontSize:14,}}>Incoming Call</Text>     
+        <Text style={{fontSize:13,}}>{ organizationName }</Text> 
         </View>
-        <View style={{flexDirection:"row",flex:0.6, justifyContent:'space-between',alignItems:'center',margin:10}}>
+        <View style={{flexDirection:"row",flex:0.7, justifyContent:'space-between',alignItems:'center',margin:10}}>
         <View style={{ backgroundColor: "#FF1C16", borderRadius: 360,}}>
             <IconButton
               padding={6}
               backgroundColor="white"
               icon="close"
               color="white"
-              size={30}
+              size={25}
               
               onPress={() => onCancelHandler()} />
           </View>
@@ -351,7 +356,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
               backgroundColor="white"
               icon={callTypes=="video"?"video": "phone-hangup-outline"}
               color="white"
-              size={30}
+              size={25}
               onPress={() => acceptCall()} />
           </View>
         </View>

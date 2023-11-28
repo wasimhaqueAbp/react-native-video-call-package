@@ -772,21 +772,7 @@ console.log("arr",arr)
     let videoDisble =audioORVideo;
     setRemoteVideoEnableDisable("")
    
-      setMyStream((prevStream) => {
-            
-        prevStream.getVideoTracks()[0].enabled = prevStream.getVideoTracks()[0].enabled
-  
-        return prevStream;
-    });
-    videoDisble = !audioORVideo
-setAudioORVideo(videoDisble)
-
-
-setTimeout(()=>{
-  videoDisble = !videoDisble
-  setAudioORVideo(videoDisble)
-},5000)
-    
+     
     // setTimeout(()=>{
     //   console.log("in timeout")
     //   setMyStream((prevStream) => {
