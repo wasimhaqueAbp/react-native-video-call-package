@@ -108,7 +108,8 @@ const VideoChatCall = props => {
   const [audioORVideo,setAudioORVideo] = useState(true)  
 const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   const [timer, setTimer] = useState(0);
-  
+  const [remoteAudioEnableDisable,setRemoteAudioEnableDisable] = useState("")
+  const [remoteVideoEnableDisable,setRemoteVideoEnableDisable] = useState("")
 
 
 
@@ -758,19 +759,21 @@ console.log("arr",arr)
 
   const handleEnableAudio = async ({audio}) => { 
     console.log("event Audio Enable",audio)
+    setRemoteAudioEnableDisable("")
 
   }
   const handleDisableAudio = async ({audio}) => { 
-    console.log("event Audio disable",audio)
+   // console.log("event Audio disable",audio)
+    setRemoteAudioEnableDisable(audio)
+  }
+  const handleEnableVideo = async ({video}) => { 
+    console.log("event Video Enable",{video})
+    setRemoteVideoEnableDisable("")
 
   }
-  const handleEnableVideo = async (event) => { 
-    console.log("event Video Enable",event)
-
-  }
-  const handleDisableVideo = async (event) => { 
-    console.log("event Video  disable",event)
-
+  const handleDisableVideo = async ({video}) => { 
+    console.log("event Video  disable",video)
+    setRemoteVideoEnableDisable(video)
   }
   useEffect(() => {
     if (callended) {
@@ -886,6 +889,7 @@ console.log("arr",arr)
       socket.emit('disablevideo', {
         to: remoteSocketId,
         from: fromUser,
+        video:"diable"
        
       });
     }
@@ -893,7 +897,7 @@ console.log("arr",arr)
       socket.emit('enblevideo', {
         to: remoteSocketId,
         from: fromUser,
-        
+        video:"enable"
       });
     }
       
@@ -944,15 +948,48 @@ console.log("arr",arr)
       
       {remoteStream && callOn && !callended  ? (
        <View style={{flex: 1,}}>
-          <RTCView
+          {remoteVideoEnableDisable == ""? <RTCView
             streamURL={remoteStream?.toURL()}
             objectFit={'cover'}
             style={{height: '100%'}}
             volume={1.5}
             mirror={false} // Adjust this based on your requirements
             // audioOutput={'output-speaker'} // This controls the audio output
-          />
-          
+          /> 
+          :
+          <View style={{zIndex:1, flex:1,position: 'absolute',
+          //flexDirection: 'row',
+          right: 10,
+          bottom: 0,
+          top:0,
+          left:0,}}>
+            <Image
+              source={{uri: getImageUrl(item.userphotoimageurl)}}
+              style={styles.circularImg}
+            /> 
+            <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
+              {prepareShortName(item.mappedUserName)}
+            </Text>
+            </View>
+          }
+           {remoteAudioEnableDisable == "disable" &&  
+          <View  style={{zIndex:1, flex:1,position: 'absolute',
+          //flexDirection: 'row',
+          right: 10,
+          bottom: 0,
+          top:0,
+          left:0,
+          alignItems:"center",
+          justifyContent:"center",
+          width:"100%",}}>
+          <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
+          <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
+              {prepareShortName(item.mappedUserName)+" is Muted"}
+            </Text>
+            </View>
+          </View>
+          } 
+
           {audioVideoType == "voice"&&
             <View style={{zIndex:1, flex:1, alignItems:"center",justifyContent:"center"}}>
             <Image
@@ -968,6 +1005,7 @@ console.log("arr",arr)
           </View>}
              </View>
           }
+
           <View style={{zIndex: 1}}>{LocalStreamView()}</View>
         </View>
       ) : (
