@@ -889,6 +889,7 @@ console.log("arr",arr)
       socket.emit('disablevideo', {
         to: remoteSocketId,
         from: fromUser,
+        room: room,
         video:"diable"
        
       });
@@ -897,6 +898,7 @@ console.log("arr",arr)
       socket.emit('enblevideo', {
         to: remoteSocketId,
         from: fromUser,
+        room: room,
         video:"enable"
       });
     }
