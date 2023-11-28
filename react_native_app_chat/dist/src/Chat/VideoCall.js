@@ -155,29 +155,36 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   // }
   // }, []);
 
-  // useEffect(() => {
-  //   // Set up an interval that runs every 1000 milliseconds (1 second)
-  //   if(callOn){
-  //     const intervalId = setInterval(() => {
-  //       setTimer((prevTimer) => prevTimer + 1);
-  //      // console.log("timer",timer)
-  //     }, 1000); // Update the timer every second
+  useEffect(() => {
+    // Set up an interval that runs every 1000 milliseconds (1 second)
+    if(callOn && audioVideoType == "voice"){
+      const intervalId = setInterval(() => {
+        setTimer((prevTimer) => prevTimer + 1);
+       // console.log("timer",timer)
+      }, 1000); // Update the timer every second
   
-  //     // Clean up the interval when the component is unmounted
-  //     return () => clearInterval(intervalId);
+      // Clean up the interval when the component is unmounted
+      return () => clearInterval(intervalId);
   
-  //   }
+    }
     
-  //   // Clean up the interval when the component is unmounted
-  //  // return () => clearInterval(intervalId);
-  // }, [callOn]);
+    // Clean up the interval when the component is unmounted
+   // return () => clearInterval(intervalId);
+  }, [callOn]);
 
   const formatTime = (timeInSeconds) => {
     const hours = Math.floor(timeInSeconds / 3600);
     const minutes = Math.floor((timeInSeconds % 3600) / 60);
     const seconds = timeInSeconds % 60;
-
-    return `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    let time = "00:00"
+console.log("hours",hours);
+    if(hours == "00"){
+      time = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }else{
+      time = `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+    
+    return time//`${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
   useEffect(() => {
     //let realmObj;
@@ -467,6 +474,7 @@ const handleNegoNeedIncomming = useCallback(
 }, [remoteSocketId, socket, room,fromUser]);
 
 useEffect(() => {
+  console.log("Nego Needed EXtra");
   peer.peer.addEventListener('negotiationneeded', handleNegoNeeded);
   return () => {
     peer.peer.removeEventListener('negotiationneeded', handleNegoNeeded);
@@ -684,11 +692,11 @@ useEffect(() => {
     setRemoteStream();
     console.log('remoteSocketId',item, remoteSocketId, fromUser);
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
-    
+    let duration = formatTime(timer);
   let arr={
     senderName:userCode,
 targetUserName: mappedUserCode,
-message: 'duration: '+ "50" + ' : ' +"00",
+message: 'duration: '+ duration,
 "createdon":  getCreatedDate(),
 "modifyon":  getCreatedDate(),
 type:'txt',
@@ -717,14 +725,16 @@ console.log("arr",arr)
       socket.emit('disableaudio', {
         to: remoteSocketId,
         from: fromUser,
-       
+        room: room,
+       audio:"disable"
       });
     }
     else{
       socket.emit('enbleaudio', {
         to: remoteSocketId,
         from: fromUser,
-        
+        room: room,
+        audio:"enable"
       });
     }
     setMyStream((prevStream) => {
@@ -746,20 +756,20 @@ console.log("arr",arr)
     InCallManager.setForceSpeakerphoneOn(isSpeakerOn);
   };
 
-  const handleEnableAudio = async ({event}) => { 
-    console.log("event",event)
+  const handleEnableAudio = async ({audio}) => { 
+    console.log("event Audio Enable",audio)
 
   }
-  const handleDisableAudio = async ({event}) => { 
-    console.log("event",event)
+  const handleDisableAudio = async ({audio}) => { 
+    console.log("event Audio disable",audio)
 
   }
-  const handleEnableVideo = async ({event}) => { 
-    console.log("event",event)
+  const handleEnableVideo = async (event) => { 
+    console.log("event Video Enable",event)
 
   }
-  const handleDisableVideo = async ({event}) => { 
-    console.log("event",event)
+  const handleDisableVideo = async (event) => { 
+    console.log("event Video  disable",event)
 
   }
   useEffect(() => {
@@ -835,10 +845,10 @@ console.log("arr",arr)
           mirror={false} // Adjust this based on your requirements
           // audioOutput={'output-speaker'} // This controls the audio output
         /> :
-        <View style={{borderWidth:1,borderColor:"#FFF",bottom:10}}>
+        <View style={{borderWidth:1,borderColor:"#FFF",top:20}}>
          <Image
                source={require('../icons/dummy_user.png')}
-               style={{width: 120, height: 200,borderColor:"#FFF", resizeMode:"contain"}}
+               style={{width: 80, height: 120,borderColor:"#FFF", resizeMode:"contain"}}
             /> 
             </View>
             :
