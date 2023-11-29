@@ -787,6 +787,7 @@ else if(formateDate2 == formateDate){
               "createdon":  getCreatedDate(),
               "modifyon":  getCreatedDate(),
               "showDate":value,
+              type:'txt',
               "isreadmsg":"f" //netInfo.isConnected ? "send":"pending"
           }
            setAsyncData(message)

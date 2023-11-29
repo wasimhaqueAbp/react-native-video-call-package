@@ -19,7 +19,9 @@ import {
   NativeModules,
   AudioManagerIOS,
   Linking,
-  Alert
+  Alert,
+  BackHandler,
+  AppState
 } from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {
@@ -104,7 +106,8 @@ const VideoChatCall = props => {
   const [endedBy, setendedBy] = useState('');
   const [userData, setUserData] = useState(null);
   const [audioEnabled, setAudioEnabled] = useState(true);
-  const [isSpeakerOn, setIsSpeakerOn] = useState(false);
+  const [speakerEnabled, setSpeakerEnabled] = useState(false);
+  
   const [audioORVideo,setAudioORVideo] = useState(true)  
 const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   const [timer, setTimer] = useState(0);
@@ -113,9 +116,57 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 
 
 
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        // Handle the back button press (e.g., navigate back or show a confirmation dialog)
+        // Return true to indicate that we've handled the back button
+        // Return false to let the default behavior (e.g., exit the app) happen
+        // For example:
+        // navigateBack(); // Implement your navigation logic
+        
+          Alert.alert(
+            '',
+            'Are you sure you want to end the call',
+            [
+              {text: 'Yes', onPress: () =>  EndCall()},
+      
+              {
+                text: 'No',
+                onPress: () => null,
+                style: 'cancel',
+              },
+            ],
+      
+            {cancelable: true},
+          );
+      
+        return true;
+      }
+    );
 
+    return () => {
+      backHandler.remove(); // Unsubscribe from the event when the component is unmounted
+    };
+  }, []); 
   
-  
+  useEffect(() => {
+    // Subscribe to app state changes
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    // Clean up the subscription when the component unmounts
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  const handleAppStateChange = (nextAppState) => {
+    if (nextAppState === 'background') {
+      // App has gone to the background, perform your background action here
+     EndCall();
+    }
+  };
   //InCallManager.start({media: 'audio'}); // audio/video, default: audioElement
   
   // useEffect(() => {
@@ -178,7 +229,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     const minutes = Math.floor((timeInSeconds % 3600) / 60);
     const seconds = timeInSeconds % 60;
     let time = "00:00"
-console.log("hours",hours);
+
     if(hours == "00"){
       time = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }else{
@@ -366,7 +417,7 @@ setAudioORVideo(callTypes)
         //setRemoteSocketId(from);
         setIncomingCall({ from, offer});
         //////console.log(`Incoming Call`, from, offer);
-
+        
     },
     [socket]
 );
@@ -381,7 +432,7 @@ const handleCallAccepted = useCallback(
         console.log('Call Accepted!', ans);
         let a = sendStreamFlag;
         setsendStreamFlag(a++);
-        //setcallOn(true);
+        
         //sendStreams();
       }
   },
@@ -592,6 +643,7 @@ useEffect(() => {
     registerUserToSocket
   ) {
     getCallDetails();
+
     //startCall
   }
 }, [callaccepted, remoteSocketId, socket, registerUserToSocket]);
@@ -617,6 +669,8 @@ useEffect(() => {
       autoDisconectBit= true
      // setRemoteAcceptCall(true);
       InCallManager.stop();
+
+     
     }
   }, [
     incomingCall,
@@ -646,6 +700,8 @@ useEffect(() => {
     setcallended(true);
     await peer.reconnectPeerConnection();
     InCallManager.stop();
+
+    props.goBack()
   };
 
   useEffect(() => {
@@ -662,9 +718,17 @@ useEffect(() => {
       if (remoteStream) {
         // const remoteAudioTrack = remoteStream.getAudioTracks()[0];
 
-        // setIsSpeakerOn(true);
+        if(audioVideoType == "video"){
+          console.log("in if of remote")
+          InCallManager.setForceSpeakerphoneOn(true);
+        }
+        else{
+          console.log("in else of remote")
+          InCallManager.setForceSpeakerphoneOn(false);
+          InCallManager.setSpeakerphoneOn(!InCallManager.isSpeakerOn)
+        }
 
-        InCallManager.setForceSpeakerphoneOn(true);
+        
 
         console.log('TTTTT');
 
@@ -694,7 +758,11 @@ useEffect(() => {
     setRemoteStream();
     console.log('remoteSocketId',item, remoteSocketId, fromUser);
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
-    let duration = formatTime(timer);
+    if(timer == 0){
+     
+    }
+    else{
+      let duration = formatTime(timer);
   let arr={
     senderName:userCode,
 targetUserName: mappedUserCode,
@@ -706,9 +774,11 @@ type:audioVideoType == "video"? "video":"audio",
 }
 console.log("arr",arr)
   socket.emit("messageSendToUser",arr);
+    }
+    
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
-   // props.goBack()
+    props.goBack()
   };
 
   useEffect(() => {
@@ -750,12 +820,16 @@ console.log("arr",arr)
   };
 
   const toggleSpeaker = () => {
-    setIsSpeakerOn(!isSpeakerOn);
-    console.log('isSpeakerOn', isSpeakerOn);
-    // if (Platform.OS === 'ios') {
-    //   AudioManagerIOS.setCategory('PlayAndRecord', isSpeakerOn ? 'builtInSpeaker' : 'default');
-    // }
-    InCallManager.setForceSpeakerphoneOn(isSpeakerOn);
+    setSpeakerEnabled(!speakerEnabled)
+    if (Platform.OS === 'ios') {
+      AudioManagerIOS.setCategory('PlayAndRecord', isSpeakerOn ? 'builtInSpeaker' : 'default');
+    }
+    if (InCallManager.isSpeakerOn) {
+      InCallManager.setSpeakerphoneOn(false);
+    } else {
+      InCallManager.setSpeakerphoneOn(true);
+    }
+    InCallManager.setForceSpeakerphoneOn(speakerEnabled);
   };
 
   const handleEnableAudio = async ({audio}) => { 
@@ -887,10 +961,7 @@ console.log("arr",arr)
             flex:1
           }}>
          
-          {/* {callOn && <View >
-          <Text style={styles.timerText}>{formatTime(timer)}</Text>
-    
-          </View>} */}
+         
           {audioVideoType== "video"&&<View
             style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
             <IconButton
@@ -926,6 +997,20 @@ console.log("arr",arr)
             return prevStream;
         });
       setAudioORVideo(!audioORVideo)
+              }}
+            />
+          </View>}
+          {audioVideoType== "voice"&& <View
+            style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
+            <IconButton
+              padding={6}
+              backgroundColor="white"
+              icon={speakerEnabled ? 'volume-high': 'volume-off' }
+              color="white"
+              size={25}
+              onPress={() => {
+               
+                toggleSpeaker()
               }}
             />
           </View>}
