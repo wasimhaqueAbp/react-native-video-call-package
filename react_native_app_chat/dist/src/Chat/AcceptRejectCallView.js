@@ -232,13 +232,13 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
   
    if(currentItem != null){
     
-  let uri =currentItem.LINK+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype+"&userCode="+incomingCall.userCode+"&mappedUserCode"+incomingCall.mappedUserCode //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
+  let uri =currentItem.LINK+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype+"&userCode="+incomingCall.userCode+"&mappedUserCode="+incomingCall.mappedUserCode //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
    console.log("Accepted call",uri)
    Linking.openURL(uri);
   }
   else{
     
-    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype+"&userCode="+incomingCall.userCode+"&mappedUserCode"+incomingCall.mappedUserCode //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
+    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype+"&userCode="+incomingCall.userCode+"&mappedUserCode="+incomingCall.mappedUserCode //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
     Linking.openURL(uri);
   }
   

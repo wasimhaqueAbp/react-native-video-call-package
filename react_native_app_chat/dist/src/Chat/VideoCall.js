@@ -226,21 +226,21 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   // }
   // }, []);
 
-  useEffect(() => {
-    // Set up an interval that runs every 1000 milliseconds (1 second)
-    if(callOn ){
-      intervalId = setInterval(() => {
-        setTimer((prevTimer) => prevTimer + 1);
-       // console.log("timer",timer)
-      }, 1000); // Update the timer every second
+  // useEffect(() => {
+  //   // Set up an interval that runs every 1000 milliseconds (1 second)
+  //   if(callOn ){
+  //     intervalId = setInterval(() => {
+  //       setTimer((prevTimer) => prevTimer + 1);
+  //      // console.log("timer",timer)
+  //     }, 1000); // Update the timer every second
   
-      // Clean up the interval when the component is unmounted
-      return () => clearInterval(intervalId);
+  //     // Clean up the interval when the component is unmounted
+  //     return () => clearInterval(intervalId);
   
-    }
+  //   }
     
     
-  }, [callOn]);
+  // }, [callOn]);
 
   const formatTime = (timeInSeconds) => {
     const hours = Math.floor(timeInSeconds / 3600);
@@ -1043,7 +1043,7 @@ useEffect(() => {
               }}
             />
           </View>}
-          {audioVideoType== "voice"&& <View
+          {/* {audioVideoType== "voice"&& <View
             style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
             <IconButton
               padding={6}
@@ -1056,7 +1056,7 @@ useEffect(() => {
                 toggleSpeaker()
               }}
             />
-          </View>}
+          </View>} */}
           <View
             style={{backgroundColor: '#333333', borderRadius: 360, margin: 5}}>
             <IconButton
@@ -1191,10 +1191,10 @@ useEffect(() => {
             </View>
           </View>
           } 
-            { callOn && <View >
+            {/* { callOn && <View >
           <Text style={styles.timerText}>{formatTime(timer)}</Text>
     
-          </View>}
+          </View>} */}
             <Text style={{fontSize: 16, color: '#FFF'}}>
               {!callOn && callended
                 ? 'Call ended ' 
