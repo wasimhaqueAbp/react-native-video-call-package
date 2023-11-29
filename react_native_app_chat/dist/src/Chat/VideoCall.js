@@ -74,7 +74,7 @@ const VideoChatCall = props => {
   // item,
   // socketConneted,
  // );
-  
+  let intervalId = null;
   let autoDisconectBit= false
   const [socket,setsocket]=useState(sockets);
   
@@ -113,7 +113,10 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   const [timer, setTimer] = useState(0);
   const [remoteAudioEnableDisable,setRemoteAudioEnableDisable] = useState("")
   const [remoteVideoEnableDisable,setRemoteVideoEnableDisable] = useState("")
-
+    const [callDuration,setCallDuration]= useState({
+      start:'',
+      end:''
+    })
 
 
   useEffect(() => {
@@ -167,6 +170,22 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
      EndCall();
     }
   };
+
+  useEffect(()=>{
+    if(audioVideoType!=null && audioVideoType!=''){
+      if(audioVideoType=='video'){
+        console.log("Tapas Speaker");
+        InCallManager.setSpeakerphoneOn(true);
+      }
+      else{
+        console.log("Tapas Speaker off");
+        InCallManager.setSpeakerphoneOn(false);
+      }
+    }
+   
+    
+  },[audioVideoType])
+  
   //InCallManager.start({media: 'audio'}); // audio/video, default: audioElement
   
   // useEffect(() => {
@@ -210,7 +229,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   useEffect(() => {
     // Set up an interval that runs every 1000 milliseconds (1 second)
     if(callOn ){
-      const intervalId = setInterval(() => {
+      intervalId = setInterval(() => {
         setTimer((prevTimer) => prevTimer + 1);
        // console.log("timer",timer)
       }, 1000); // Update the timer every second
@@ -220,8 +239,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   
     }
     
-    // Clean up the interval when the component is unmounted
-   // return () => clearInterval(intervalId);
+    
   }, [callOn]);
 
   const formatTime = (timeInSeconds) => {
@@ -242,7 +260,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     //let realmObj;
    // InCallManager.stop();
     console.log("incoming")
-    InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or _DTMF_
+    InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: audioVideoType == "video"? 'speaker':"earpiece"}); // or _DEFAULT_ or _DTMF_
 
     (async () => {
       const obj = UserData //await getUser();
@@ -349,6 +367,7 @@ setAudioORVideo(callTypes)
     setuserRoomJoined(true);
   };
 
+
   useEffect(() => {
     async function userJoined() {
       if (userRoomJoined) {
@@ -394,6 +413,11 @@ setAudioORVideo(callTypes)
         room: room,
       });
       autoDisconectBit = true
+      socket.emit("calltime", { to: incomingCall.from, from: fromUser, starttime: getCreatedDate(), endtime: '' });
+      setCallDuration((prevData) => {
+        return { ...prevData, ['start']: getCreatedDate() }
+    })
+    
       console.log('stream????', stream, incomingCall.from, fromUser);
     } catch (error) {
       console.log('errorrr acceptCall', error);
@@ -719,14 +743,14 @@ useEffect(() => {
         // const remoteAudioTrack = remoteStream.getAudioTracks()[0];
 
         if(audioVideoType == "video"){
-          console.log("in if of remote")
+          
           InCallManager.setForceSpeakerphoneOn(true);
         }
-        else{
-          console.log("in else of remote")
-          InCallManager.setForceSpeakerphoneOn(false);
-          InCallManager.setSpeakerphoneOn(!InCallManager.isSpeakerOn)
-        }
+        // else{
+        //   console.log("in else of remote")
+        //   InCallManager.setForceSpeakerphoneOn(false);
+        //   InCallManager.setSpeakerphoneOn(!InCallManager.isSpeakerOn)
+        // }
 
         
 
@@ -743,6 +767,10 @@ useEffect(() => {
 
  
   const EndCall = async () => {
+
+    if(timer > 0){
+      clearInterval(intervalId);
+    }
     InCallManager.stop();
     setcallOn(false);
     
@@ -758,23 +786,31 @@ useEffect(() => {
     setRemoteStream();
     console.log('remoteSocketId',item, remoteSocketId, fromUser);
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
-    if(timer == 0){
-     
+
+    if (callDuration.start) {
+
+      let endCallTime = getCreatedDate();
+      let actualDuration = endCallTime - callDuration.start
+      let diffInSec = Math.floor(actualDuration / 1000);
+  let duration =formatTime(diffInSec);
+      const secTalked = diffInSec % 60
+      const minTalked = Math.floor(diffInSec / 60)
+      console.log('endCallTime', endCallTime, 'callDuration.start', callDuration.start,"duration",duration)
+      console.log(secTalked,"secTalked",minTalked,"minTalked");
+      let arr={
+        senderName:userCode,
+    targetUserName: mappedUserCode,
+    message: duration,
+    "createdon":  getCreatedDate(),
+    "modifyon":  getCreatedDate(),
+    type:audioVideoType == "video"? "video":"voice",
+    "devPlatform":Platform.OS =="android"?"android":"ios"
     }
-    else{
-      let duration = formatTime(timer);
-  let arr={
-    senderName:userCode,
-targetUserName: mappedUserCode,
-message: duration,
-"createdon":  getCreatedDate(),
-"modifyon":  getCreatedDate(),
-type:audioVideoType == "video"? "video":"audio",
-"devPlatform":Platform.OS =="android"?"android":"ios"
-}
-console.log("arr",arr)
-  socket.emit("messageSendToUser",arr);
-    }
+    console.log("arr",arr)
+      socket.emit("messageSendToUser",arr);
+        
+    }  
+    
     
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
@@ -820,16 +856,17 @@ console.log("arr",arr)
   };
 
   const toggleSpeaker = () => {
-    setSpeakerEnabled(!speakerEnabled)
+    
     if (Platform.OS === 'ios') {
       AudioManagerIOS.setCategory('PlayAndRecord', isSpeakerOn ? 'builtInSpeaker' : 'default');
     }
+    InCallManager.setForceSpeakerphoneOn(!speakerEnabled);
     if (InCallManager.isSpeakerOn) {
       InCallManager.setSpeakerphoneOn(false);
     } else {
       InCallManager.setSpeakerphoneOn(true);
     }
-    InCallManager.setForceSpeakerphoneOn(speakerEnabled);
+    setSpeakerEnabled(!speakerEnabled)
   };
 
   const handleEnableAudio = async ({audio}) => { 
@@ -876,7 +913,12 @@ console.log("arr",arr)
      
     }
   }, [callended]);
-
+  const handleCallTimeEmit = (data) => {
+    console.log('handleCallTimeEmit', data)
+    if ('starttime' in data) {
+        setCallDuration({ ...callDuration, start: data.starttime })
+    }
+}
   useEffect(() => {
     if (socket != null) {
       try {
@@ -891,6 +933,7 @@ console.log("arr",arr)
          socket.on('disableaudio',handleDisableAudio)
          socket.on('enblevideo',handleEnableVideo)
          socket.on('disablevideo',handleDisableVideo)
+         socket.on("calltime", handleCallTimeEmit);
         return () => {
            socket.off('userInRoom', handleuserInRoom);
            socket.off('incommingcall', handleIncommingCall);

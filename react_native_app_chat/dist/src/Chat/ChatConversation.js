@@ -920,7 +920,7 @@ else if(formateDate2 == formateDate){
                     <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
                     <View style={{flexDirection:"row"}}>
                       {item.message == "" ? 
-                        <View style={{backgroundColor:"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
+                        <View style={{backgroundColor:alignment == "right"?"#A8A8A8":"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
                         <Image
         style={{height:25,width:25,marginLeft:6,}}
        source={require('../icons/video_call_rejected.png')} resizeMode="contain" /> 
@@ -954,7 +954,7 @@ else if(formateDate2 == formateDate){
                     <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
                     <View style={{flexDirection:"row"}}>
                       {item.message == "" ? 
-                        <View style={{backgroundColor:"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
+                        <View style={{backgroundColor:alignment == "right"?"#A8A8A8":"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
                         <Image
         style={{height:22,width:22,}}
        source={require('../icons/audio_call_rejected.png')} resizeMode="contain" /> 

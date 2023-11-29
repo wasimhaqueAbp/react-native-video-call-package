@@ -295,7 +295,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
      InCallManager.stop();
       
       //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
-     // socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
+      socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
       socket.emit("misesdcall", { from: UserData.userId, to: incomingCall.from,call: 'missedCall' });
       //peer.peer.close();
 
@@ -336,7 +336,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
         <View style={{ flex:1,paddingLeft:10}}>
         <Text style={{fontSize:18,fontWeight:"500"}}>{ prepareShortName(targetUserName) }</Text>     
             
-        <Text style={{fontSize:14,}}>{"Incoming "+callTypes=="video"?"Video":"Voice" +" Call"}</Text>     
+        <Text style={{fontSize:14,}}>{callTypes=="video"?"Incoming Video Call":"Incoming Voice Call"}</Text>     
         <Text style={{fontSize:13,}}>{ organizationName }</Text> 
         </View>
         <View style={{flexDirection:"row",flex:0.8, justifyContent:'space-between',alignItems:'center',margin:10}}>
