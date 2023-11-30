@@ -25,11 +25,12 @@ import InCallManager from 'react-native-incall-manager';
 
 import { prepareShortName, showToast } from '../Utility/Utility';
 import { propTypes } from 'react-native-page-control';
+import { useVideoCall } from '../../../../../src/Utility/VideoCall/VideoCallContextProvider';
 
 const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserData,onNavigate ,organizationName,organizationImage} ) => {
   // const navigation = useNavigation();
  // const navigation = React.useContext(NavigationContext);
-  
+ const {  sockets } = useVideoCall();
     const [incomingCall, setIncomingCall] = useState(null);
     
     const [showNotificationIncomingCall, setshowNotificationIncomingCall] = useState(false);
@@ -55,7 +56,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
         };
       }, [userData]);
 
-      
+     
 
 
     // const IncommingCallNotification = useCallback(
@@ -70,12 +71,12 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     //         setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
     //         setTargetUserName(fromname)
     //         setCallTypes(calltype)
-    //       //   setautoDisconnectTimeOutEvent(()=>{
-    //       //     return setTimeout(()=>{
-    //       //         console.log('call auto disconnected')
-    //       //         callCancelHandler(event)
-    //       //     },20*1000)
-    //       // })
+          //   setautoDisconnectTimeOutEvent(()=>{
+          //     return setTimeout(()=>{
+          //         console.log('call auto disconnected')
+          //         callCancelHandler(event)
+          //     },20*1000)
+          // })
     //         //console.log(`Incoming Call`, from, offer);
     //     },
     //     [socket]
@@ -89,9 +90,21 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
            // outGoingRing(audioElement);
           // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
           InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or system filename with extension
+          if(currentItem.data ){
+            setTargetUserName(currentItem.data.name);
+            setCallTypes(currentItem.data.callType)
+          }else{
+            setTargetUserName(currentItem.name);
+            setCallTypes(currentItem.callType)
+            
+          }
 
-          setTargetUserName(currentItem.data.name);
-          setCallTypes(currentItem.data.callType)
+          setautoDisconnectTimeOutEvent(()=>{
+            return setTimeout(()=>{
+                console.log('call auto disconnected')
+                onCancelHandler()
+            },20*1000)
+        })
         }
     },[currentItem])
 
@@ -226,12 +239,18 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
   // PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
   //"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&item="+item
  // const props = {"roomno":incomingCall.from,"rooms=":incomingCall.room,"audio":true,"video":true,"callaccept":"Y","callinitiateByothers":"remote","item":item} 
+ if( autoDisconnectTimeOutEvent ) {
+  console.log('if autoDisconnectTimeOutEvent')
+  clearTimeout(autoDisconnectTimeOutEvent)
+}
   onNavigate()
   //Un comment this when push
   
    if(currentItem != null){
     
-  let uri =currentItem.data.LINK+"&roomno="+item.roomno+"&rooms="+item.rooms+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+item.calltype+"&userCode="+item.userCode+"&mappedUserCode="+item.mappedUserCode+"&name="+item.name+"&image="+item.image+"&uid="+item.uid+"&accept=true&sourceuid="+item.sourceuid 
+  let uri =currentItem.data?
+  currentItem.data.LINK+"&roomno="+item.roomno+"&rooms="+item.rooms+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+item.calltype+"&userCode="+item.userCode+"&mappedUserCode="+item.mappedUserCode+"&name="+item.name+"&image="+item.image+"&uid="+item.uid+"&accept=true&sourceuid="+item.sourceuid 
+  :currentItem.LINK+"&roomno="+item.roomno+"&rooms="+item.rooms+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+item.calltype+"&userCode="+item.userCode+"&mappedUserCode="+item.mappedUserCode+"&name="+item.name+"&image="+item.image+"&uid="+item.uid+"&accept=true&sourceuid="+item.sourceuid 
    console.log("Accepted call",uri)
    Linking.openURL(uri);
   }
@@ -257,7 +276,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
         if(socket){
            
           //  socket.on("IncommingCallNotification", IncommingCallNotification);
-           // socket.on('endCall', handleEndCall);
+            socket.on('endCall', handleEndCall);
            socket.on("callalreadyreceived", handlealreadyreceived);
             return () => {
                // socket.off("IncommingCallNotification", IncommingCallNotification);
@@ -282,10 +301,10 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     };
    
     const onCancelHandler = async () =>{
-    //   if( autoDisconnectTimeOutEvent ) {
-    //     console.log('if autoDisconnectTimeOutEvent')
-    //     clearTimeout(autoDisconnectTimeOutEvent)
-    // }
+      if( autoDisconnectTimeOutEvent ) {
+        console.log('if autoDisconnectTimeOutEvent')
+        clearTimeout(autoDisconnectTimeOutEvent)
+    }
          // remoteSocketId 2713882 2702140
        //  setVideoCallEvent("cancel")// un comment
 

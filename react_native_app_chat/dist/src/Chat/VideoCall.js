@@ -814,6 +814,9 @@ useEffect(() => {
     console.log("arr",arr)
       socket.emit("messageSendToUser",arr);
         
+    }
+    else{
+      socket.emit("misesdcall", { from: fromUser, to: remoteSocketId,call: 'missedCall' });
     }  
     
     
@@ -924,6 +927,10 @@ useEffect(() => {
         setCallDuration({ ...callDuration, start: data.starttime })
     }
 }
+const handleCallEngage = (data) => {
+  console.log('handleCallTimeEmit', data)
+  EndCall();
+}
   useEffect(() => {
     if (socket != null) {
       try {
@@ -939,6 +946,7 @@ useEffect(() => {
          socket.on('enblevideo',handleEnableVideo)
          socket.on('disablevideo',handleDisableVideo)
          socket.on("calltime", handleCallTimeEmit);
+         socket.on("alreadyengaged", handleCallEngage);
         return () => {
            socket.off('userInRoom', handleuserInRoom);
            socket.off('incommingcall', handleIncommingCall);
@@ -1125,18 +1133,18 @@ useEffect(() => {
             {remoteVideoEnableDisable != "" && remoteAudioEnableDisable == "disable" ?
               <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
               <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
-                  {prepareShortName(item.mappedUserName)+" paused  video & audio"}
+                  {prepareShortName(targetUserName)+" paused  video & audio"}
                 </Text>
                 </View>:
             remoteVideoEnableDisable != ""? <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
               <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
-                  {prepareShortName(item.mappedUserName)+" paused  video"}
+                  {prepareShortName(targetUserName)+" paused  video"}
                 </Text>
                 </View>
               :  remoteVideoEnableDisable == "" && remoteAudioEnableDisable == "disable" && 
               <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
               <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
-                  {prepareShortName(item.mappedUserName)+" muted this call"}
+                  {prepareShortName(targetUserName)+" muted this call"}
                 </Text>
                 </View>
               }
@@ -1154,13 +1162,13 @@ useEffect(() => {
           //     style={styles.circularImg}
           //   /> 
           //   <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
-          //     {prepareShortName(item.mappedUserName)}
+          //     {prepareShortName(targetUserName)}
           //   </Text>
            
           //   </View>
           //   :<Text></Text>
           // } */}
-           {remoteVideoEnableDisable == "" && remoteAudioEnableDisable == "disable" &&  
+           {/* {remoteVideoEnableDisable == "" && remoteAudioEnableDisable == "disable" &&  
           <View  style={{zIndex:1, flex:1,position: 'absolute',
           //flexDirection: 'row',
           right: 0,
@@ -1176,7 +1184,7 @@ useEffect(() => {
             </Text>
             </View>
           </View>
-          } 
+          }  */}
 
           <View style={{zIndex: 1}}>{LocalStreamView()}</View> 
         </View>
