@@ -58,39 +58,42 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
       
 
 
-    const IncommingCallNotification = useCallback(
-        async ({ from,room,calltype,fromname,userCode, mappedUserCode}) => {
+    // const IncommingCallNotification = useCallback(
+    //     async ({ from,room,calltype,fromname,userCode, mappedUserCode}) => {
 
             
-            console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
-            setshowNotificationIncomingCall(true);
-            //handleremoteSocketId(from);
+    //         console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
+    //         setshowNotificationIncomingCall(true);
+    //         //handleremoteSocketId(from);
             
             
-            setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
-            setTargetUserName(fromname)
-            setCallTypes(calltype)
-          //   setautoDisconnectTimeOutEvent(()=>{
-          //     return setTimeout(()=>{
-          //         console.log('call auto disconnected')
-          //         callCancelHandler(event)
-          //     },20*1000)
-          // })
-            //console.log(`Incoming Call`, from, offer);
-        },
-        [socket]
-    );
+    //         setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
+    //         setTargetUserName(fromname)
+    //         setCallTypes(calltype)
+    //       //   setautoDisconnectTimeOutEvent(()=>{
+    //       //     return setTimeout(()=>{
+    //       //         console.log('call auto disconnected')
+    //       //         callCancelHandler(event)
+    //       //     },20*1000)
+    //       // })
+    //         //console.log(`Incoming Call`, from, offer);
+    //     },
+    //     [socket]
+    // );
   
    
     useEffect(()=>{
         //console.log("audioElement 111",audioElement);
-        if(incomingCall!=null){
-            console.log("audioElement??? ");
+        if(currentItem!=null){
+            console.log("audioElement??? ",currentItem);
            // outGoingRing(audioElement);
           // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
           InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or system filename with extension
+
+          setTargetUserName(currentItem.data.name);
+          setCallTypes(currentItem.data.callType)
         }
-    },[incomingCall])
+    },[currentItem])
 
     const acceptCall = async () => {
       
@@ -209,7 +212,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
       }
        const handleAcceptButton = () =>{
        // pause(audioElement,0);
-       console.log("sjhs",incomingCall)
+       
       
          let roomNo=2456;
     //     let url='/'+ROUTES.CALLWINDOW+'?roomno='+incomingCall.from+'&room='+roomNo+'&audio=true&video=true&callaccept=Y&callinitiateByothers=remote';
@@ -217,28 +220,24 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     //     let windowWidth=1200;
     //     let windowHeight=700;
         
-   // console.log("incomingCall.from",incomingCall.from)
-    console.log("incomingCall.from",currentItem)
-    //console.log("incomingCall.from",incomingCall.from)
-    console.log("item???",item)
-  //  setVideoCallEvent("accept") // un comment
+   //  setVideoCallEvent("accept") // un comment
    // setshowNotificationIncomingCall(true);
 
   // PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
   //"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&item="+item
  // const props = {"roomno":incomingCall.from,"rooms=":incomingCall.room,"audio":true,"video":true,"callaccept":"Y","callinitiateByothers":"remote","item":item} 
- // onNavigate({data:props})
+  onNavigate()
   //Un comment this when push
   
    if(currentItem != null){
     
-  let uri =currentItem.LINK+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype+"&userCode="+incomingCall.userCode+"&mappedUserCode="+incomingCall.mappedUserCode //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
+  let uri =currentItem.data.LINK+"&roomno="+item.roomno+"&rooms="+item.rooms+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+item.calltype+"&userCode="+item.userCode+"&mappedUserCode="+item.mappedUserCode+"&name="+item.name+"&image="+item.image+"&uid="+item.uid+"&accept=true&sourceuid="+item.sourceuid 
    console.log("Accepted call",uri)
    Linking.openURL(uri);
   }
   else{
     
-    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+incomingCall.calltype+"&userCode="+incomingCall.userCode+"&mappedUserCode="+incomingCall.mappedUserCode //+"&socket="+JSON.parse(socket)+"&socketConneted="+socketConneted
+    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+item.roomno+"&rooms="+item.rooms+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+item.calltype+"&userCode="+item.userCode+"&mappedUserCode="+item.mappedUserCode+"&name="+item.name+"&image="+item.image+"&uid="+item.uid+"&accept=true&sourceuid="+item.sourceuid 
     Linking.openURL(uri);
   }
   
@@ -257,16 +256,16 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     useEffect(() => {
         if(socket){
            
-            socket.on("IncommingCallNotification", IncommingCallNotification);
+          //  socket.on("IncommingCallNotification", IncommingCallNotification);
            // socket.on('endCall', handleEndCall);
            socket.on("callalreadyreceived", handlealreadyreceived);
             return () => {
-                socket.off("IncommingCallNotification", IncommingCallNotification);
+               // socket.off("IncommingCallNotification", IncommingCallNotification);
                // socket.off('endCall', handleEndCall);
             }
         }       
 
-    }, [socket, IncommingCallNotification]);
+    }, [socket, ]);
 
     const handlealreadyreceived = useCallback(
       async ({ event}) => {
@@ -289,15 +288,21 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     // }
          // remoteSocketId 2713882 2702140
        //  setVideoCallEvent("cancel")// un comment
-        console.log('remoteSocketId', incomingCall,UserData.userId);
-     //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
-     setshowNotificationIncomingCall(false);
-     InCallManager.stop();
-      
-      //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
-      socket.emit('endCall', {to: incomingCall.from, from: UserData.userId , room: incomingCall.room});
-      socket.emit("misesdcall", { from: UserData.userId, to: incomingCall.from,call: 'missedCall' });
-      //peer.peer.close();
+
+       try {
+        console.log('remoteSocketId', item.sourceuid,UserData.userId);
+        //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
+        setshowNotificationIncomingCall(false);
+        InCallManager.stop();
+         
+         
+         socket.emit('endCall', {to: item.sourceuid, from: UserData.userId , room: item.rooms});
+         socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid,call: 'missedCall' });
+         onNavigate()
+       } catch (error) {
+         console.log("in cancle error",error)
+       }
+          //peer.peer.close();
 
 
      // await peer.reconnectPeerConnection();
@@ -312,7 +317,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
       
            
        <View style={{position:'absolute',width:'100%', backgroundColor:"red"}}>
-        {showNotificationIncomingCall ?
+        {/* {showNotificationIncomingCall ? */}
         <View style={{ 
             position:'absolute',
          backgroundColor:"#FFFFFF",margin:10,borderRadius:15,
@@ -361,7 +366,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
           </View>
         </View>
         </View>
-        :null}
+        {/* :null} */}
         </View>
         
         

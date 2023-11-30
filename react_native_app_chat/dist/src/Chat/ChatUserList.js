@@ -71,7 +71,7 @@ const [data, setData] = useState([]);
     
     setTimeout(()=>{
      
-  //  console.log("pushData??????",pushData,newPushData,data);
+    console.log("pushData??????",pushData,newPushData,data);
    if(newPushData != null && newPushData.from == "push"){
      
      if(data.length >0){
@@ -96,11 +96,45 @@ const [data, setData] = useState([]);
      }
 
    }
+  
 
   }, 1000)
    
 },[newPushData,data])
+useEffect(()=>{
+    
+  setTimeout(()=>{
+   
+  console.log("pushDataCall??????",newPushData);
+ 
+  if(newPushData != null && newPushData.from == "call" && props.socket != null && props.socket!='' && chatuserId != null){
+    console.log("in else call reject")
+    onCancelHandler(newPushData)
+  }
 
+}, 1000)
+ 
+},[newPushData,props.socket,chatuserId])
+
+
+const onCancelHandler = async (dataPush) =>{
+  //alert("hisis")
+  try {
+    console.log('remoteSocketId', dataPush,props.socket);
+    //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
+    props.socket.emit('endCall', {to: dataPush.userId, from: chatuserId , room: dataPush.rooms});
+    props.socket.emit("misesdcall", { from: chatuserId, to: dataPush.userId,call: 'missedCall' });
+   
+  } catch (error) {
+    console.log("End Call Error",error)
+  }
+    //peer.peer.close();
+
+
+   // await peer.reconnectPeerConnection();
+      
+
+  }
 //   useEffect(()=>{
     
 //     setTimeout(()=>{

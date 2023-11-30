@@ -60,7 +60,9 @@ const VideoChatCall = props => {
     UserData,
     audioVideoType,
     userCode,
-    mappedUserCode
+    mappedUserCode,
+    targetUserName,
+    targetUserImage
   } = props.props;
   
  // console.log('item video call',sockets //props.props,
@@ -260,7 +262,10 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     //let realmObj;
    // InCallManager.stop();
     console.log("incoming")
-    InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: audioVideoType == "video"? 'speaker':"earpiece"}); // or _DEFAULT_ or _DTMF_
+    if(callinitiateByothers == "own"){
+      InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: audioVideoType == "video"? 'speaker':"earpiece"}); // or _DEFAULT_ or _DTMF_
+    }
+    
 
     (async () => {
       const obj = UserData //await getUser();
@@ -330,7 +335,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
       }
       
      //
-    }, 20000);
+    }, 40000);
   }, []);
 
   const handleCallUser = async () => {
@@ -1116,11 +1121,11 @@ useEffect(() => {
           alignItems:"center",justifyContent:"center",
           backgroundColor: '#000000',}}>
             <Image
-              source={{uri: getImageUrl(item.userphotoimageurl)}}
+              source={{uri: getImageUrl(targetUserImage)}}
               style={styles.circularImg}
             /> 
             <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
-              {prepareShortName(item.mappedUserName)}
+              {prepareShortName(targetUserName)}
             </Text>
            
             </View>
@@ -1137,27 +1142,11 @@ useEffect(() => {
           width:"100%",}}>
           <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
           <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
-              {prepareShortName(item.mappedUserName)+" muted this call"}
+              {prepareShortName(targetUserName)+" muted this call"}
             </Text>
             </View>
           </View>
           } 
-
-          {/* {audioVideoType == "voice"&&
-            <View style={{zIndex:1, flex:1, alignItems:"center",justifyContent:"center"}}>
-            <Image
-              source={{uri: getImageUrl(item.userphotoimageurl)}}
-              style={styles.circularImg}
-            /> 
-            <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
-              {prepareShortName(item.mappedUserName)}
-            </Text>
-           { callOn && <View >
-          <Text style={styles.timerText}>{formatTime(timer)}</Text>
-    
-          </View>}
-             </View>
-          } */}
 
           <View style={{zIndex: 1}}>{LocalStreamView()}</View> 
         </View>
@@ -1172,11 +1161,11 @@ useEffect(() => {
               borderWidth: 1,
             }}>
              <Image
-              source={{uri: getImageUrl(item.userphotoimageurl)}}
+              source={{uri: getImageUrl(targetUserImage)}}
               style={styles.circularImg}
             /> 
             <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
-              {prepareShortName(item.mappedUserName)}
+              {prepareShortName(targetUserName)}
             </Text>
 
             {remoteVideoEnableDisable == "" && remoteAudioEnableDisable == "disable" &&  
@@ -1186,7 +1175,7 @@ useEffect(() => {
           width:"100%",}}>
           <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
           <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
-              {prepareShortName(item.mappedUserName)+" muted this call"}
+              {prepareShortName(targetUserName)+" muted this call"}
             </Text>
             </View>
           </View>

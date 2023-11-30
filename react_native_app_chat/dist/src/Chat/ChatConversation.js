@@ -41,7 +41,7 @@ const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
 const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted} = props
-
+console.log("item???????",JSON.stringify(item))
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
   userId:chatuserId,
@@ -705,7 +705,8 @@ const [userData,setUserData] = useState({
                  socketConneted:socketConneted,
                 callaccept:"N",
                 userCode:userCode,
-                mappedUserCode:item.mappedUserCode
+                mappedUserCode:item.mappedUserCode,
+                name:item.mappedUserName,image:item.userphotoimageurl
                 }
                 if(type =="audio"){
                   props.onClickAudioCall(data)
