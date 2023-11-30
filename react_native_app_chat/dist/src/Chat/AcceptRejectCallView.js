@@ -16,7 +16,7 @@ import {
     
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
-
+import Incomingvideocall from "../Utility/incoming-video-call";
 
 import InCallManager from 'react-native-incall-manager';
 
@@ -25,6 +25,25 @@ import InCallManager from 'react-native-incall-manager';
 
 import { prepareShortName, showToast } from '../Utility/Utility';
 import { propTypes } from 'react-native-page-control';
+
+import RNCallKeep from 'react-native-callkeep';
+const options = {
+  ios: {
+    appName: 'My app name',
+  },
+  android: {
+    alertTitle: 'Permissions required',
+    alertDescription: 'This application needs to access your phone accounts',
+    cancelButton: 'Cancel',
+    okButton: 'ok',
+    
+  }
+};
+
+RNCallKeep.setup(options).then(accepted => {});
+
+
+
 
 const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserData,onNavigate ,organizationName,organizationImage} ) => {
   // const navigation = useNavigation();
@@ -56,14 +75,16 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
       }, [userData]);
 
       
+      
 
+      
 
     const IncommingCallNotification = useCallback(
         async ({ from,room,calltype,fromname,userCode, mappedUserCode}) => {
 
             
             console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
-            setshowNotificationIncomingCall(true);
+            //setshowNotificationIncomingCall(true);
             //handleremoteSocketId(from);
             
             
@@ -85,10 +106,23 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     useEffect(()=>{
         //console.log("audioElement 111",audioElement);
         if(incomingCall!=null){
-            console.log("audioElement??? ");
-           // outGoingRing(audioElement);
-          // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
-          InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or system filename with extension
+          InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto:  'speaker'}); 
+          const incomingCallAnswer = ({ callUUID }) => {
+            
+            Incomingvideocall.endIncomingcallAnswer(callUUID);
+            //setisCalling(false);
+            acceptCall()
+          };
+        
+          const endIncomingCall = () => {
+            InCallManager.stop();
+            Incomingvideocall.endIncomingcallAnswer();
+            
+          };
+        
+          Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
+          Incomingvideocall.displayIncomingCall("Tapas");
+          
         }
     },[incomingCall])
 

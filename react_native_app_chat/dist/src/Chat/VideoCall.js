@@ -38,7 +38,7 @@ import peer from '../Utility/peer';
 import { prepareShortName,getCreatedDate } from '../Utility/Utility';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
-
+import Incomingvideocall from "../Utility/incoming-video-call";
 
 
 const VideoChatCall = props => {
@@ -260,7 +260,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     //let realmObj;
    // InCallManager.stop();
     console.log("incoming")
-    InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: audioVideoType == "video"? 'speaker':"earpiece"}); // or _DEFAULT_ or _DTMF_
+    //InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: audioVideoType == "video"? 'speaker':"earpiece"}); // or _DEFAULT_ or _DTMF_
 
     (async () => {
       const obj = UserData //await getUser();
@@ -335,7 +335,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 
   const handleCallUser = async () => {
     try {
-
+      InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: audioVideoType == "video"? 'speaker':"earpiece"}); 
       const callTypes =audioVideoType == "video"? true: false
       const stream = await mediaDevices.getUserMedia({
         audio: {
@@ -358,7 +358,7 @@ setAudioORVideo(callTypes)
       //socket.emit("startCall", { from:fromUser, to: remoteSocketId, offer });
       
     } catch (error) {
-
+      InCallManager.stop();
       console.log('errorrr handleCallUser', error);
     }
   };
@@ -724,7 +724,7 @@ useEffect(() => {
     setcallended(true);
     await peer.reconnectPeerConnection();
     InCallManager.stop();
-
+    Incomingvideocall.endIncomingcallAnswer();
     props.goBack()
   };
 
@@ -767,7 +767,7 @@ useEffect(() => {
 
  
   const EndCall = async () => {
-
+    Incomingvideocall.endIncomingcallAnswer();
     if(timer > 0){
       clearInterval(intervalId);
     }
