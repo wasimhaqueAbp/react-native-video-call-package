@@ -119,40 +119,40 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     })
 
 
-  useEffect(() => {
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      () => {
-        // Handle the back button press (e.g., navigate back or show a confirmation dialog)
-        // Return true to indicate that we've handled the back button
-        // Return false to let the default behavior (e.g., exit the app) happen
-        // For example:
-        // navigateBack(); // Implement your navigation logic
+  // useEffect(() => {
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     () => {
+  //       // Handle the back button press (e.g., navigate back or show a confirmation dialog)
+  //       // Return true to indicate that we've handled the back button
+  //       // Return false to let the default behavior (e.g., exit the app) happen
+  //       // For example:
+  //       // navigateBack(); // Implement your navigation logic
         
-          Alert.alert(
-            '',
-            'Are you sure you want to end the call',
-            [
-              {text: 'Yes', onPress: () =>  EndCall()},
+  //         Alert.alert(
+  //           '',
+  //           'Are you sure you want to end the call',
+  //           [
+  //             {text: 'Yes', onPress: () =>  EndCall()},
       
-              {
-                text: 'No',
-                onPress: () => null,
-                style: 'cancel',
-              },
-            ],
+  //             {
+  //               text: 'No',
+  //               onPress: () => null,
+  //               style: 'cancel',
+  //             },
+  //           ],
       
-            {cancelable: true},
-          );
+  //           {cancelable: true},
+  //         );
       
-        return true;
-      }
-    );
+  //       return true;
+  //     }
+  //   );
 
-    return () => {
-      backHandler.remove(); // Unsubscribe from the event when the component is unmounted
-    };
-  }, []); 
+  //   return () => {
+  //     backHandler.remove(); // Unsubscribe from the event when the component is unmounted
+  //   };
+  // }, []); 
   
   useEffect(() => {
     // Subscribe to app state changes
@@ -1094,7 +1094,7 @@ useEffect(() => {
       
       {remoteStream && callOn && !callended  ? (
        <View style={{flex: 1,}}>
-          {remoteVideoEnableDisable == ""?
+          
          
            <RTCView
             streamURL={remoteStream?.toURL()}
@@ -1106,25 +1106,55 @@ useEffect(() => {
           />
            
           
-          :
-          <View style={{ //position: 'absolute',
-          
-          flex:1,
-          width:"100%",
-          height:"100%",
+          {/* {remoteVideoEnableDisable != ""? */}
 
-          alignItems:"center",justifyContent:"center",
-          backgroundColor: '#000000',}}>
-            <Image
-              source={{uri: getImageUrl(item.userphotoimageurl)}}
-              style={styles.circularImg}
-            /> 
-            <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
-              {prepareShortName(item.mappedUserName)}
-            </Text>
+              <View  style={{zIndex:1, flex:1,position: 'absolute',
+              //flexDirection: 'row',
+              right: 0,
+              bottom: 0,
+              top:0,
+              left:0,
+              alignItems:"center",
+              justifyContent:"center",
+              width:"100%",}}>
+            {remoteVideoEnableDisable != "" && remoteAudioEnableDisable == "disable" ?
+              <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
+              <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
+                  {prepareShortName(item.mappedUserName)+" paused  video & audio"}
+                </Text>
+                </View>:
+            remoteVideoEnableDisable != ""? <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
+              <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
+                  {prepareShortName(item.mappedUserName)+" paused  video"}
+                </Text>
+                </View>
+              :  remoteVideoEnableDisable == "" && remoteAudioEnableDisable == "disable" && 
+              <View style={{backgroundColor:"#656565", borderRadius:10,paddingHorizontal:10, paddingVertical:10}}>
+              <Text style={{fontSize: 13, fontWeight: 'bold', color: '#FFF'}}>
+                  {prepareShortName(item.mappedUserName)+" muted this call"}
+                </Text>
+                </View>
+              }
+              </View>
+          {/* // <View style={{ //position: 'absolute',
+          
+          // flex:1,
+          // width:"100%",
+          // height:"100%",
+
+          // alignItems:"center",justifyContent:"center",
+          // backgroundColor: '#000000',}}>
+          //   <Image
+          //     source={{uri: getImageUrl(item.userphotoimageurl)}}
+          //     style={styles.circularImg}
+          //   /> 
+          //   <Text style={{fontSize: 20, fontWeight: 'bold', color: '#FFF'}}>
+          //     {prepareShortName(item.mappedUserName)}
+          //   </Text>
            
-            </View>
-          }
+          //   </View>
+          //   :<Text></Text>
+          // } */}
            {remoteVideoEnableDisable == "" && remoteAudioEnableDisable == "disable" &&  
           <View  style={{zIndex:1, flex:1,position: 'absolute',
           //flexDirection: 'row',
@@ -1196,9 +1226,20 @@ useEffect(() => {
     
           </View>} */}
             <Text style={{fontSize: 16, color: '#FFF'}}>
+
+              {/* {callinitiateByothers=='own' && remoteStream==null?'Calling....'} */}
+
               {!callOn && callended
+                ? 'Call ended' 
+                :
+                callOn?''
+                :
+                callinitiateByothers=='own'?'Calling....':''
+                }
+
+              {/* {!callOn && callended
                 ? 'Call ended ' 
-                :callOn?'' :'Calling....'}
+                :callOn?'' :'Calling....'} */}
             </Text>
           </View>
           {!callended &&

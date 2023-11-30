@@ -28,7 +28,35 @@ export const Circle = ({size, color}) => {
 
 export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMessage = true, style={marginHorizontal:16, marginVertical:8, elevation:2}}) => {
  
- 
+ const showmessagebody = (item) =>{
+  //item.messagebody
+  console.log(item);
+  let message=item.calltype;
+  let displaymessage=''
+  switch(message){
+    case 'video':
+      if(item.messagebody == null){
+        displaymessage='Missed Video Call';
+      }
+      else{
+        displaymessage='Video Call';
+      } 
+    break;
+    case 'voice':
+    case 'audio':
+      if(item.messagebody == null){
+        displaymessage='Missed Voice Call';
+      }
+      else{
+        displaymessage='Voice Call';
+      }
+    break;
+    default:
+      displaymessage=item.messagebody
+    break;
+  }
+ return displaymessage;
+ }
     
   return (
         
@@ -48,7 +76,7 @@ export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMess
        <Text style={styles.userText(item)}> {prepareShortName(item.mappedUserName)}</Text>
        
        </View>
-       {item.messagebody != null && <View style={styles.dateMainView}>
+       {((item.messagebody != null && item.calltype=='txt') || (item.calltype=='video' || item.calltype=='audio' || item.calltype=='voice')) && <View style={styles.dateMainView}>
        <Text style={styles.dateText(item)}> {formatChatTimestamp(item.modifyon) } </Text>
        </View>}
        </View>
@@ -58,7 +86,7 @@ export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMess
          <View style={styles.flex1}>
         <Text 
         numberOfLines={1}
-        style={styles.lastMessageText(item)}> {item.messagebody} </Text>
+        style={styles.lastMessageText(item)}> {showmessagebody(item)} </Text>
         </View>
         )} 
         {item.unreadcount> 0 && ( 
