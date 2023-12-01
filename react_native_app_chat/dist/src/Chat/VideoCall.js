@@ -338,7 +338,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
       }
       
      //
-    }, 40000);
+    }, 160000);
   }, []);
 
   const handleCallUser = async () => {

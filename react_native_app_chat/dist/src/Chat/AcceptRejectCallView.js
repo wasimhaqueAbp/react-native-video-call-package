@@ -27,6 +27,25 @@ import { prepareShortName, showToast } from '../Utility/Utility';
 import { propTypes } from 'react-native-page-control';
 import { useVideoCall } from '../../../../../src/Utility/VideoCall/VideoCallContextProvider';
 
+
+import RNCallKeep from 'react-native-callkeep';
+import Incomingvideocall from "../Utility/incoming-video-call";
+const options = {
+  ios: {
+    appName: 'My app name',
+  },
+  android: {
+    alertTitle: 'Permissions required',
+    alertDescription: 'This application needs to access your phone accounts',
+    cancelButton: 'Cancel',
+    okButton: 'ok',
+    selfManaged:true
+    
+  }
+};
+
+RNCallKeep.setup(options).then(accepted => {});
+RNCallKeep.setAvailable(true);
 const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserData,onNavigate ,organizationName,organizationImage} ) => {
   // const navigation = useNavigation();
  // const navigation = React.useContext(NavigationContext);
@@ -90,20 +109,57 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
            // outGoingRing(audioElement);
           // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
           InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or system filename with extension
-          if(currentItem.data ){
-            setTargetUserName(currentItem.data.name);
-            setCallTypes(currentItem.data.callType)
+          // if(currentItem.data ){
+          //   setTargetUserName(currentItem.data.name);
+          //   setCallTypes(currentItem.data.callType)
+          // }else{
+          //   setTargetUserName(currentItem.name);
+          //   setCallTypes(currentItem.callType)
+            
+          // }
+
+//Code on 01 December by Wasim
+
+let targetUsername='';
+            let targetCallType='';
+
+           if(currentItem.data ){
+            targetUsername=currentItem.data.name;
+            
+            targetCallType=currentItem.data.callType;
           }else{
-            setTargetUserName(currentItem.name);
-            setCallTypes(currentItem.callType)
+            targetUsername=currentItem.name;
+            targetCallType=currentItem.callType;
             
           }
-//Code on 01 December by Wasim
+          let calldisplayname=prepareShortName(targetUsername)+' Voice Call ABPWeddings';
+          if(targetCallType=='video'){
+            calldisplayname=prepareShortName(targetUsername)+' Video Call ABPWeddings';
+          }
+
+          const incomingCallAnswer = ({ callUUID }) => {
+            
+            Incomingvideocall.endIncomingcallAnswer(callUUID);
+            //setisCalling(false);
+            acceptCall()
+          };
+        
+          const endIncomingCall = () => {
+            InCallManager.stop();
+            Incomingvideocall.endIncomingcallAnswer();
+            onCancelHandler()
+          };
+
+          console.log("calldisplayname",calldisplayname);
+        
+          Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
+          Incomingvideocall.displayIncomingCall(prepareShortName(targetUsername),calldisplayname)
+
           setautoDisconnectTimeOutEvent(()=>{
             return setTimeout(()=>{
                 console.log('call auto disconnected')
                 onCancelHandler()
-            },20*1000)
+            },60*1000)
         })
         }
     },[currentItem])
@@ -335,60 +391,60 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
    
     return(
         
-      
+      <View></View>
            
-       <View style={{position:'absolute',width:'100%', backgroundColor:"red"}}>
-        {/* {showNotificationIncomingCall ? */}
-        <View style={{ 
-            position:'absolute',
-         backgroundColor:"#FFFFFF",margin:10,borderRadius:15,
-         shadowColor: '#171717',
-            shadowOffset: {
-            width: 10,
-            height: 2,
-            },
-            shadowOpacity: 0.25,
-            shadowRadius: 15,
-            elevation: 5,
-            flexDirection:'row',
-            alignItems:"center",justifyContent:"space-between",
-            padding:10
-         }}>
-         <View style={{paddingLeft:10}}>
-   <Image source={{uri:organizationImage}} resizeMode="contain"
-     style={{height:40,width:40,borderRadius:360}}
-      /> 
-    </View>    
-        <View style={{ flex:1,paddingLeft:10}}>
-        <Text style={{fontSize:18,fontWeight:"500"}}>{ prepareShortName(targetUserName) }</Text>     
+  //      <View style={{position:'absolute',width:'100%', backgroundColor:"red"}}>
+  //       {/* {showNotificationIncomingCall ? */}
+  //       <View style={{ 
+  //           position:'absolute',
+  //        backgroundColor:"#FFFFFF",margin:10,borderRadius:15,
+  //        shadowColor: '#171717',
+  //           shadowOffset: {
+  //           width: 10,
+  //           height: 2,
+  //           },
+  //           shadowOpacity: 0.25,
+  //           shadowRadius: 15,
+  //           elevation: 5,
+  //           flexDirection:'row',
+  //           alignItems:"center",justifyContent:"space-between",
+  //           padding:10
+  //        }}>
+  //        <View style={{paddingLeft:10}}>
+  //  <Image source={{uri:organizationImage}} resizeMode="contain"
+  //    style={{height:40,width:40,borderRadius:360}}
+  //     /> 
+  //   </View>    
+  //       <View style={{ flex:1,paddingLeft:10}}>
+  //       <Text style={{fontSize:18,fontWeight:"500"}}>{ prepareShortName(targetUserName) }</Text>     
             
-        <Text style={{fontSize:14,}}>{callTypes=="video"?"Incoming Video Call":"Incoming Voice Call"}</Text>     
-        <Text style={{fontSize:13,}}>{ organizationName }</Text> 
-        </View>
-        <View style={{flexDirection:"row",flex:0.8, justifyContent:'space-between',alignItems:'center',margin:10}}>
-        <View style={{ backgroundColor: "#FF1C16", borderRadius: 360,}}>
-            <IconButton
-              padding={6}
-              backgroundColor="white"
-              icon="close"
-              color="white"
-              size={25}
+  //       <Text style={{fontSize:14,}}>{callTypes=="video"?"Incoming Video Call":"Incoming Voice Call"}</Text>     
+  //       <Text style={{fontSize:13,}}>{ organizationName }</Text> 
+  //       </View>
+  //       <View style={{flexDirection:"row",flex:0.8, justifyContent:'space-between',alignItems:'center',margin:10}}>
+  //       <View style={{ backgroundColor: "#FF1C16", borderRadius: 360,}}>
+  //           <IconButton
+  //             padding={6}
+  //             backgroundColor="white"
+  //             icon="close"
+  //             color="white"
+  //             size={25}
               
-              onPress={() => onCancelHandler()} />
-          </View>
-          <View style={{ backgroundColor: "green", borderRadius: 360, }}>
-            <IconButton
-              padding={6}
-              backgroundColor="white"
-              icon={callTypes=="video"?"video": "phone-hangup-outline"}
-              color="white"
-              size={25}
-              onPress={() => acceptCall()} />
-          </View>
-        </View>
-        </View>
-        {/* :null} */}
-        </View>
+  //             onPress={() => onCancelHandler()} />
+  //         </View>
+  //         <View style={{ backgroundColor: "green", borderRadius: 360, }}>
+  //           <IconButton
+  //             padding={6}
+  //             backgroundColor="white"
+  //             icon={callTypes=="video"?"video": "phone-hangup-outline"}
+  //             color="white"
+  //             size={25}
+  //             onPress={() => acceptCall()} />
+  //         </View>
+  //       </View>
+  //       </View>
+  //       {/* :null} */}
+  //       </View>
         
         
         
