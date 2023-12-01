@@ -65,7 +65,7 @@ const VideoChatCall = props => {
     targetUserImage
   } = props.props;
   
- // console.log('item video call',sockets //props.props,
+  console.log('item video call',props.props,
   // registerUserToSocket_,
   // roomno,
   // rooms,
@@ -75,7 +75,7 @@ const VideoChatCall = props => {
   // callaccept,
   // item,
   // socketConneted,
- // );
+  );
   let intervalId = null;
   let autoDisconectBit= false
   const [socket,setsocket]=useState(sockets);
@@ -120,41 +120,41 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
       end:''
     })
 
-
-  // useEffect(() => {
-  //   const backHandler = BackHandler.addEventListener(
-  //     'hardwareBackPress',
-  //     () => {
-  //       // Handle the back button press (e.g., navigate back or show a confirmation dialog)
-  //       // Return true to indicate that we've handled the back button
-  //       // Return false to let the default behavior (e.g., exit the app) happen
-  //       // For example:
-  //       // navigateBack(); // Implement your navigation logic
+// Code done by Wasim on 01 December
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        // Handle the back button press (e.g., navigate back or show a confirmation dialog)
+        // Return true to indicate that we've handled the back button
+        // Return false to let the default behavior (e.g., exit the app) happen
+        // For example:
+        // navigateBack(); // Implement your navigation logic
         
-  //         Alert.alert(
-  //           '',
-  //           'Are you sure you want to end the call',
-  //           [
-  //             {text: 'Yes', onPress: () =>  EndCall()},
+          Alert.alert(
+            '',
+            'Are you sure you want to end the call',
+            [
+              {text: 'Yes', onPress: () =>  EndCall()},
       
-  //             {
-  //               text: 'No',
-  //               onPress: () => null,
-  //               style: 'cancel',
-  //             },
-  //           ],
+              {
+                text: 'No',
+                onPress: () => null,
+                style: 'cancel',
+              },
+            ],
       
-  //           {cancelable: true},
-  //         );
+            {cancelable: true},
+          );
       
-  //       return true;
-  //     }
-  //   );
+        return true;
+      }
+    );
 
-  //   return () => {
-  //     backHandler.remove(); // Unsubscribe from the event when the component is unmounted
-  //   };
-  // }, []); 
+    return () => {
+      backHandler.remove(); // Unsubscribe from the event when the component is unmounted
+    };
+  }, []); 
   
   useEffect(() => {
     // Subscribe to app state changes
@@ -167,7 +167,9 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   }, []);
 
   const handleAppStateChange = (nextAppState) => {
-    if (nextAppState === 'background') {
+    //Code done by Wasim on 01
+    console.log("nextAppState videocall",nextAppState)
+    if (nextAppState == 'background') {
       // App has gone to the background, perform your background action here
      EndCall();
     }
@@ -242,7 +244,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   //   }
     
     
-  // }, [callOn]);
+  //  }, [callOn]);
 
   const formatTime = (timeInSeconds) => {
     const hours = Math.floor(timeInSeconds / 3600);
@@ -331,7 +333,8 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
      InCallManager.stop();
     //alert("hiii")
     console.log("in auto dis")
-        EndCall();
+    //Code change on 01 december
+     //   EndCall();
       }
       
      //
@@ -403,6 +406,7 @@ setAudioORVideo(callTypes)
         // audio: true,
       });
       setMyStream(stream);
+      console.log("incomingCall.offer",incomingCall.offer)
       const ans = await peer.getAnswer(incomingCall.offer);
 
       console.log('Tapas In', ans);
@@ -778,7 +782,7 @@ useEffect(() => {
     }
     InCallManager.stop();
     setcallOn(false);
-    
+    peer.peer.close();
     setcallended(true);
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
@@ -791,7 +795,7 @@ useEffect(() => {
     setRemoteStream();
     console.log('remoteSocketId',item, remoteSocketId, fromUser);
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
-
+    await peer.reconnectPeerConnection();
     if (callDuration.start) {
 
       let endCallTime = getCreatedDate();
@@ -816,6 +820,8 @@ useEffect(() => {
         
     }
     else{
+      //alert("missedCall")
+      console.log("misedCall in videoCall")
       socket.emit("misesdcall", { from: fromUser, to: remoteSocketId,call: 'missedCall' });
     }  
     
@@ -928,33 +934,33 @@ useEffect(() => {
     }
 }
 const handleCallEngage = (data) => {
-  console.log('handleCallTimeEmit', data)
+  console.log('handleCallEngageEmit', data)
   EndCall();
 }
   useEffect(() => {
     if (socket != null) {
       try {
         socket.on('userInRoom', handleuserInRoom);
-        socket.on('incommingcall', handleIncommingCall);
-        socket.on('callAccepted', handleCallAccepted);
-         socket.on('negotiationneeded', handleNegoNeedIncomming);
-         socket.on('negotiationFinal', handleNegoNeedFinal);
-         socket.on('iceCandidate', handleRemoteICECandidate);
-         socket.on('endCall', handleEndCall);
+         socket.on('incommingcall', handleIncommingCall);
+         socket.on('callAccepted', handleCallAccepted);
+          socket.on('negotiationneeded', handleNegoNeedIncomming);
+          socket.on('negotiationFinal', handleNegoNeedFinal);
+          socket.on('iceCandidate', handleRemoteICECandidate);
+          socket.on('endCall', handleEndCall);
          socket.on('enbleaudio',handleEnableAudio)
          socket.on('disableaudio',handleDisableAudio)
          socket.on('enblevideo',handleEnableVideo)
          socket.on('disablevideo',handleDisableVideo)
          socket.on("calltime", handleCallTimeEmit);
-         socket.on("alreadyengaged", handleCallEngage);
+        // socket.on("alreadyengaged", handleCallEngage);
         return () => {
-           socket.off('userInRoom', handleuserInRoom);
-           socket.off('incommingcall', handleIncommingCall);
-           socket.off('callAccepted', handleCallAccepted);
-           socket.off('negotiationneeded', handleNegoNeedIncomming);
-           socket.off('negotiationFinal', handleNegoNeedFinal);
-           socket.off('iceCandidate', handleRemoteICECandidate);
-          socket.off('endCall', handleEndCall);
+            socket.off('userInRoom', handleuserInRoom);
+            socket.off('incommingcall', handleIncommingCall);
+            socket.off('callAccepted', handleCallAccepted);
+            socket.off('negotiationneeded', handleNegoNeedIncomming);
+            socket.off('negotiationFinal', handleNegoNeedFinal);
+            socket.off('iceCandidate', handleRemoteICECandidate);
+            socket.off('endCall', handleEndCall);
           socket.off('enbleaudio',handleEnableAudio)
           socket.off('disableaudio',handleDisableAudio)
           socket.off('enblevideo',handleEnableVideo)
@@ -1101,7 +1107,7 @@ const handleCallEngage = (data) => {
        </View>
     );
   };
-  //console.log("remoteStream && callOn && !callended",remoteStream , callOn , callended)
+  
   return (
     <View style={{flex: 1}}>
       

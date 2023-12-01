@@ -98,7 +98,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
             setCallTypes(currentItem.callType)
             
           }
-
+//Code on 01 December by Wasim
           setautoDisconnectTimeOutEvent(()=>{
             return setTimeout(()=>{
                 console.log('call auto disconnected')
@@ -239,6 +239,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
   // PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
   //"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&item="+item
  // const props = {"roomno":incomingCall.from,"rooms=":incomingCall.room,"audio":true,"video":true,"callaccept":"Y","callinitiateByothers":"remote","item":item} 
+ //Code done on 01 December by wasim
  if( autoDisconnectTimeOutEvent ) {
   console.log('if autoDisconnectTimeOutEvent')
   clearTimeout(autoDisconnectTimeOutEvent)
@@ -276,7 +277,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
         if(socket){
            
           //  socket.on("IncommingCallNotification", IncommingCallNotification);
-            socket.on('endCall', handleEndCall);
+           // socket.on('endCall', handleEndCall);
            socket.on("callalreadyreceived", handlealreadyreceived);
             return () => {
                // socket.off("IncommingCallNotification", IncommingCallNotification);
@@ -301,6 +302,7 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
     };
    
     const onCancelHandler = async () =>{
+      //Code done on 01 December by wasim
       if( autoDisconnectTimeOutEvent ) {
         console.log('if autoDisconnectTimeOutEvent')
         clearTimeout(autoDisconnectTimeOutEvent)

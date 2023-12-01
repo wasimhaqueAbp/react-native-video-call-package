@@ -109,6 +109,7 @@ useEffect(()=>{
  
   if(newPushData != null && newPushData.from == "call" && props.socket != null && props.socket!='' && chatuserId != null){
     console.log("in else call reject")
+    
     onCancelHandler(newPushData)
   }
 
