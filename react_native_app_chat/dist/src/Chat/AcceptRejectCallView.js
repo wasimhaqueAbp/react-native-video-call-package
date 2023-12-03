@@ -1,19 +1,19 @@
-import React, {useState, useEffect, createRef, useRef, useCallback} from 'react';
+import React, { useState, useEffect, createRef, useRef, useCallback } from 'react';
 import {
-    StyleSheet,
-    View,
-    Text,
-    FlatList,
-    Platform,
-    StatusBar,
-    TextInput,
-    TouchableOpacity,
-    Linking,
-    Alert,
-    PermissionsAndroid,
-    Permissions,
-    Image
-    
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  Platform,
+  StatusBar,
+  TextInput,
+  TouchableOpacity,
+  Linking,
+  Alert,
+  PermissionsAndroid,
+  Permissions,
+  Image
+
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
 
@@ -40,332 +40,342 @@ import Incomingvideocall from "../Utility/incoming-video-call";
 //     cancelButton: 'Cancel',
 //     okButton: 'ok',
 //     selfManaged:true
-    
+
 //   }
 // };
 
 // RNCallKeep.setup(options).then(accepted => {});
 // RNCallKeep.setAvailable(true);
-const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserData,onNavigate ,organizationName,organizationImage} ) => {
+const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem, UserData, onNavigate, organizationName, organizationImage }) => {
   // const navigation = useNavigation();
- // const navigation = React.useContext(NavigationContext);
- const {  sockets } = useVideoCall();
-    const [incomingCall, setIncomingCall] = useState(null);
-    
-    const [showNotificationIncomingCall, setshowNotificationIncomingCall] = useState(false);
-    const moreRef = useRef();
-    const [userData, setUserData] = useState(null);
-    const [targetUserName,setTargetUserName] = useState(null);
-    const [callTypes,setCallTypes] = useState(null)
-    const [autoDisconnectTimeOutEvent,setautoDisconnectTimeOutEvent] = useState()
-   
-    console.log("Accept Reject ",name,socket,item,socketConneted,currentItem)
-    useEffect(() => {
-        //let realmObj;
-    
-        (async () => {
-          const obj = UserData;
-          console.log('UserData Accept reject', obj);
-          setUserData(obj);
-         
-        })();
-    
-        return () => {
-          // realmObj.close();
-        };
-      }, [userData]);
+  // const navigation = React.useContext(NavigationContext);
+  const { sockets } = useVideoCall();
+  const [incomingCall, setIncomingCall] = useState(null);
 
-     
+  const [showNotificationIncomingCall, setshowNotificationIncomingCall] = useState(false);
+  const moreRef = useRef();
+  const [userData, setUserData] = useState(null);
+  const [targetUserName, setTargetUserName] = useState(null);
+  const [callTypes, setCallTypes] = useState(null)
+  const [autoDisconnectTimeOutEvent, setautoDisconnectTimeOutEvent] = useState()
+
+  console.log("Accept Reject ", name, socket, item, socketConneted, currentItem)
+  useEffect(() => {
+    //let realmObj;
+
+    (async () => {
+      const obj = UserData;
+      console.log('UserData Accept reject', obj);
+      setUserData(obj);
+
+    })();
+
+    return () => {
+      // realmObj.close();
+    };
+  }, [userData]);
 
 
-    // const IncommingCallNotification = useCallback(
-    //     async ({ from,room,calltype,fromname,userCode, mappedUserCode}) => {
-
-            
-    //         console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
-    //         setshowNotificationIncomingCall(true);
-    //         //handleremoteSocketId(from);
-            
-            
-    //         setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
-    //         setTargetUserName(fromname)
-    //         setCallTypes(calltype)
-          //   setautoDisconnectTimeOutEvent(()=>{
-          //     return setTimeout(()=>{
-          //         console.log('call auto disconnected')
-          //         callCancelHandler(event)
-          //     },20*1000)
-          // })
-    //         //console.log(`Incoming Call`, from, offer);
-    //     },
-    //     [socket]
-    // );
-  
-   
-    useEffect(()=>{
-        //console.log("audioElement 111",audioElement);
-        if(currentItem!=null){
-            console.log("audioElement??? ",currentItem);
-           // outGoingRing(audioElement);
-          // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
-          InCallManager.start({media: 'audio', ringback: '_BUNDLE_'}); // or _DEFAULT_ or system filename with extension
-          // if(currentItem.data ){
-          //   setTargetUserName(currentItem.data.name);
-          //   setCallTypes(currentItem.data.callType)
-          // }else{
-          //   setTargetUserName(currentItem.name);
-          //   setCallTypes(currentItem.callType)
-            
-          // }
-
-//Code on 01 December by Wasim
-setautoDisconnectTimeOutEvent(()=>{
-  return setTimeout(()=>{
-      console.log('call auto disconnected')
-      onCancelHandler()
-  },60*1000)
-})
-let targetUsername='';
-            let targetCallType='';
-
-           if(currentItem.data ){
-            targetUsername=currentItem.data.name;
-            
-            targetCallType=currentItem.data.callType;
-          }else{
-            targetUsername=currentItem.name;
-            targetCallType=currentItem.callType;
-            
-          }
-
-      
-RNNotificationCall.displayNotification(
-  '22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad',
-  null,
-  30000,
-  {
-    channelId: 'com.abc.incomingcall',
-    channelName: 'Incoming video call',
-    notificationIcon: 'ic_launcher', //mipmap
-    notificationTitle: targetUsername,
-    notificationBody: 'Incoming '+targetCallType+ " call",
-    answerText: 'Answer',
-    declineText: 'Decline',
-    notificationColor: 'colorAccent',
-    notificationSound: null, //raw
-    //mainComponent:'MyReactNativeApp',//AppRegistry.registerComponent('MyReactNativeApp', () => CustomIncomingCall);
-    // payload:{name:'Test',Body:'test'}
-  }
-);
 
 
-RNNotificationCall.addEventListener('answer', (data) => {
-  RNNotificationCall.backToApp();
-  const { callUUID, payload } = data;
-  console.log('press answer', callUUID);
-  InCallManager.stop();
-  acceptCall()
-});
-RNNotificationCall.addEventListener('endCall', (data) => {
-  const { callUUID, endAction, payload } = data;
-  console.log('press endCall', callUUID);
-  InCallManager.stop();
-  onCancelHandler()
-});
-//Change done by wasim on 3 december 
-// let targetUsername='';
-//             let targetCallType='';
+  // const IncommingCallNotification = useCallback(
+  //     async ({ from,room,calltype,fromname,userCode, mappedUserCode}) => {
 
-//            if(currentItem.data ){
-//             targetUsername=currentItem.data.name;
-            
-//             targetCallType=currentItem.data.callType;
-//           }else{
-//             targetUsername=currentItem.name;
-//             targetCallType=currentItem.callType;
-            
-//           }
-//           let calldisplayname=prepareShortName(targetUsername)+' Voice Call ABPWeddings';
-//           if(targetCallType=='video'){
-//             calldisplayname=prepareShortName(targetUsername)+' Video Call ABPWeddings';
-//           }
 
-//           const incomingCallAnswer = ({ callUUID }) => {
-            
-//             Incomingvideocall.endIncomingcallAnswer(callUUID);
-//             //setisCalling(false);
-//             acceptCall()
-//           };
-        
-//           const endIncomingCall = () => {
-//             InCallManager.stop();
-//             Incomingvideocall.endIncomingcallAnswer();
-//             onCancelHandler()
-//           };
+  //         console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
+  //         setshowNotificationIncomingCall(true);
+  //         //handleremoteSocketId(from);
 
-//           console.log("calldisplayname",calldisplayname);
-        
-//           Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
-//           Incomingvideocall.displayIncomingCall(prepareShortName(targetUsername),calldisplayname)
 
-         
-        }
-    },[currentItem])
+  //         setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
+  //         setTargetUserName(fromname)
+  //         setCallTypes(calltype)
+  //   setautoDisconnectTimeOutEvent(()=>{
+  //     return setTimeout(()=>{
+  //         console.log('call auto disconnected')
+  //         callCancelHandler(event)
+  //     },20*1000)
+  // })
+  //         //console.log(`Incoming Call`, from, offer);
+  //     },
+  //     [socket]
+  // );
 
-    const acceptCall = async () => {
-      
-        InCallManager.stop();
-       
-       
-       // handleAcceptButton();
-       checkPermissions();
 
-       }
+  useEffect(() => {
+    //console.log("audioElement 111",audioElement);
+    if (currentItem != null) {
+      console.log("audioElement??? ", currentItem);
+      // outGoingRing(audioElement);
+      // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
+      InCallManager.start({ media: 'audio', ringback: '_BUNDLE_' }); // or _DEFAULT_ or system filename with extension
+      // if(currentItem.data ){
+      //   setTargetUserName(currentItem.data.name);
+      //   setCallTypes(currentItem.data.callType)
+      // }else{
+      //   setTargetUserName(currentItem.name);
+      //   setCallTypes(currentItem.callType)
 
-       const checkPermissions= async ()=>{
-        
-        if(Platform.OS ="android"){
+      // }
 
-          try {
+      //Code on 01 December by Wasim
+      setautoDisconnectTimeOutEvent(() => {
+        return setTimeout(() => {
+          console.log('call auto disconnected')
+          onCancelHandler()
+        }, 60 * 1000)
+      })
+      let targetUsername = '';
+      let targetCallType = '';
+      let roomsStr=''
 
-            const granted = await PermissionsAndroid.requestMultiple([
-              PermissionsAndroid.PERMISSIONS.CAMERA,
-              PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-             
-              // Add more permissions as needed
-            ]);
+      let profileimage = null;
 
-            if (
-              granted['android.permission.CAMERA'] === PermissionsAndroid.RESULTS.GRANTED &&
-              granted['android.permission.RECORD_AUDIO'] === PermissionsAndroid.RESULTS.GRANTED 
-              // Check for other permissions here
-            ) {
-              setshowNotificationIncomingCall(false);
-        
-              handleAcceptButton();
-              console.log('All permissions granted');
-              // You can now use the requested features that require these permissions
-            } else {
-              console.log('One or more permissions denied');
-              Alert.alert(
-                '',
-                'Please allow the camera and microphone permissions from settings to access the video call',
-                [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log('cancel'),
-                    style: 'cancel',
-                  },
-            
-                  {
-                    text:"OK",
-                    onPress: () => {
-                        Linking.openSettings();
-                      
-                    },
-                  },
-                ],
-            
-                {
-                  cancelable: true,
-                },
-              );
-              // Handle the case where one or more permissions were denied
-              showToast('Please allow the camera and microphone permissions from settings to access the video call')
-
-            }
-           
-          } catch (err) {
-            console.warn(err);
-          }
-         
-        }
-        else{
-          try {
-            const { status } = await Permissions.askAsync(Permissions.CAMERA);
-            const { statusMicroPhone } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-            
-            if (status === 'granted' && statusMicroPhone === 'granted') {
-              console.log('Camera permission is granted.');
-              setshowNotificationIncomingCall(false);
-        
-              handleAcceptButton();
-            }  else {
-              Alert.alert(
-                '',
-                "Please allow the camera and microphone permissions from settings to access the video call",
-                [
-                  {
-                    text: "Cancel",
-                    onPress: () => console.log('cancel'),
-                    style: 'cancel',
-                  },
-            
-                  {
-                    text: "OK",
-                    onPress: () => {
-                      Linking.openURL('app-settings:');
-                      
-                    },
-                  },
-                ],
-            
-                {
-                  cancelable: true,
-                },
-              );
-             
-              showToast('Please allow the camera and microphone permissions from settings to access the video call')
-
-              console.log('Camera permission is not granted.');
-            }
-          } catch (err) {
-            console.warn(err);
-          }
-          
-        }
-
-       
+      if (currentItem.data) {
+        targetUsername = currentItem.data.name;
+        targetCallType = currentItem.data.callType;
+        roomsStr=currentItem.data.rooms;
+        profileimage = 'https://testcdn.abpweddings.com/'+currentItem.data.image;
+      } else {
+        targetUsername = currentItem.name;
+        targetCallType = currentItem.callType;
+        roomsStr=currentItem.rooms;
+        profileimage = 'https://testcdn.abpweddings.com/'+currentItem.image;
       }
-       const handleAcceptButton = () =>{
-       // pause(audioElement,0);
-       
-      
-         let roomNo=2456;
+      let calldisplayname =  'Abpweddings - Voice Call';
+      if (targetCallType == 'video') {
+        calldisplayname = 'Abpweddings - Video Call';
+      }
+
+      console.log("currentItem.data",currentItem);
+
+      RNNotificationCall.displayNotification(
+        roomsStr,
+        profileimage,
+        30000,
+        {
+          channelId: 'com.abc.incomingcall',
+          channelName: 'Incoming video call',
+          notificationIcon: 'ic_launcher', //mipmap
+          notificationTitle: prepareShortName(targetUsername),
+          notificationBody: calldisplayname,
+          answerText: 'Answer',
+          declineText: 'Decline',
+          notificationColor: 'colorAccent',
+          notificationSound: null, //raw
+          //mainComponent:'MyReactNativeApp',//AppRegistry.registerComponent('MyReactNativeApp', () => CustomIncomingCall);
+          // payload:{name:'Test',Body:'test'}
+        }
+      );
+
+
+      RNNotificationCall.addEventListener('answer', (data) => {
+        RNNotificationCall.backToApp();
+        const { callUUID, payload } = data;
+        console.log('press answer', callUUID);
+        InCallManager.stop();
+        acceptCall()
+      });
+      RNNotificationCall.addEventListener('endCall', (data) => {
+        const { callUUID, endAction, payload } = data;
+        console.log('press endCall', callUUID);
+        InCallManager.stop();
+        onCancelHandler()
+      });
+      //Change done by wasim on 3 december 
+      // let targetUsername='';
+      //             let targetCallType='';
+
+      //            if(currentItem.data ){
+      //             targetUsername=currentItem.data.name;
+
+      //             targetCallType=currentItem.data.callType;
+      //           }else{
+      //             targetUsername=currentItem.name;
+      //             targetCallType=currentItem.callType;
+
+      //           }
+      //           let calldisplayname=prepareShortName(targetUsername)+' Voice Call ABPWeddings';
+      //           if(targetCallType=='video'){
+      //             calldisplayname=prepareShortName(targetUsername)+' Video Call ABPWeddings';
+      //           }
+
+      //           const incomingCallAnswer = ({ callUUID }) => {
+
+      //             Incomingvideocall.endIncomingcallAnswer(callUUID);
+      //             //setisCalling(false);
+      //             acceptCall()
+      //           };
+
+      //           const endIncomingCall = () => {
+      //             InCallManager.stop();
+      //             Incomingvideocall.endIncomingcallAnswer();
+      //             onCancelHandler()
+      //           };
+
+      //           console.log("calldisplayname",calldisplayname);
+
+      //           Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
+      //           Incomingvideocall.displayIncomingCall(prepareShortName(targetUsername),calldisplayname)
+
+
+    }
+  }, [currentItem])
+
+  const acceptCall = async () => {
+
+    InCallManager.stop();
+
+
+    // handleAcceptButton();
+    checkPermissions();
+
+  }
+
+  const checkPermissions = async () => {
+
+    if (Platform.OS = "android") {
+
+      try {
+
+        const granted = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+
+          // Add more permissions as needed
+        ]);
+
+        if (
+          granted['android.permission.CAMERA'] === PermissionsAndroid.RESULTS.GRANTED &&
+          granted['android.permission.RECORD_AUDIO'] === PermissionsAndroid.RESULTS.GRANTED
+          // Check for other permissions here
+        ) {
+          setshowNotificationIncomingCall(false);
+
+          handleAcceptButton();
+          console.log('All permissions granted');
+          // You can now use the requested features that require these permissions
+        } else {
+          console.log('One or more permissions denied');
+          Alert.alert(
+            '',
+            'Please allow the camera and microphone permissions from settings to access the video call',
+            [
+              {
+                text: "Cancel",
+                onPress: () => console.log('cancel'),
+                style: 'cancel',
+              },
+
+              {
+                text: "OK",
+                onPress: () => {
+                  Linking.openSettings();
+
+                },
+              },
+            ],
+
+            {
+              cancelable: true,
+            },
+          );
+          // Handle the case where one or more permissions were denied
+          showToast('Please allow the camera and microphone permissions from settings to access the video call')
+
+        }
+
+      } catch (err) {
+        console.warn(err);
+      }
+
+    }
+    else {
+      try {
+        const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        const { statusMicroPhone } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+
+        if (status === 'granted' && statusMicroPhone === 'granted') {
+          console.log('Camera permission is granted.');
+          setshowNotificationIncomingCall(false);
+
+          handleAcceptButton();
+        } else {
+          Alert.alert(
+            '',
+            "Please allow the camera and microphone permissions from settings to access the video call",
+            [
+              {
+                text: "Cancel",
+                onPress: () => console.log('cancel'),
+                style: 'cancel',
+              },
+
+              {
+                text: "OK",
+                onPress: () => {
+                  Linking.openURL('app-settings:');
+
+                },
+              },
+            ],
+
+            {
+              cancelable: true,
+            },
+          );
+
+          showToast('Please allow the camera and microphone permissions from settings to access the video call')
+
+          console.log('Camera permission is not granted.');
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+
+    }
+
+
+  }
+  const handleAcceptButton = () => {
+    // pause(audioElement,0);
+
+
+    let roomNo = 2456;
     //     let url='/'+ROUTES.CALLWINDOW+'?roomno='+incomingCall.from+'&room='+roomNo+'&audio=true&video=true&callaccept=Y&callinitiateByothers=remote';
     //     let nameWindow='chatWindow';
     //     let windowWidth=1200;
     //     let windowHeight=700;
-        
-   //  setVideoCallEvent("accept") // un comment
-   // setshowNotificationIncomingCall(true);
 
-  // PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
-  //"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&item="+item
- // const props = {"roomno":incomingCall.from,"rooms=":incomingCall.room,"audio":true,"video":true,"callaccept":"Y","callinitiateByothers":"remote","item":item} 
- //Code done on 01 December by wasim
- if( autoDisconnectTimeOutEvent ) {
-  console.log('if autoDisconnectTimeOutEvent')
-  clearTimeout(autoDisconnectTimeOutEvent)
-}
-  onNavigate()
-  //Un comment this when push
-  
-   if(currentItem != null){
-    
-  let uri =currentItem.data?
-  currentItem.data.LINK+"&roomno="+item.roomno+"&rooms="+item.rooms+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+item.calltype+"&userCode="+item.userCode+"&mappedUserCode="+item.mappedUserCode+"&name="+item.name+"&image="+item.image+"&uid="+item.uid+"&accept=true&sourceuid="+item.sourceuid 
-  :currentItem.LINK+"&roomno="+item.roomno+"&rooms="+item.rooms+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+item.calltype+"&userCode="+item.userCode+"&mappedUserCode="+item.mappedUserCode+"&name="+item.name+"&image="+item.image+"&uid="+item.uid+"&accept=true&sourceuid="+item.sourceuid 
-   console.log("Accepted call",uri)
-   Linking.openURL(uri);
-  }
-  else{
-    
-    let uri ="aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL"+"&roomno="+item.roomno+"&rooms="+item.rooms+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item="+item+"&calltype="+item.calltype+"&userCode="+item.userCode+"&mappedUserCode="+item.mappedUserCode+"&name="+item.name+"&image="+item.image+"&uid="+item.uid+"&accept=true&sourceuid="+item.sourceuid 
-    Linking.openURL(uri);
-  }
-  
-  // navigation.navigate("videoChat");
+    //  setVideoCallEvent("accept") // un comment
+    // setshowNotificationIncomingCall(true);
+
+    // PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
+    //"&roomno="+incomingCall.from+"&rooms="+incomingCall.room+"&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&item="+item
+    // const props = {"roomno":incomingCall.from,"rooms=":incomingCall.room,"audio":true,"video":true,"callaccept":"Y","callinitiateByothers":"remote","item":item} 
+    //Code done on 01 December by wasim
+    if (autoDisconnectTimeOutEvent) {
+      console.log('if autoDisconnectTimeOutEvent')
+      clearTimeout(autoDisconnectTimeOutEvent)
+    }
+    onNavigate()
+    //Un comment this when push
+
+    if (currentItem != null) {
+
+      let uri = currentItem.data ?
+        currentItem.data.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + item.calltype + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+        : currentItem.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + item.calltype + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+      console.log("Accepted call", uri)
+      Linking.openURL(uri);
+    }
+    else {
+
+      let uri = "aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL" + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + item.calltype + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+      Linking.openURL(uri);
+    }
+
+    // navigation.navigate("videoChat");
     // navigation.navigate("videoChat",
     // {roomno:incomingCall.from,rooms :incomingCall.room,
     // audio:true,video:true,
@@ -375,128 +385,128 @@ RNNotificationCall.addEventListener('endCall', (data) => {
     // }
     // )
 
+  }
+
+  useEffect(() => {
+    if (socket) {
+
+      //  socket.on("IncommingCallNotification", IncommingCallNotification);
+      // socket.on('endCall', handleEndCall);
+      socket.on("callalreadyreceived", handlealreadyreceived);
+      return () => {
+        // socket.off("IncommingCallNotification", IncommingCallNotification);
+        // socket.off('endCall', handleEndCall);
+      }
     }
 
-    useEffect(() => {
-        if(socket){
-           
-          //  socket.on("IncommingCallNotification", IncommingCallNotification);
-           // socket.on('endCall', handleEndCall);
-           socket.on("callalreadyreceived", handlealreadyreceived);
-            return () => {
-               // socket.off("IncommingCallNotification", IncommingCallNotification);
-               // socket.off('endCall', handleEndCall);
-            }
-        }       
+  }, [socket,]);
 
-    }, [socket, ]);
+  const handlealreadyreceived = useCallback(
+    async ({ event }) => {
 
-    const handlealreadyreceived = useCallback(
-      async ({ event}) => {
+    }
+  )
 
-      }
-    )
- 
-    const handleEndCall = async ({from}) => {
-      // Stop the streams
-     console.log("handleEndCall")
+  const handleEndCall = async ({ from }) => {
+    // Stop the streams
+    console.log("handleEndCall")
+    setshowNotificationIncomingCall(false);
+    InCallManager.stop();
+
+  };
+
+  const onCancelHandler = async () => {
+    //Code done on 01 December by wasim
+    if (autoDisconnectTimeOutEvent) {
+      console.log('if autoDisconnectTimeOutEvent')
+      clearTimeout(autoDisconnectTimeOutEvent)
+    }
+    // remoteSocketId 2713882 2702140
+    //  setVideoCallEvent("cancel")// un comment
+
+    try {
+      console.log('remoteSocketId', item, UserData.userId);
+      //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
       setshowNotificationIncomingCall(false);
       InCallManager.stop();
-    
-    };
-   
-    const onCancelHandler = async () =>{
-      //Code done on 01 December by wasim
-      if( autoDisconnectTimeOutEvent ) {
-        console.log('if autoDisconnectTimeOutEvent')
-        clearTimeout(autoDisconnectTimeOutEvent)
+
+
+      socket.emit('endCall', { to: item.sourceuid, from: UserData.userId, room: item.rooms });
+      socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid, call: 'missedCall' });
+      onNavigate()
+    } catch (error) {
+      console.log("in cancle error", error)
     }
-         // remoteSocketId 2713882 2702140
-       //  setVideoCallEvent("cancel")// un comment
-
-       try {
-        console.log('remoteSocketId', item,UserData.userId);
-        //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
-        setshowNotificationIncomingCall(false);
-        InCallManager.stop();
-         
-         
-         socket.emit('endCall', {to: item.sourceuid, from: UserData.userId , room: item.rooms});
-         socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid,call: 'missedCall' });
-         onNavigate()
-       } catch (error) {
-         console.log("in cancle error",error)
-       }
-          //peer.peer.close();
+    //peer.peer.close();
 
 
-     // await peer.reconnectPeerConnection();
-        
-
-    }
+    // await peer.reconnectPeerConnection();
 
 
-   
-    return(
-        
-      <View></View>
-           
-  //      <View style={{position:'absolute',width:'100%', backgroundColor:"red"}}>
-  //       {/* {showNotificationIncomingCall ? */}
-  //       <View style={{ 
-  //           position:'absolute',
-  //        backgroundColor:"#FFFFFF",margin:10,borderRadius:15,
-  //        shadowColor: '#171717',
-  //           shadowOffset: {
-  //           width: 10,
-  //           height: 2,
-  //           },
-  //           shadowOpacity: 0.25,
-  //           shadowRadius: 15,
-  //           elevation: 5,
-  //           flexDirection:'row',
-  //           alignItems:"center",justifyContent:"space-between",
-  //           padding:10
-  //        }}>
-  //        <View style={{paddingLeft:10}}>
-  //  <Image source={{uri:organizationImage}} resizeMode="contain"
-  //    style={{height:40,width:40,borderRadius:360}}
-  //     /> 
-  //   </View>    
-  //       <View style={{ flex:1,paddingLeft:10}}>
-  //       <Text style={{fontSize:18,fontWeight:"500"}}>{ prepareShortName(targetUserName) }</Text>     
-            
-  //       <Text style={{fontSize:14,}}>{callTypes=="video"?"Incoming Video Call":"Incoming Voice Call"}</Text>     
-  //       <Text style={{fontSize:13,}}>{ organizationName }</Text> 
-  //       </View>
-  //       <View style={{flexDirection:"row",flex:0.8, justifyContent:'space-between',alignItems:'center',margin:10}}>
-  //       <View style={{ backgroundColor: "#FF1C16", borderRadius: 360,}}>
-  //           <IconButton
-  //             padding={6}
-  //             backgroundColor="white"
-  //             icon="close"
-  //             color="white"
-  //             size={25}
-              
-  //             onPress={() => onCancelHandler()} />
-  //         </View>
-  //         <View style={{ backgroundColor: "green", borderRadius: 360, }}>
-  //           <IconButton
-  //             padding={6}
-  //             backgroundColor="white"
-  //             icon={callTypes=="video"?"video": "phone-hangup-outline"}
-  //             color="white"
-  //             size={25}
-  //             onPress={() => acceptCall()} />
-  //         </View>
-  //       </View>
-  //       </View>
-  //       {/* :null} */}
-  //       </View>
-        
-        
-        
-    )
+  }
+
+
+
+  return (
+
+    <View></View>
+
+    //      <View style={{position:'absolute',width:'100%', backgroundColor:"red"}}>
+    //       {/* {showNotificationIncomingCall ? */}
+    //       <View style={{ 
+    //           position:'absolute',
+    //        backgroundColor:"#FFFFFF",margin:10,borderRadius:15,
+    //        shadowColor: '#171717',
+    //           shadowOffset: {
+    //           width: 10,
+    //           height: 2,
+    //           },
+    //           shadowOpacity: 0.25,
+    //           shadowRadius: 15,
+    //           elevation: 5,
+    //           flexDirection:'row',
+    //           alignItems:"center",justifyContent:"space-between",
+    //           padding:10
+    //        }}>
+    //        <View style={{paddingLeft:10}}>
+    //  <Image source={{uri:organizationImage}} resizeMode="contain"
+    //    style={{height:40,width:40,borderRadius:360}}
+    //     /> 
+    //   </View>    
+    //       <View style={{ flex:1,paddingLeft:10}}>
+    //       <Text style={{fontSize:18,fontWeight:"500"}}>{ prepareShortName(targetUserName) }</Text>     
+
+    //       <Text style={{fontSize:14,}}>{callTypes=="video"?"Incoming Video Call":"Incoming Voice Call"}</Text>     
+    //       <Text style={{fontSize:13,}}>{ organizationName }</Text> 
+    //       </View>
+    //       <View style={{flexDirection:"row",flex:0.8, justifyContent:'space-between',alignItems:'center',margin:10}}>
+    //       <View style={{ backgroundColor: "#FF1C16", borderRadius: 360,}}>
+    //           <IconButton
+    //             padding={6}
+    //             backgroundColor="white"
+    //             icon="close"
+    //             color="white"
+    //             size={25}
+
+    //             onPress={() => onCancelHandler()} />
+    //         </View>
+    //         <View style={{ backgroundColor: "green", borderRadius: 360, }}>
+    //           <IconButton
+    //             padding={6}
+    //             backgroundColor="white"
+    //             icon={callTypes=="video"?"video": "phone-hangup-outline"}
+    //             color="white"
+    //             size={25}
+    //             onPress={() => acceptCall()} />
+    //         </View>
+    //       </View>
+    //       </View>
+    //       {/* :null} */}
+    //       </View>
+
+
+
+  )
 }
 
 export default AcceptRejectCallView;
