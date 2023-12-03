@@ -26,26 +26,26 @@ import InCallManager from 'react-native-incall-manager';
 import { prepareShortName, showToast } from '../Utility/Utility';
 import { propTypes } from 'react-native-page-control';
 import { useVideoCall } from '../../../../../src/Utility/VideoCall/VideoCallContextProvider';
-
+import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
 
 import RNCallKeep from 'react-native-callkeep';
 import Incomingvideocall from "../Utility/incoming-video-call";
-const options = {
-  ios: {
-    appName: 'My app name',
-  },
-  android: {
-    alertTitle: 'Permissions required',
-    alertDescription: 'This application needs to access your phone accounts',
-    cancelButton: 'Cancel',
-    okButton: 'ok',
-    selfManaged:true
+// const options = {
+//   ios: {
+//     appName: 'My app name',
+//   },
+//   android: {
+//     alertTitle: 'Permissions required',
+//     alertDescription: 'This application needs to access your phone accounts',
+//     cancelButton: 'Cancel',
+//     okButton: 'ok',
+//     selfManaged:true
     
-  }
-};
+//   }
+// };
 
-RNCallKeep.setup(options).then(accepted => {});
-RNCallKeep.setAvailable(true);
+// RNCallKeep.setup(options).then(accepted => {});
+// RNCallKeep.setAvailable(true);
 const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserData,onNavigate ,organizationName,organizationImage} ) => {
   // const navigation = useNavigation();
  // const navigation = React.useContext(NavigationContext);
@@ -119,7 +119,12 @@ const AcceptRejectCallView = ({name,socket,item,socketConneted,currentItem,UserD
           // }
 
 //Code on 01 December by Wasim
-
+setautoDisconnectTimeOutEvent(()=>{
+  return setTimeout(()=>{
+      console.log('call auto disconnected')
+      onCancelHandler()
+  },60*1000)
+})
 let targetUsername='';
             let targetCallType='';
 
@@ -132,35 +137,78 @@ let targetUsername='';
             targetCallType=currentItem.callType;
             
           }
-          let calldisplayname=prepareShortName(targetUsername)+' Voice Call ABPWeddings';
-          if(targetCallType=='video'){
-            calldisplayname=prepareShortName(targetUsername)+' Video Call ABPWeddings';
-          }
 
-          const incomingCallAnswer = ({ callUUID }) => {
+      
+RNNotificationCall.displayNotification(
+  '22221a97-8eb4-4ac2-b2cf-0a3c0b9100ad',
+  null,
+  30000,
+  {
+    channelId: 'com.abc.incomingcall',
+    channelName: 'Incoming video call',
+    notificationIcon: 'ic_launcher', //mipmap
+    notificationTitle: targetUsername,
+    notificationBody: 'Incoming '+targetCallType+ " call",
+    answerText: 'Answer',
+    declineText: 'Decline',
+    notificationColor: 'colorAccent',
+    notificationSound: null, //raw
+    //mainComponent:'MyReactNativeApp',//AppRegistry.registerComponent('MyReactNativeApp', () => CustomIncomingCall);
+    // payload:{name:'Test',Body:'test'}
+  }
+);
+
+
+RNNotificationCall.addEventListener('answer', (data) => {
+  RNNotificationCall.backToApp();
+  const { callUUID, payload } = data;
+  console.log('press answer', callUUID);
+  InCallManager.stop();
+  acceptCall()
+});
+RNNotificationCall.addEventListener('endCall', (data) => {
+  const { callUUID, endAction, payload } = data;
+  console.log('press endCall', callUUID);
+  InCallManager.stop();
+  onCancelHandler()
+});
+//Change done by wasim on 3 december 
+// let targetUsername='';
+//             let targetCallType='';
+
+//            if(currentItem.data ){
+//             targetUsername=currentItem.data.name;
             
-            Incomingvideocall.endIncomingcallAnswer(callUUID);
-            //setisCalling(false);
-            acceptCall()
-          };
-        
-          const endIncomingCall = () => {
-            InCallManager.stop();
-            Incomingvideocall.endIncomingcallAnswer();
-            onCancelHandler()
-          };
+//             targetCallType=currentItem.data.callType;
+//           }else{
+//             targetUsername=currentItem.name;
+//             targetCallType=currentItem.callType;
+            
+//           }
+//           let calldisplayname=prepareShortName(targetUsername)+' Voice Call ABPWeddings';
+//           if(targetCallType=='video'){
+//             calldisplayname=prepareShortName(targetUsername)+' Video Call ABPWeddings';
+//           }
 
-          console.log("calldisplayname",calldisplayname);
+//           const incomingCallAnswer = ({ callUUID }) => {
+            
+//             Incomingvideocall.endIncomingcallAnswer(callUUID);
+//             //setisCalling(false);
+//             acceptCall()
+//           };
         
-          Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
-          Incomingvideocall.displayIncomingCall(prepareShortName(targetUsername),calldisplayname)
+//           const endIncomingCall = () => {
+//             InCallManager.stop();
+//             Incomingvideocall.endIncomingcallAnswer();
+//             onCancelHandler()
+//           };
 
-          setautoDisconnectTimeOutEvent(()=>{
-            return setTimeout(()=>{
-                console.log('call auto disconnected')
-                onCancelHandler()
-            },60*1000)
-        })
+//           console.log("calldisplayname",calldisplayname);
+        
+//           Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
+//           Incomingvideocall.displayIncomingCall(prepareShortName(targetUsername),calldisplayname)
+
+         
         }
     },[currentItem])
 
@@ -367,7 +415,7 @@ let targetUsername='';
        //  setVideoCallEvent("cancel")// un comment
 
        try {
-        console.log('remoteSocketId', item.sourceuid,UserData.userId);
+        console.log('remoteSocketId', item,UserData.userId);
         //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
         setshowNotificationIncomingCall(false);
         InCallManager.stop();

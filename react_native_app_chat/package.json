@@ -1,6 +1,6 @@
 {
   "name": "react_native_app_chat",
-  "version": "1.0.4",
+  "version": "1.0.6",
   "description": "This is video chat component",
   "main": "index.js",
   "scripts": {
@@ -43,16 +43,18 @@
     "react-native": "0.67.5",
     "react-native-callkeep": "^4.3.12",
     "react-native-document-picker": "^8.2.1",
+    "react-native-full-screen-notification-incoming-call": "^0.1.12",
     "react-native-emoji-selector": "^0.2.0",
     "react-native-image-crop-picker": "^0.40.0",
     "react-native-incall-manager": "^4.1.0",
     "react-native-material-menu": "^2.0.0",
     "react-native-paper": "^4.12.1",
     "react-native-simple-toast": "^1.1.3",
-    "react-native-webrtc": "^111.0.6",
+    "react-native-webrtc": "^118.0.0",
     "socket.io-client": "^4.7.2"
   },
   "dependencies": {
+    
     "react-native-uuid": "^2.0.1"
   }
 }
