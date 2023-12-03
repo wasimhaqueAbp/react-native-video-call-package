@@ -105,7 +105,27 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   useEffect(() => {
     //console.log("audioElement 111",audioElement);
     if (currentItem != null) {
+      let targetUsername = '';
+      let targetCallType = '';
+      let roomsStr=''
+
+      let profileimage = null;
+      if (currentItem.data) {
+        targetUsername = currentItem.data.name;
+        targetCallType = currentItem.data.callType;
+        roomsStr=currentItem.data.rooms;
+        profileimage = 'https://testcdn.abpweddings.com/'+currentItem.data.image;
+      } else {
+        targetUsername = currentItem.name;
+        targetCallType = currentItem.callType;
+        roomsStr=currentItem.rooms;
+        profileimage = 'https://testcdn.abpweddings.com/'+currentItem.image;
+      }
       console.log("audioElement??? ", currentItem);
+
+      if(targetCallType!='endcall'){
+
+      
       // outGoingRing(audioElement);
       // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
       InCallManager.start({ media: 'audio', ringback: '_BUNDLE_' }); // or _DEFAULT_ or system filename with extension
@@ -125,23 +145,9 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
           onCancelHandler()
         }, 60 * 1000)
       })
-      let targetUsername = '';
-      let targetCallType = '';
-      let roomsStr=''
+      
 
-      let profileimage = null;
-
-      if (currentItem.data) {
-        targetUsername = currentItem.data.name;
-        targetCallType = currentItem.data.callType;
-        roomsStr=currentItem.data.rooms;
-        profileimage = 'https://testcdn.abpweddings.com/'+currentItem.data.image;
-      } else {
-        targetUsername = currentItem.name;
-        targetCallType = currentItem.callType;
-        roomsStr=currentItem.rooms;
-        profileimage = 'https://testcdn.abpweddings.com/'+currentItem.image;
-      }
+      
       let calldisplayname =  'Abpweddings - Voice Call';
       if (targetCallType == 'video') {
         calldisplayname = 'Abpweddings - Video Call';
@@ -216,7 +222,11 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       //           console.log("calldisplayname",calldisplayname);
 
       //           Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
-      //           Incomingvideocall.displayIncomingCall(prepareShortName(targetUsername),calldisplayname)
+    }
+    else{
+      InCallManager.stop();
+      RNNotificationCall.hideNotification();
+    }
 
 
     }
@@ -387,19 +397,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
   }
 
-  useEffect(() => {
-    if (socket) {
-
-      //  socket.on("IncommingCallNotification", IncommingCallNotification);
-      // socket.on('endCall', handleEndCall);
-      socket.on("callalreadyreceived", handlealreadyreceived);
-      return () => {
-        // socket.off("IncommingCallNotification", IncommingCallNotification);
-        // socket.off('endCall', handleEndCall);
-      }
-    }
-
-  }, [socket,]);
+ 
 
   const handlealreadyreceived = useCallback(
     async ({ event }) => {
