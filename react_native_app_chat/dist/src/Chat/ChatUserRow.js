@@ -30,7 +30,7 @@ export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMess
  
  const showmessagebody = (item) =>{
   //item.messagebody
-  console.log(item);
+  
   let message=item.calltype;
   let displaymessage=''
   switch(message){

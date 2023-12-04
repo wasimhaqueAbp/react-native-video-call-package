@@ -41,7 +41,7 @@ const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
 const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted} = props
-console.log("item???????",JSON.stringify(item))
+
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
   userId:chatuserId,
@@ -95,7 +95,6 @@ const [userData,setUserData] = useState({
           eventEmitter.addListener('REQUEST_BLUR', (data) => {
             const newData = data;
             if(newData==false){
-              console.log('Custom event received with data Blur Conversation:', data);
              
               props.goBack();
               props.clearChat()
@@ -142,7 +141,7 @@ const [userData,setUserData] = useState({
      const setLocalandRemoteData= async () =>{
         const value = await AsyncStorage.getItem("chatData")
         const parsedValue = JSON.parse(value);
-       // console.log("Parsed result", parsedValue);
+       
       setChatAsyncData(parsedValue)
 
 
@@ -261,7 +260,7 @@ const [userData,setUserData] = useState({
     }
 
     const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
-   // console.log("response chat history",JSON.stringify(response))
+   
   if(response.status != 0){
     const list = response.chathistory.chatlist
     
@@ -276,7 +275,7 @@ const [userData,setUserData] = useState({
     // }
     
     if(startIndex > 0){
-     // console.log("in startIndex")
+     
       const sortedMsg = [...data,...list] //sortMessages([...data, ...unqueData])
 
       const tempData = chatData;
@@ -768,7 +767,7 @@ const formateCurrentDate = DATE.format(currentDate, 'DD/MM/YYYY')
 const yesterday = new Date();
   yesterday.setDate(currentDate.getDate() - 1);
   const formateDate2 = DATE.format(yesterday, 'DD/MM/YYYY')
-  console.log("yesterday",formateDate2)
+  
 
 if(data.length == 0 ){
   value = true
@@ -812,18 +811,18 @@ else if(formateDate2 == formateDate){
           }
            setChatText("")
           //  const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr1);
-          // console.log("response chat history",response)
+          
           }
           const setAsyncData = async (message)=>{
             const value = await AsyncStorage.getItem("chatData")
             const parsedValue = JSON.parse(value);
-           // console.log("Parsed result", parsedValue);
+           
           setChatAsyncData(parsedValue)
     
     
              for(let i = 0;i< parsedValue.length;i++){
                if(parsedValue[i].mappedUserid == item.mappedUserid){
-             //  console.log(parsedValue[i],"parsedValue[i]");
+             
                  let lastmessage = message.message;
                  parsedValue[i].messagebody =lastmessage
                 let asyData =parsedValue[i].userChatHistory;
@@ -831,7 +830,7 @@ else if(formateDate2 == formateDate){
                 parsedValue[i].userChatHistory =asyData
                 await AsyncStorage.setItem("chatData", JSON.stringify(parsedValue));
 
-                //console.log("asyData",asyData)
+                
 
                }
              }

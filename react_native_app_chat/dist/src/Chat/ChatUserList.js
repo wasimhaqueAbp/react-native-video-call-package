@@ -9,7 +9,8 @@ import {
   TextInput,
   Image,
   Keyboard,
-  AppState
+  AppState,
+  Platform
   
 } from 'react-native';
 
@@ -28,7 +29,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
  const ChatUserList = props => {
-//console.log("ChatUserList props",props)
+
 const newProps = props //props.route.params.props; //props
 const  {userCode,chatuserId,profileImage,profileName,genderId,socketConneted } = props;
 let {pushData} = props
@@ -76,10 +77,10 @@ const [data, setData] = useState([]);
      
      if(data.length >0){
       for (const friend of data) {
-       // console.log(friend.mappedUserid,newPushData.userId,"data.mappedUserid")
+       
         if (friend.mappedUserid == newPushData.userId) {
            // foundFriend = friend;
-           //console.log("friend",friend)
+       
            setTypes(newPushData.from)
            setItems(friend);
            setNewPushData(null);
@@ -124,7 +125,8 @@ const onCancelHandler = async (dataPush) =>{
     console.log('remoteSocketId', dataPush,props.socket);
     //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
     props.socket.emit('endCall', {to: dataPush.userId, from: chatuserId , room: dataPush.rooms});
-    props.socket.emit("misesdcall", { from: chatuserId, to: dataPush.userId,call: 'missedCall' });
+    props.socket.emit("misesdcall", { from: chatuserId, to: dataPush.userId,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
+    calltype:item.calltype  });
    
   } catch (error) {
     console.log("End Call Error",error)
@@ -169,14 +171,14 @@ const onCancelHandler = async (dataPush) =>{
 const localRemortData = async ()=>{
   const asyncData = await AsyncStorage.getItem("chatData")
     const parsedValue = JSON.parse(asyncData);
- //console.log("parsedValue new",parsedValue)
+ 
  if(parsedValue == null){
   if(netInfo.isConnected){
-   // console.log("in null if")
+ 
     fetchChatFriends();
   }
   else{
-   // console.log("in null else")
+   
       setData([]);
       setPreviousData([]);
   }
@@ -220,7 +222,7 @@ const localRemortData = async ()=>{
         
       const response =  await callApi(ServiceConstant.FETCH_CHAT_FRIENDS_LIST, arr);
       
-     // console.log("response.friendlist",response)
+     
       if(response != null && response['friendlist'] != null){
 
         let result = response.friendlist
@@ -229,7 +231,7 @@ const localRemortData = async ()=>{
         const asyncData = await AsyncStorage.getItem("chatData")
         const parsedValue = JSON.parse(asyncData);
       
-      //  console.log("valuse",parsedValue); 
+      
         
 
 if(asyncData != null){
@@ -237,7 +239,7 @@ if(asyncData != null){
  
   const updatedFriendlist =  result.map(item => {
     const asyncUser = parsedValue.find((user) => user.mappedUserid === item.mappedUserid);
-    //console.log("asyncUser",asyncUser);
+    
     if (asyncUser ) {
       
    return {...item,
@@ -247,7 +249,7 @@ if(asyncData != null){
     return item
   });
 
-//console.log("Updated friendlist:", updatedFriendlist);
+
 await AsyncStorage.setItem("chatData", JSON.stringify(updatedFriendlist))
 }     
 else{
@@ -292,7 +294,7 @@ else{
      
       
       props.socket.on(userCode, (msg) => {
-      //  console.log("msgsss",msg);
+      
       //  onMessageReceived(msg, data)
        
         setIncomeMesage(msg);
@@ -305,7 +307,7 @@ else{
    useEffect( () => {
 
     if(incomeMesage == null) return
-   // console.log("incomeMesage",incomeMesage)
+   
     onMessageReceived(incomeMesage, data)
 
     setIncomeMesage(null)
@@ -321,7 +323,7 @@ else{
 
      try {
 
-      //console.log(messages)
+      
       
       const updatedData = messages.map(item => {
         if (item.mappedUserCode === msg.senderName) {
@@ -341,7 +343,7 @@ else{
       const sortedFriendList = updatedData.sort((a, b) => {
         return b.modifyon - a.modifyon;  // Corrected the return order
       });
-     // console.log("updatedData",sortedFriendList)
+     
       setPreviousData(sortedFriendList);
       setData(sortedFriendList)     
      } 
@@ -456,14 +458,14 @@ else{
             onChangeText={e => {
               if(e !=""){
 setSearchText(e)
-                console.log(e )
+                
                 const filteredData = previousData.filter(item => item.mappedUserName.toLowerCase().includes(e.toLowerCase()));
                 //props.onChangeText(e)
-               // console.log("filteredData",filteredData)
+               
                setData(filteredData)
               }else{
                 setSearchText(e)
-                console.log(e)
+                
 
                 setData(
                   previousData
@@ -506,7 +508,7 @@ setSearchText(e)
       
       const onSelectProfile = (item, index) => {
 
-         // console.log("onSelectProfile", item)
+         
     
           if(item == null) return
     
@@ -516,7 +518,7 @@ setSearchText(e)
         setItems(item)
         selectItem = item;
 
-       // console.log("in",selectItem)
+       
         setTimeout(()=>{
           setOpenUserDetailPage(true);
           setPageType("detail")

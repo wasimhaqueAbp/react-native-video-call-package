@@ -822,7 +822,8 @@ useEffect(() => {
     else{
       //alert("missedCall")
       console.log("misedCall in videoCall")
-      socket.emit("misesdcall", { from: fromUser, to: remoteSocketId,call: 'missedCall' });
+      socket.emit("misesdcall", { from: fromUser, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
+      calltype:audioVideoType});
     }  
     
     

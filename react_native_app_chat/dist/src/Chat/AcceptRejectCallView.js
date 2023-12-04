@@ -430,7 +430,8 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
 
       socket.emit('endCall', { to: item.sourceuid, from: UserData.userId, room: item.rooms });
-      socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid, call: 'missedCall' });
+      socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid, call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
+      calltype:item.calltype });
       onNavigate()
     } catch (error) {
       console.log("in cancle error", error)
