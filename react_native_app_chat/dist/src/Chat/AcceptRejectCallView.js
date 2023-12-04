@@ -180,12 +180,14 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         const { callUUID, payload } = data;
         console.log('press answer', callUUID);
         InCallManager.stop();
+        RNNotificationCall.hideNotification();
         acceptCall()
       });
       RNNotificationCall.addEventListener('endCall', (data) => {
         const { callUUID, endAction, payload } = data;
         console.log('press endCall', callUUID);
         InCallManager.stop();
+        RNNotificationCall.hideNotification();
         onCancelHandler()
       });
       //Change done by wasim on 3 december 

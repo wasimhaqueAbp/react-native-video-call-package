@@ -38,6 +38,7 @@ import peer from '../Utility/peer';
 import { prepareShortName,getCreatedDate } from '../Utility/Utility';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
+import KeepAwake from 'react-native-keep-awake';
 
 
 
@@ -119,6 +120,14 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
       start:'',
       end:''
     })
+// Code done by Wasim on 04 December
+    useEffect(() => {
+      // Enable screen keep awake when the component mounts
+      KeepAwake.activate();
+  
+      // Disable screen keep awake when the component unmounts
+      return () => KeepAwake.deactivate();
+    }, []);
 
 // Code done by Wasim on 01 December
   useEffect(() => {
@@ -998,7 +1007,7 @@ const handleCallEngage = (data) => {
           objectFit={'cover'}
           style={{width: 80, height: 120,top:20, borderRadius:10}}
           volume={1.5}
-          mirror={false} // Adjust this based on your requirements
+          mirror={true} // Adjust this based on your requirements
           // audioOutput={'output-speaker'} // This controls the audio output
         /> :
         <View style={{borderWidth:1,borderColor:"#FFF",top:20}}>
@@ -1121,7 +1130,7 @@ const handleCallEngage = (data) => {
             objectFit={'cover'}
             style={{height: '100%'}}
             volume={1.5}
-            mirror={false} // Adjust this based on your requirements
+            mirror={true} // Adjust this based on your requirements
             // audioOutput={'output-speaker'} // This controls the audio output
           />
            
