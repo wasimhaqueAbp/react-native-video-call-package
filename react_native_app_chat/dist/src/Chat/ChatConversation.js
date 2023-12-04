@@ -537,6 +537,7 @@ const [userData,setUserData] = useState({
                     targetUserName: msg.targetUserName,
                     message:msg.message,
                    createdon:date, //formatTime(msg.createdon),//getCreatedDate(),
+                   type:"txt",
                    "showDate":value,
                 }
                 setAsyncData(arr3)
