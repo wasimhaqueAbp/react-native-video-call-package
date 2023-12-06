@@ -180,10 +180,22 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     console.log("nextAppState videocall",nextAppState)
     if (nextAppState == 'background') {
       // App has gone to the background, perform your background action here
+      console.log("nextAppState videocall????",nextAppState)
+      
      EndCall();
     }
   };
 
+  // useEffect(() => {
+  //   // Subscribe to app state changes
+  //   document.addEventListener("visibilitychange",event=>{
+  //     console.log("Document.visiblity state",document.visibilityState);
+  //   })
+  //   // Clean up the subscription when the component unmounts
+  //   return () => {
+      
+  //   };
+  // }, []);
   useEffect(()=>{
     if(audioVideoType!=null && audioVideoType!=''){
       if(audioVideoType=='video'){
@@ -340,7 +352,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     
       if(autoDisconectBit == false && remoteStream == undefined){
      InCallManager.stop();
-    //alert("hiii")
+    
     console.log("in auto dis")
     //Code change on 01 december
      //   EndCall();
@@ -789,10 +801,13 @@ useEffect(() => {
     if(timer > 0){
       clearInterval(intervalId);
     }
+    socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
+   
     InCallManager.stop();
     setcallOn(false);
     peer.peer.close();
     setcallended(true);
+    console.log("in Endcall");
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
       setMyStream()
@@ -803,7 +818,7 @@ useEffect(() => {
     }
     setRemoteStream();
     console.log('remoteSocketId',item, remoteSocketId, fromUser);
-    socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
+   // socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
     await peer.reconnectPeerConnection();
     if (callDuration.start) {
 

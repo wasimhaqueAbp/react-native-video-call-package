@@ -1,6 +1,6 @@
 {
   "name": "react_native_app_chat",
-  "version": "1.0.5",
+  "version": "1.0.4",
   "description": "This is video chat component",
   "main": "index.js",
   "scripts": {

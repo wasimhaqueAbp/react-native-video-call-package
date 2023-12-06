@@ -14,16 +14,26 @@ class PeerService {
         //   ],
         // });
 
+        // this.peer = new RTCPeerConnection({
+        //     iceServers: [
+        //         { urls: 'stun:turnqa.wbpweddings.com:30022' },
+        //         {
+        //           urls: 'turn:turnqa.wbpweddings.com:30022',
+        //           username: 'abp',
+        //           credential: 'P@ssw0rd#123@@'
+        //         }
+        //       ]
+        // });
         this.peer = new RTCPeerConnection({
-            iceServers: [
-                { urls: 'stun:turnqa.wbpweddings.com:30022' },
-                {
-                  urls: 'turn:turnqa.wbpweddings.com:30022',
-                  username: 'abp',
-                  credential: 'P@ssw0rd#123@@'
-                }
-              ]
-        });
+          iceServers: [
+              { urls: 'stun:14.140.228.254:40022' },
+              {
+                urls: 'turn:14.140.228.254:40022',
+                username: 'abp',
+                credential: 'P@ssw0rd#123@@'
+              }
+            ]
+      });
         
       }
     }
@@ -31,17 +41,27 @@ class PeerService {
 async reconnectPeerConnection(){
   
   //if (!this.peer) {
-    console.log("hiii reconnect",this.peer);  
-    this.peer = new RTCPeerConnection({
-      iceServers: [
-          { urls: 'stun:turnqa.wbpweddings.com:30022' },
-          {
-            urls: 'turn:turnqa.wbpweddings.com:30022',
-            username: 'abp',
-            credential: 'P@ssw0rd#123@@'
-          }
-        ]
-  });
+   // console.log("hiii reconnect",this.peer);  
+  //   this.peer = new RTCPeerConnection({
+  //     iceServers: [
+  //         { urls: 'stun:turnqa.wbpweddings.com:30022' },
+  //         {
+  //           urls: 'turn:turnqa.wbpweddings.com:30022',
+  //           username: 'abp',
+  //           credential: 'P@ssw0rd#123@@'
+  //         }
+  //       ]
+  // });
+  this.peer = new RTCPeerConnection({
+    iceServers: [
+        { urls: 'stun:14.140.228.254:40022' },
+        {
+          urls: 'turn:14.140.228.254:40022',
+          username: 'abp',
+          credential: 'P@ssw0rd#123@@'
+        }
+      ]
+});
  // }
 }
 
