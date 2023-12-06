@@ -24,6 +24,7 @@ class PeerService {
         //         }
         //       ]
         // });
+        //Live server peer
         this.peer = new RTCPeerConnection({
           iceServers: [
               { urls: 'stun:14.140.228.254:40022' },
@@ -34,7 +35,16 @@ class PeerService {
               }
             ]
       });
-        
+      // this.peer = new RTCPeerConnection({
+      //   iceServers: [
+      //       { urls: 'stun:14.140.228.249:3478' },
+      //       {
+      //         urls: 'turn:14.140.228.249:3478',
+      //         username: 'abp',
+      //         credential: 'password123'
+      //       }
+      //     ]
+      // });
       }
     }
   
@@ -52,6 +62,7 @@ async reconnectPeerConnection(){
   //         }
   //       ]
   // });
+  //Live server peer
   this.peer = new RTCPeerConnection({
     iceServers: [
         { urls: 'stun:14.140.228.254:40022' },
@@ -62,6 +73,16 @@ async reconnectPeerConnection(){
         }
       ]
 });
+// this.peer = new RTCPeerConnection({
+//   iceServers: [
+//       { urls: 'stun:14.140.228.249:3478' },
+//       {
+//         urls: 'turn:14.140.228.249:3478',
+//         username: 'abp',
+//         credential: 'password123'
+//       }
+//     ]
+// });
  // }
 }
 

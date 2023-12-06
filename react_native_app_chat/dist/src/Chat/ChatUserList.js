@@ -124,9 +124,9 @@ const onCancelHandler = async (dataPush) =>{
   try {
     console.log('remoteSocketId', dataPush,props.socket);
     //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
-    props.socket.emit('endCall', {to: dataPush.userId, from: chatuserId , room: dataPush.rooms});
-    props.socket.emit("misesdcall", { from: chatuserId, to: dataPush.userId,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
-    calltype:item.calltype  });
+    props.socket.emit('endCall', {to: dataPush.userId, from: dataPush.sourceuid , room: dataPush.rooms});
+    props.socket.emit("misesdcall", { from: dataPush.sourceuid, to: dataPush.userId,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
+    calltype:dataPush.calltype  });
    
   } catch (error) {
     console.log("End Call Error",error)
@@ -487,6 +487,7 @@ setSearchText(e)
           <FlatList
               style={{marginVertical: 5,}}
               data={data}
+              keyExtractor={(item,index) => index}
               renderItem={renderRowItem}
               windowSize={15}
               showsVerticalScrollIndicator={false}
@@ -498,6 +499,7 @@ setSearchText(e)
       const renderRowItem = ({item, index}) => {
         return (
           <ChatUserRow
+          key={item.lastmessageid}
             item={item}
             index={index}
              onSelectProfile={onSelectProfile}
@@ -553,8 +555,9 @@ setSearchText(e)
        
       </View>
       : 
-     pageType != null && pageType =="detail"? 
+      pageType != null && pageType =="detail"? 
      <ChatConversation props={props}
+        
         item={items}
         goBack={()=>onPressGoBack()}
         socket={props.socket}
@@ -571,7 +574,7 @@ setSearchText(e)
         
       />
       :
-      pageType != null && pageType =="block"?
+       pageType != null && pageType =="block"?
       <BlockList
          goBack={()=>onPressGoBack()}
       />
@@ -579,7 +582,7 @@ setSearchText(e)
       <PendingRequest
         goBack={()=>onPressGoBack()}
       />
-      }
+      }  
 
      
       {/* <WS

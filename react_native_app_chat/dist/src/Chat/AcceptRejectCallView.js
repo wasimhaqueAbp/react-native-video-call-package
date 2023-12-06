@@ -46,6 +46,7 @@ import Incomingvideocall from "../Utility/incoming-video-call";
 
 // RNCallKeep.setup(options).then(accepted => {});
 // RNCallKeep.setAvailable(true);
+var globalAcceptReject = false;
 const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem, UserData, onNavigate, organizationName, organizationImage }) => {
   // const navigation = useNavigation();
   // const navigation = React.useContext(NavigationContext);
@@ -58,7 +59,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   const [targetUserName, setTargetUserName] = useState(null);
   const [callTypes, setCallTypes] = useState(null)
   const [autoDisconnectTimeOutEvent, setautoDisconnectTimeOutEvent] = useState()
-
+  
   console.log("Accept Reject ", name, socket, item, socketConneted, currentItem)
   useEffect(() => {
     //let realmObj;
@@ -141,8 +142,12 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       //Code on 01 December by Wasim
       setautoDisconnectTimeOutEvent(() => {
         return setTimeout(() => {
-          console.log('call auto disconnected')
-          onCancelHandler()
+          console.log('call auto disconnected',globalAcceptReject)
+          if(globalAcceptReject == false){
+            console.log('call auto disconnected11')
+            onCancelHandler()
+          }
+          
         }, 60 * 1000)
       })
       
@@ -160,7 +165,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         profileimage,
         30000,
         {
-          channelId: 'com.abc.incomingcall',
+          channelId: 'com.abpweddings.incomingcall',
           channelName: 'Incoming video call',
           notificationIcon: 'ic_launcher', //mipmap
           notificationTitle: prepareShortName(targetUsername),
@@ -228,6 +233,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
     else{
       InCallManager.stop();
       RNNotificationCall.hideNotification();
+      globalAcceptReject= true;
     }
 
 
@@ -238,7 +244,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
     InCallManager.stop();
 
-
+    
     // handleAcceptButton();
     checkPermissions();
 
@@ -352,7 +358,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   const handleAcceptButton = () => {
     // pause(audioElement,0);
 
-
+    globalAcceptReject = true;
     let roomNo = 2456;
     //     let url='/'+ROUTES.CALLWINDOW+'?roomno='+incomingCall.from+'&room='+roomNo+'&audio=true&video=true&callaccept=Y&callinitiateByothers=remote';
     //     let nameWindow='chatWindow';
@@ -423,7 +429,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
     }
     // remoteSocketId 2713882 2702140
     //  setVideoCallEvent("cancel")// un comment
-
+    globalAcceptReject = true;
     try {
       console.log('remoteSocketId', item, UserData.userId);
       //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });

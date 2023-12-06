@@ -61,7 +61,7 @@ export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMess
   return (
         
     //   <Card style={style}>
-    <View>
+    <View key={item.lastmessageid}>
       <Pressable style={styles.mainView} onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}>
     
        <View style={styles.imageMainView}>
