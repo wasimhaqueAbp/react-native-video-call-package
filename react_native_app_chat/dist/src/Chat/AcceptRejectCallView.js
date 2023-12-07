@@ -187,6 +187,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         InCallManager.stop();
         RNNotificationCall.hideNotification();
         acceptCall()
+        RNNotificationCall.removeEventListener('answer');
       });
       RNNotificationCall.addEventListener('endCall', (data) => {
         const { callUUID, endAction, payload } = data;
@@ -194,7 +195,11 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         InCallManager.stop();
         RNNotificationCall.hideNotification();
         onCancelHandler()
+        RNNotificationCall.removeEventListener('endCall');
       });
+
+      
+      
       //Change done by wasim on 3 december 
       // let targetUsername='';
       //             let targetCallType='';
