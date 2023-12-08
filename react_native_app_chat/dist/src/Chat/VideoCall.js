@@ -42,6 +42,15 @@ import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
 import KeepAwake from 'react-native-keep-awake';
 import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
 
+import {
+  Activity,
+  WakeLock,
+  PartialWakeLock,
+  WifiLock,
+  ScreenLock,
+  PictureInPicture
+} from '@saserinn/react-native-app-utils';
+
 
 const VideoChatCall = props => {
   const {t, i18n} = useTranslation();
@@ -741,6 +750,8 @@ useEffect(() => {
       fromname = 'You';
     }
     setendedBy(fromname);
+
+    ScreenLock.release();
 
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
