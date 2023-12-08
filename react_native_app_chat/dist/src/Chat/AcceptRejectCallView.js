@@ -12,7 +12,8 @@ import {
   Alert,
   PermissionsAndroid,
   Permissions,
-  Image
+  Image,
+  Keyboard
 
 } from 'react-native';
 import { IconButton } from 'react-native-paper';
@@ -50,7 +51,7 @@ var globalAcceptReject = false;
 const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem, UserData, onNavigate, organizationName, organizationImage }) => {
   // const navigation = useNavigation();
   // const navigation = React.useContext(NavigationContext);
-  const { sockets } = useVideoCall();
+// const { sockets } = useVideoCall();
   const [incomingCall, setIncomingCall] = useState(null);
 
   const [showNotificationIncomingCall, setshowNotificationIncomingCall] = useState(false);
@@ -186,6 +187,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         console.log('press answer', callUUID);
         InCallManager.stop();
         RNNotificationCall.hideNotification();
+        Keyboard.dismiss()
         acceptCall()
         RNNotificationCall.removeEventListener('answer');
       });
@@ -194,6 +196,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         console.log('press endCall', callUUID);
         InCallManager.stop();
         RNNotificationCall.hideNotification();
+        Keyboard.dismiss()
         onCancelHandler()
         RNNotificationCall.removeEventListener('endCall');
       });

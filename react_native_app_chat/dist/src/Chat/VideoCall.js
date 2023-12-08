@@ -21,7 +21,8 @@ import {
   Linking,
   Alert,
   BackHandler,
-  AppState
+  AppState,
+  Keyboard
 } from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {
@@ -39,7 +40,7 @@ import { prepareShortName,getCreatedDate } from '../Utility/Utility';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
 import KeepAwake from 'react-native-keep-awake';
-
+import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
 
 
 const VideoChatCall = props => {
@@ -66,7 +67,7 @@ const VideoChatCall = props => {
     targetUserImage
   } = props.props;
   
-  console.log('item video call',props.props,
+ // console.log('item video call',props.props,
   // registerUserToSocket_,
   // roomno,
   // rooms,
@@ -76,7 +77,7 @@ const VideoChatCall = props => {
   // callaccept,
   // item,
   // socketConneted,
-  );
+ // );
   let intervalId = null;
   let autoDisconectBit= false
   const [socket,setsocket]=useState(sockets);
@@ -124,7 +125,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     useEffect(() => {
       // Enable screen keep awake when the component mounts
       KeepAwake.activate();
-  
+  Keyboard.dismiss()
       // Disable screen keep awake when the component unmounts
       return () => KeepAwake.deactivate();
     }, []);
@@ -355,7 +356,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     
     console.log("in auto dis")
     //Code change on 01 december
-     //   EndCall();
+        EndCall();
       }
       
      //
@@ -802,7 +803,8 @@ useEffect(() => {
       clearInterval(intervalId);
     }
     socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
-   
+  
+  
     InCallManager.stop();
     setcallOn(false);
     peer.peer.close();

@@ -122,10 +122,11 @@ useEffect(()=>{
 const onCancelHandler = async (dataPush) =>{
   //alert("hisis")
   try {
-    console.log('remoteSocketId', dataPush,props.socket);
+    //console.log('remoteSocketId on cancel handler', dataPush,dataPush.sourceuid);
     //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
-    props.socket.emit('endCall', {to: dataPush.userId, from: dataPush.sourceuid , room: dataPush.rooms});
-    props.socket.emit("misesdcall", { from: dataPush.sourceuid, to: dataPush.userId,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
+    //console.log({to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms})
+    props.socket.emit('endCall', {to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms});
+    props.socket.emit("misesdcall", { from: dataPush.userId, to:dataPush.sourceuid ,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
     calltype:dataPush.calltype  });
    
   } catch (error) {

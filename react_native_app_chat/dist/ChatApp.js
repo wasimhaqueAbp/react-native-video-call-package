@@ -1,5 +1,5 @@
 import React, {useState, useEffect, createRef, useRef,AppState} from 'react';
-import { View } from 'react-native';
+import { Keyboard, View } from 'react-native';
 import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
 import { getEventEmitter } from './src/Utility/Utility';
@@ -115,6 +115,7 @@ const ChatApp = props => {
            }
         });
         eventEmitter.addListener('REQUEST_BLUR', (data) => {
+          Keyboard.dismiss();
           const newData = data;
           if(newData==false){
             console.log('Custom event received with data Blur:', data);

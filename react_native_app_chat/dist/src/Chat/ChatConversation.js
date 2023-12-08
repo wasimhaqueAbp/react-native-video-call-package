@@ -94,6 +94,7 @@ const [userData,setUserData] = useState({
           
           eventEmitter.addListener('REQUEST_BLUR', (data) => {
             const newData = data;
+            Keyboard.dismiss();
             if(newData==false){
              
               props.goBack();
