@@ -356,7 +356,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     
     console.log("in auto dis")
     //Code change on 01 december
-        EndCall();
+       // EndCall();
       }
       
      //

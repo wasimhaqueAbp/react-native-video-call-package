@@ -48,7 +48,7 @@ import Incomingvideocall from "../Utility/incoming-video-call";
 // RNCallKeep.setup(options).then(accepted => {});
 // RNCallKeep.setAvailable(true);
 var globalAcceptReject = false;
-const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem, UserData, onNavigate, organizationName, organizationImage }) => {
+const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem, UserData, onNavigate, organizationName, organizationImage,callType }) => {
   // const navigation = useNavigation();
   // const navigation = React.useContext(NavigationContext);
 // const { sockets } = useVideoCall();
@@ -58,16 +58,17 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   const moreRef = useRef();
   const [userData, setUserData] = useState(null);
   const [targetUserName, setTargetUserName] = useState(null);
-  const [callTypes, setCallTypes] = useState(null)
+  const [callTypes, setCallTypes] = useState(callType)
   const [autoDisconnectTimeOutEvent, setautoDisconnectTimeOutEvent] = useState()
-  
-  console.log("Accept Reject ", name, socket, item, socketConneted, currentItem)
+  const [newItems,setNewItems] =useState(item)
+  const [callAccepted,setCallAccepted] = useState(false);
+  console.log("Accept Reject ", name, item, socketConneted, currentItem)
   useEffect(() => {
     //let realmObj;
 
     (async () => {
       const obj = UserData;
-      console.log('UserData Accept reject', obj);
+     // console.log('UserData Accept reject', obj);
       setUserData(obj);
 
     })();
@@ -184,12 +185,13 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       RNNotificationCall.addEventListener('answer', (data) => {
         RNNotificationCall.backToApp();
         const { callUUID, payload } = data;
-        console.log('press answer', callUUID);
+        console.log('press answer', callUUID,item,callType);
         InCallManager.stop();
         RNNotificationCall.hideNotification();
+        RNNotificationCall.removeEventListener('answer');
         Keyboard.dismiss()
         acceptCall()
-        RNNotificationCall.removeEventListener('answer');
+       
       });
       RNNotificationCall.addEventListener('endCall', (data) => {
         const { callUUID, endAction, payload } = data;
@@ -197,8 +199,9 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         InCallManager.stop();
         RNNotificationCall.hideNotification();
         Keyboard.dismiss()
-        onCancelHandler()
+        
         RNNotificationCall.removeEventListener('endCall');
+        onCancelHandler()
       });
 
       
@@ -246,8 +249,33 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
 
     }
+    return () => {
+      RNNotificationCall.removeEventListener('endCall');
+      RNNotificationCall.removeEventListener('answer')
+    };
+
   }, [currentItem])
 
+
+  // useEffect(()=>{
+  //   console.log("callAccepted11???",callAccepted,item);
+  //   if(callAccepted){
+  //     console.log("callAccepted???",callAccepted,item);
+  //     if (currentItem != null) {
+
+  //       let uri = currentItem.data ?
+  //         currentItem.data.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+  //         : currentItem.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+  //       console.log("Accepted call", uri)
+  //       Linking.openURL(uri);
+  //     }
+  //     else {
+  
+  //       let uri = "aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL" + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes+ "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+  //       Linking.openURL(uri);
+  //     }
+  //   }
+  // },[callAccepted])
   const acceptCall = async () => {
 
     InCallManager.stop();
@@ -365,7 +393,8 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   }
   const handleAcceptButton = () => {
     // pause(audioElement,0);
-
+    setCallAccepted(true);
+   
     globalAcceptReject = true;
     let roomNo = 2456;
     //     let url='/'+ROUTES.CALLWINDOW+'?roomno='+incomingCall.from+'&room='+roomNo+'&audio=true&video=true&callaccept=Y&callinitiateByothers=remote';
@@ -384,23 +413,23 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       console.log('if autoDisconnectTimeOutEvent')
       clearTimeout(autoDisconnectTimeOutEvent)
     }
-    onNavigate()
+   
     //Un comment this when push
-
+    console.log("itemd?????",currentItem,callTypes,callType);
     if (currentItem != null) {
 
       let uri = currentItem.data ?
-        currentItem.data.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + item.calltype + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
-        : currentItem.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + item.calltype + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+        currentItem.data.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+        : currentItem.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
       console.log("Accepted call", uri)
       Linking.openURL(uri);
     }
     else {
 
-      let uri = "aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL" + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + item.calltype + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
+      let uri = "aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL" + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes+ "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
       Linking.openURL(uri);
     }
-
+    // onNavigate()
     // navigation.navigate("videoChat");
     // navigation.navigate("videoChat",
     // {roomno:incomingCall.from,rooms :incomingCall.room,
