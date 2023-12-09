@@ -763,7 +763,7 @@ useEffect(() => {
     await peer.reconnectPeerConnection();
     console.log("in Endcall1")
     InCallManager.stop();
-   // KeepAwake.deactivate();
+    KeepAwake.deactivate();
     console.log("in Endcall2")
     props.goBack()
   };
@@ -1149,7 +1149,7 @@ const handleCallEngage = (data) => {
       
       {remoteStream && callOn && !callended  ? (
        <View style={{flex: 1,}}>
-          
+       
          
            <RTCView
             streamURL={remoteStream?.toURL()}
@@ -1232,6 +1232,7 @@ const handleCallEngage = (data) => {
         </View>
       ) : (
         <View style={{flex: 1}}>
+        
           <View
             style={{
               height: '100%',
@@ -1285,6 +1286,7 @@ const handleCallEngage = (data) => {
           LocalStreamView()}
         </View>
       )}
+      
     </View>
   );
 };
