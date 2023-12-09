@@ -22,8 +22,11 @@ import {
   Alert,
   BackHandler,
   AppState,
-  Keyboard
+  Keyboard,
+  
+
 } from 'react-native';
+
 import {IconButton} from 'react-native-paper';
 import {
   RTCPeerConnection,
@@ -41,15 +44,6 @@ import { getImageUrl } from '../../NW/ServiceURL';
 import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
 import KeepAwake from 'react-native-keep-awake';
 import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
-
-import {
-  Activity,
-  WakeLock,
-  PartialWakeLock,
-  WifiLock,
-  ScreenLock,
-  PictureInPicture
-} from '@saserinn/react-native-app-utils';
 
 
 const VideoChatCall = props => {
@@ -134,12 +128,15 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     useEffect(() => {
       // Enable screen keep awake when the component mounts
       KeepAwake.activate();
+   
+
   Keyboard.dismiss()
       // Disable screen keep awake when the component unmounts
-      return () => KeepAwake.deactivate();
+      //return () => KeepAwake.deactivate();
     }, []);
 
-// Code done by Wasim on 01 December
+    
+    // Code done by Wasim on 01 December
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       'hardwareBackPress',
@@ -751,22 +748,23 @@ useEffect(() => {
     }
     setendedBy(fromname);
 
-    ScreenLock.release();
-
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
     }
     if (remoteStream) {
       remoteStream.getTracks().forEach(track => track.stop());
     }
+    console.log("in Endcall")
     peer.peer.close();
     setcallOn(false);
     setMyStream()
     setRemoteStream();
     setcallended(true);
     await peer.reconnectPeerConnection();
+    console.log("in Endcall1")
     InCallManager.stop();
-
+   // KeepAwake.deactivate();
+    console.log("in Endcall2")
     props.goBack()
   };
 
@@ -863,7 +861,7 @@ useEffect(() => {
       calltype:audioVideoType});
     }  
     
-    
+    KeepAwake.deactivate();
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
     props.goBack()

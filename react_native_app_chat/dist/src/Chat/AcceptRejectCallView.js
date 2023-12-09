@@ -108,6 +108,9 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   useEffect(() => {
     //console.log("audioElement 111",audioElement);
     if (currentItem != null) {
+    //  RNNotificationCall.removeEventListener('answer');
+      //RNNotificationCall.removeEventListener('endCall');
+      
       let targetUsername = '';
       let targetCallType = '';
       let roomsStr=''
@@ -188,7 +191,6 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         console.log('press answer', callUUID,item,callType);
         InCallManager.stop();
         RNNotificationCall.hideNotification();
-        RNNotificationCall.removeEventListener('answer');
         Keyboard.dismiss()
         acceptCall()
        
@@ -200,7 +202,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         RNNotificationCall.hideNotification();
         Keyboard.dismiss()
         
-        RNNotificationCall.removeEventListener('endCall');
+        
         onCancelHandler()
       });
 
@@ -477,7 +479,8 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       socket.emit('endCall', { to: item.sourceuid, from: UserData.userId, room: item.rooms });
       socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid, call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
       calltype:item.calltype });
-      onNavigate()
+      console.log("remoteSocketId??",socket);
+    onNavigate()
     } catch (error) {
       console.log("in cancle error", error)
     }
