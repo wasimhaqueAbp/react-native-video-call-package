@@ -33,6 +33,13 @@ import RNCallKeep from 'react-native-callkeep';
 import Incomingvideocall from "../Utility/incoming-video-call";
 import { ServiceConstant } from '../../NW/ServiceAPI';
 import { callApi } from '../../NW/APIManager';
+import {
+  RINGER_MODE,
+  getRingerMode,
+  RingerModeType,
+} from 'react-native-ringer-mode';
+
+
 // const options = {
 //   ios: {
 //     appName: 'My app name',
@@ -54,6 +61,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   // const navigation = useNavigation();
   // const navigation = React.useContext(NavigationContext);
 // const { sockets } = useVideoCall();
+
   const [incomingCall, setIncomingCall] = useState(null);
 
   const [showNotificationIncomingCall, setshowNotificationIncomingCall] = useState(false);
@@ -64,11 +72,13 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   const [autoDisconnectTimeOutEvent, setautoDisconnectTimeOutEvent] = useState()
   const [newItems,setNewItems] =useState(item)
   const [callAccepted,setCallAccepted] = useState(false);
+  const currentMode =   getRingerMode();
   console.log("Accept Reject ", name, item, socketConneted, currentItem)
   useEffect(() => {
     //let realmObj;
 
     (async () => {
+     
       const obj = UserData;
      // console.log('UserData Accept reject', obj);
       setUserData(obj);
@@ -135,8 +145,11 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
       
       // outGoingRing(audioElement);
-      // InCallManager.startRingtone('_DEFAULT_'); // or _DEFAULT_ or system filename with extension
-      InCallManager.start({ media: 'audio', ringback: '_BUNDLE_' }); // or _DEFAULT_ or system filename with extension
+      
+      if(currentMode == 2){
+        InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: true}); // or _DEFAULT_ or system filename with extension
+      
+      }
       // if(currentItem.data ){
       //   setTargetUserName(currentItem.data.name);
       //   setCallTypes(currentItem.data.callType)
