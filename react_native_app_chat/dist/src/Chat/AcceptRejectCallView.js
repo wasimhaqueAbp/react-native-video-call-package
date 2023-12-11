@@ -31,6 +31,8 @@ import RNNotificationCall from 'react-native-full-screen-notification-incoming-c
 
 import RNCallKeep from 'react-native-callkeep';
 import Incomingvideocall from "../Utility/incoming-video-call";
+import { ServiceConstant } from '../../NW/ServiceAPI';
+import { callApi } from '../../NW/APIManager';
 // const options = {
 //   ios: {
 //     appName: 'My app name',
@@ -459,38 +461,67 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
     InCallManager.stop();
 
   };
-
-  const onCancelHandler = async () => {
+  const onCancelHandler = async () =>{
     //Code done on 01 December by wasim
-    if (autoDisconnectTimeOutEvent) {
-      console.log('if autoDisconnectTimeOutEvent')
-      clearTimeout(autoDisconnectTimeOutEvent)
-    }
-    // remoteSocketId 2713882 2702140
-    //  setVideoCallEvent("cancel")// un comment
-    globalAcceptReject = true;
-    try {
-      console.log('remoteSocketId', item, UserData.userId);
+       // remoteSocketId 2713882 2702140
+     //  setVideoCallEvent("cancel")// un comment
+
+     try {
+       
       //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
-      setshowNotificationIncomingCall(false);
-      InCallManager.stop();
+      const body = {
+        from: item.uid,
+        to:item.sourceuid,
+        devplatform:Platform.OS ="android"?"android":"ios",
+        calltype:item.calltype,
+        rooms:item.rooms
 
-
-      socket.emit('endCall', { to: item.sourceuid, from: UserData.userId, room: item.rooms });
-      socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid, call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
-      calltype:item.calltype });
-      console.log("remoteSocketId??",socket);
-    onNavigate()
-    } catch (error) {
-      console.log("in cancle error", error)
-    }
-    //peer.peer.close();
-
-
-    // await peer.reconnectPeerConnection();
-
+      };
+      console.log("response rejectCall Push handler??",body)
+      const response = await callApi(ServiceConstant.VIDEO_CALL_REJECT, body);
+     console.log("response push handler rejectCall??",response)
+     
+      
+    
+    
+      } catch (error) {
+       console.log("in cancle error",error)
+     }
+       
 
   }
+
+  // const onCancelHandler = async () => {
+  //   //Code done on 01 December by wasim
+  //   if (autoDisconnectTimeOutEvent) {
+  //     console.log('if autoDisconnectTimeOutEvent')
+  //     clearTimeout(autoDisconnectTimeOutEvent)
+  //   }
+  //   // remoteSocketId 2713882 2702140
+  //   //  setVideoCallEvent("cancel")// un comment
+  //   globalAcceptReject = true;
+  //   try {
+  //     console.log('remoteSocketId', item, UserData.userId);
+  //     //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
+  //     setshowNotificationIncomingCall(false);
+  //     InCallManager.stop();
+
+
+  //     socket.emit('endCall', { to: item.sourceuid, from: UserData.userId, room: item.rooms });
+  //     socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid, call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
+  //     calltype:item.calltype });
+  //     console.log("remoteSocketId??",socket);
+  //   onNavigate()
+  //   } catch (error) {
+  //     console.log("in cancle error", error)
+  //   }
+  //   //peer.peer.close();
+
+
+  //   // await peer.reconnectPeerConnection();
+
+
+  // }
 
 
 
