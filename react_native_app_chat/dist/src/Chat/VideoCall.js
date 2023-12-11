@@ -42,6 +42,7 @@ import peer from '../Utility/peer';
 import { prepareShortName,getCreatedDate } from '../Utility/Utility';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
+import KeepAwake from 'react-native-keep-awake';
 import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
 
 import {
@@ -139,10 +140,12 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 // Code done by Wasim on 04 December
     useEffect(() => {
       // Enable screen keep awake when the component mounts
-      
+      //KeepAwake.activate();
+   
 
   Keyboard.dismiss()
-      
+      // Disable screen keep awake when the component unmounts
+      //return () => KeepAwake.deactivate();
     }, []);
 
     
@@ -755,6 +758,10 @@ useEffect(() => {
 
   const handleEndCall = async ({from}) => {
     // Stop the streams
+
+    PartialWakeLock.release(); 
+    ScreenLock.release();
+
     let fromname = 'Remote User';
     if (from == 'own') {
       fromname = 'You';
@@ -776,7 +783,7 @@ useEffect(() => {
     await peer.reconnectPeerConnection();
     console.log("in Endcall1")
     InCallManager.stop();
-    
+    KeepAwake.deactivate();
     console.log("in Endcall2")
     WakeLock.release();
     props.goBack()
@@ -822,7 +829,8 @@ useEffect(() => {
 
  
   const EndCall = async () => {
-
+    PartialWakeLock.release(); 
+    ScreenLock.release();
     if(timer > 0){
       clearInterval(intervalId);
     }
@@ -875,10 +883,8 @@ useEffect(() => {
       socket.emit("misesdcall", { from: fromUser, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
       calltype:audioVideoType});
     }  
-    
-  // peer.peer.close();
     WakeLock.release();
-    
+    //KeepAwake.deactivate();
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
     props.goBack()
@@ -1001,7 +1007,10 @@ const handlecheckUserStatusResponse = async(ev) =>{
     setcheckCallActive(true);
   }
   else{
+    PartialWakeLock.release(); 
+    ScreenLock.release();
     console.log("Props");
+    InCallManager.stop();
     peer.peer.close();
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
@@ -1020,7 +1029,8 @@ const handlecheckUserStatusResponse = async(ev) =>{
 }
 
 useEffect(()=>{
-  if(callaccepted && remoteSocketId!='' && fromUser!='' && room!=''){
+  console.log("callaccepted",callaccepted);
+  if(callaccepted=='Y' && remoteSocketId!='' && fromUser!='' && room!=''){
     socket.emit('checkUserStatus', {to: remoteSocketId, from: fromUser, room: room});
   }
 },[callaccepted,remoteSocketId,fromUser,room]);
