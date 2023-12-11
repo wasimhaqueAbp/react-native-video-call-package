@@ -147,5 +147,43 @@ export const callApi = async (type, param = null, showError = false) => {
                       }
                       break
         
-    }
+                      case ServiceConstant.VIDEO_CALL_REJECT:
+                        try {
+                  
+                            const headers = {
+                              'Content-Type': 'application/json',
+                              Accept: 'application/json',
+                            }
+                            //let url = ServiceUrl(type)
+                            const body=JSON.stringify(param)
+                            let reqUrlCH = ServiceUrl(type);
+                            var requestOptions = {
+                              method: 'POST',
+                              headers: headers,
+                              redirect: 'follow',
+                              body:body
+                          };
+                            if(__DEV__) { console.log(type + " =====>>>>", reqUrlCH, param)}
+                            const response = await fetch(reqUrlCH, requestOptions)
+                     
+                            // const response = await axios.post(url, param, {
+                            //   headers,
+                            //   timeout: 60000,
+                            // })
+                  
+                           // if(__DEV__) { console.log(type + " =====>>>>", response)}
+                  
+                           const data = await response.json();
+                
+                        return data
+                        }
+                        catch(e){
+                  
+                          if(__DEV__)    console.log(type, " ==> ", e);;
+                          return getNWError();
+                        }
+                        break
+                  
+   
+                    }
 }

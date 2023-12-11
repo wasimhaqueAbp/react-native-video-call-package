@@ -51,8 +51,8 @@ export const getImageUrl = (path,genderId) => {
     FETCH_CHAT_HISTORY_URL:
     '/messegingservice/user/chat/usersSpecificChathistory',
     FETCH_SEND_CHAT_URL:'/messegingservice/user/chat/usersFriendListUpdation',
-    UPDATE_UNREAD_CHAT_URL:"/messegingservice/user/chat/updateunreadCount"
-
+    UPDATE_UNREAD_CHAT_URL:"/messegingservice/user/chat/updateunreadCount",
+    VIDEO_CALL_REJECT_URL:'/messegingservice/user/chat/videocallrejection'
   }
   export default ServiceApi;
 
@@ -78,6 +78,10 @@ export const getImageUrl = (path,genderId) => {
         case ServiceConstant.UPDATE_UNREAD_CHAT:
           url = base.BASE_CHAT +ServiceApi.UPDATE_UNREAD_CHAT_URL //base.BASE_URL_SOF + ServiceApi.FETCH_CHAT_FRIENDS_LIST_URL;
           break;
+          case ServiceConstant.VIDEO_CALL_REJECT:
+      url = base.BASE_CHAT + ServiceApi.VIDEO_CALL_REJECT_URL;
+
+      break;
   }
   return url;
 }
