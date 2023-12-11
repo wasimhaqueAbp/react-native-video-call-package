@@ -53,6 +53,7 @@ import {
   ScreenLock,
   PictureInPicture
 } from '@saserinn/react-native-app-utils';
+import { set } from 'date-fns';
 
 
 const VideoChatCall = props => {
@@ -133,6 +134,9 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
       start:'',
       end:''
     })
+
+    const [checkCallActive,setcheckCallActive] = useState(false)
+
 // Code done by Wasim on 04 December
     useEffect(() => {
       // Enable screen keep awake when the component mounts
@@ -473,6 +477,7 @@ setAudioORVideo(callTypes)
   const getCallDetails = () => {
     WakeLock.acquire();
     console.log("getCallDetails",remoteSocketId,fromUser,room);
+    
     socket.emit('getCallDetails', {
       from: remoteSocketId,
       to: fromUser,
@@ -711,13 +716,14 @@ useEffect(() => {
     callaccepted == 'Y' &&
     remoteSocketId != null &&
     socket &&
-    registerUserToSocket
+    registerUserToSocket && 
+    checkCallActive
   ) {
     getCallDetails();
 
     //startCall
   }
-}, [callaccepted, remoteSocketId, socket, registerUserToSocket]);
+}, [callaccepted, remoteSocketId, socket, registerUserToSocket,checkCallActive]);
 
   
   useEffect(() => {
@@ -985,9 +991,45 @@ const handleCallEngage = (data) => {
   console.log('handleCallEngageEmit', data)
   EndCall();
 }
+
+
+
+const handlecheckUserStatusResponse = async(ev) =>{
+
+  console.log("evvv",ev);
+
+  if(ev.targetuserStatus!=null && ev.targetuserStatus=='true'){
+    setcheckCallActive(true);
+  }
+  else{
+    console.log("Props");
+    peer.peer.close();
+    if (myStream) {
+      myStream.getTracks().forEach(track => track.stop());
+      
+    }
+    setMyStream()
+    if (remoteStream) {
+      remoteStream.getTracks().forEach(track => track.stop());
+      
+    }
+    setRemoteStream();
+    await peer.reconnectPeerConnection();
+    WakeLock.release();
+    props.goBack();
+  }
+}
+
+useEffect(()=>{
+  if(callaccepted && remoteSocketId!='' && fromUser!='' && room!=''){
+    socket.emit('checkUserStatus', {to: remoteSocketId, from: fromUser, room: room});
+  }
+},[callaccepted,remoteSocketId,fromUser,room]);
+
   useEffect(() => {
     if (socket != null) {
       try {
+        socket.on('checkUserStatusResponse', handlecheckUserStatusResponse);
         socket.on('userInRoom', handleuserInRoom);
          socket.on('incommingcall', handleIncommingCall);
          socket.on('callAccepted', handleCallAccepted);
@@ -1002,6 +1044,7 @@ const handleCallEngage = (data) => {
          socket.on("calltime", handleCallTimeEmit);
         // socket.on("alreadyengaged", handleCallEngage);
         return () => {
+            socket.off('checkUserStatusResponse', handlecheckUserStatusResponse);
             socket.off('userInRoom', handleuserInRoom);
             socket.off('incommingcall', handleIncommingCall);
             socket.off('callAccepted', handleCallAccepted);
