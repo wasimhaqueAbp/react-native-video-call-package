@@ -45,6 +45,15 @@ import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
 import KeepAwake from 'react-native-keep-awake';
 import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
 
+import {
+  Activity,
+  WakeLock,
+  PartialWakeLock,
+  WifiLock,
+  ScreenLock,
+  PictureInPicture
+} from '@saserinn/react-native-app-utils';
+
 
 const VideoChatCall = props => {
   const {t, i18n} = useTranslation();
@@ -127,7 +136,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 // Code done by Wasim on 04 December
     useEffect(() => {
       // Enable screen keep awake when the component mounts
-      KeepAwake.activate();
+      //KeepAwake.activate();
    
 
   Keyboard.dismiss()
@@ -371,7 +380,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 
   const handleCallUser = async () => {
     try {
-
+      WakeLock.acquire();
       const callTypes =audioVideoType == "video"? true: false
       const stream = await mediaDevices.getUserMedia({
         audio: {
@@ -462,6 +471,7 @@ setAudioORVideo(callTypes)
   };
 
   const getCallDetails = () => {
+    WakeLock.acquire();
     console.log("getCallDetails",remoteSocketId,fromUser,room);
     socket.emit('getCallDetails', {
       from: remoteSocketId,
@@ -765,7 +775,9 @@ useEffect(() => {
     InCallManager.stop();
     KeepAwake.deactivate();
     console.log("in Endcall2")
+    WakeLock.release();
     props.goBack()
+    
   };
 
   useEffect(() => {
@@ -860,8 +872,8 @@ useEffect(() => {
       socket.emit("misesdcall", { from: fromUser, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
       calltype:audioVideoType});
     }  
-    
-    KeepAwake.deactivate();
+    WakeLock.release();
+    //KeepAwake.deactivate();
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
     props.goBack()
