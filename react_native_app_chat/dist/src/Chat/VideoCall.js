@@ -1020,7 +1020,7 @@ const handlecheckUserStatusResponse = async(ev) =>{
 }
 
 useEffect(()=>{
-  if(callaccepted && remoteSocketId!='' && fromUser!='' && room!=''){
+  if(callaccepted == "Y" && remoteSocketId!='' && fromUser!='' && room!=''){
     socket.emit('checkUserStatus', {to: remoteSocketId, from: fromUser, room: room});
   }
 },[callaccepted,remoteSocketId,fromUser,room]);
