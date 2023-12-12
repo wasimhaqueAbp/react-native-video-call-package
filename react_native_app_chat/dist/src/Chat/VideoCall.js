@@ -42,7 +42,7 @@ import peer from '../Utility/peer';
 import { prepareShortName,getCreatedDate } from '../Utility/Utility';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { getEnvironment } from 'react_native_app_chat/dist/NW/ServiceAPI';
-import KeepAwake from 'react-native-keep-awake';
+
 import RNNotificationCall from 'react-native-full-screen-notification-incoming-call';
 
 import {
@@ -140,12 +140,12 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 // Code done by Wasim on 04 December
     useEffect(() => {
       // Enable screen keep awake when the component mounts
-      //KeepAwake.activate();
+      
    
 
   Keyboard.dismiss()
       // Disable screen keep awake when the component unmounts
-      //return () => KeepAwake.deactivate();
+     
     }, []);
 
     
@@ -783,7 +783,7 @@ useEffect(() => {
     await peer.reconnectPeerConnection();
     console.log("in Endcall1")
     InCallManager.stop();
-    KeepAwake.deactivate();
+    
     console.log("in Endcall2")
     WakeLock.release();
     props.goBack()
@@ -884,7 +884,7 @@ useEffect(() => {
       calltype:audioVideoType});
     }  
     WakeLock.release();
-    //KeepAwake.deactivate();
+    
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
     props.goBack()

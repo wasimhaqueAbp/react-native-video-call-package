@@ -329,10 +329,12 @@ else{
       const updatedData = messages.map(item => {
         if (item.mappedUserCode === msg.senderName) {
           // Update the messagebody for the specified mappedUserCode
-         
+         //console.log("item????",item);
+        // console.log("msg????",msg)
          
           return {
             ...item,
+             calltype:msg.type!=null?msg.type:msg.calltype,
             messagebody: msg.message,
            modifyon :getCreatedDate(),
            unreadcount:item.unreadcount+1

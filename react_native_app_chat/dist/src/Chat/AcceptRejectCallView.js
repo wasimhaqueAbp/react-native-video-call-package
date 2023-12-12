@@ -72,7 +72,8 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   const [autoDisconnectTimeOutEvent, setautoDisconnectTimeOutEvent] = useState()
   const [newItems,setNewItems] =useState(item)
   const [callAccepted,setCallAccepted] = useState(false);
-  const currentMode =   getRingerMode();
+  
+  
   console.log("Accept Reject ", name, item, socketConneted, currentItem)
   useEffect(() => {
     //let realmObj;
@@ -90,8 +91,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
     };
   }, [userData]);
 
-
-
+ 
 
   // const IncommingCallNotification = useCallback(
   //     async ({ from,room,calltype,fromname,userCode, mappedUserCode}) => {
@@ -145,11 +145,14 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
       
       // outGoingRing(audioElement);
-      
+      (async () => {
+        const currentMode =   await getRingerMode();
+   
       if(currentMode == 2){
         InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: true}); // or _DEFAULT_ or system filename with extension
       
       }
+    })();
       // if(currentItem.data ){
       //   setTargetUserName(currentItem.data.name);
       //   setCallTypes(currentItem.data.callType)
@@ -168,7 +171,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
             onCancelHandler()
           }
           
-        }, 60 * 1000)
+        }, 70 * 1000)
       })
       
 
