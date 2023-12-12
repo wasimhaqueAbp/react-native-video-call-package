@@ -879,9 +879,10 @@ useEffect(() => {
     }
     else{
       //alert("missedCall")
-      console.log("misedCall in videoCall")
+      // console.log("misedCall in videoCall",callinitiateByothers,{ from: fromUser, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
+      // calltype:audioVideoType,initiateCallUser:callinitiateByothers == "own"? fromUser : remoteSocketId})
       socket.emit("misesdcall", { from: fromUser, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
-      calltype:audioVideoType});
+      calltype:audioVideoType,initiateCallUser:callinitiateByothers == "own"? fromUser : remoteSocketId});
     }  
     WakeLock.release();
     

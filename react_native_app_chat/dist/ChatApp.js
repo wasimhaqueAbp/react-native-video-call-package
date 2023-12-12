@@ -1,5 +1,5 @@
-import React, {useState, useEffect, createRef, useRef,AppState} from 'react';
-import { Keyboard, View } from 'react-native';
+import React, {useState, useEffect, createRef, useRef} from 'react';
+import { Keyboard, View,AppState } from 'react-native';
 import ChatUserList from './src/Chat/ChatUserList';
 import io from 'socket.io-client';
 import { getEventEmitter } from './src/Utility/Utility';
@@ -10,9 +10,9 @@ import { getEnvironment } from './NW/ServiceAPI';
 
 const ChatApp = props => {
   var globalScoketConnection;
- const  {userCode,chatuserId,profileImage,profileName,pushData,genderId,appState,pageFocus } = props;
+ const  {userCode,chatuserId,profileImage,profileName,pushData,genderId,appStates,pageFocus } = props;
  //console.log(userCode,pushData,"userCode")
- //const appState = useRef(AppState.currentState);
+ const appState = useRef(AppState.currentState);
       const [socket,setsocket]=useState(null);
       const eventEmitter = getEventEmitter()
       const [socketConneted,setsocketConneted]=useState(false);
@@ -137,17 +137,58 @@ const ChatApp = props => {
     },[chatuserId,socket]);
  
     useEffect(() => {
+      const  subscription = AppState.addEventListener(
+        'change',
+        async (nextAppState) => {
+
+          console.log("App state chat App", nextAppState, appState.current)
+
+          if (
+            appState.current.match(/active/) &&
+            nextAppState === 'active'
+          ) {
+
+            console.log('App active');
+            setSocketConnection()
+            
+          }
+          else {
+
+            console.log("App inactive")
+            socket.disconnect()
+            if(globalScoketConnection) {
+              globalScoketConnection.disconnect();
+               setsocketConneted(false);
+             }
+          }
+  
+          appState.current = nextAppState;
+
+        },
+      )
+    
       
-      if(socket!=null && appState=="background" || socket!=null && appState== "inactive" ){
-        console.log("in background disconect")
-        socket.disconnect()
-      }
-      // else if (appState == "active"){
+      // if(socket!=null && appStates=="background" || socket!=null && appStates== "inactive" ){
+      //   console.log("in background disconect")
+      //   socket.disconnect()
+      // }
+      // else if (appStates == "active"){
       //   setSocketConnection();
       // }
 
      // 
-    }, [appState]);
+     return () => {
+
+      if(subscription != null){
+        subscription.remove()
+      }
+
+     
+    }
+ 
+   }, [])
+
+   
 
    
 

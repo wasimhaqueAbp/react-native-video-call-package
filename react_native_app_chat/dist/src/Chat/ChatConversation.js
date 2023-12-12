@@ -492,7 +492,7 @@ const [userData,setUserData] = useState({
   const onMessageReceived = (msg, messages) => {
 
      console.log('MESSAGE:' + JSON.stringify(msg))
-     console.log('MESSAGE:' + JSON.stringify(msg.createdon))
+     console.log('MESSAGE:' + JSON.stringify(messages))
      console.log('MESSAGE:' +userCode)
      
      if(msg == null) return
@@ -537,7 +537,7 @@ const [userData,setUserData] = useState({
                     targetUserName: msg.targetUserName,
                     message:msg.message,
                    createdon:date, //formatTime(msg.createdon),//getCreatedDate(),
-                   type:"txt",
+                   type: "txt",
                    "showDate":value,
                 }
                 setAsyncData(arr3)
@@ -918,11 +918,13 @@ else if(formateDate2 == formateDate){
                       </View>
                     </View> 
                     :
-                    item.type =="video"?
+                     item.type =="video"?
                     <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
-                    <View style={{flexDirection:"row"}}>
+                    <View style={{flexDirection:"row"}} >
                       {item.message == "" ? 
-                        <View style={{backgroundColor:alignment == "right"?"#A8A8A8":"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
+                        <View 
+                        key={item.messageid}
+                        style={{backgroundColor:alignment == "right"?"#A8A8A8":"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
                         <Image
         style={{height:25,width:25,marginLeft:6,}}
        source={require('../icons/video_call_rejected.png')} resizeMode="contain" /> 
@@ -936,25 +938,19 @@ else if(formateDate2 == formateDate){
                     
                         </View>
                       }
-                      <View style={{ paddingLeft:5}}>
-                      <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Video Call"}</Text>
-                      <Text style={{ fontSize: 10, color: "black", }} key={index}>{item.message== "" ?"Missed Call": item.message +" min"}</Text>
-                      </View>
+                       <View style={{ paddingLeft:5}}>
+                      <Text style={{ fontSize: 14, color: "black", }} >{"Video Call"}</Text>
+                      <Text style={{ fontSize: 10, color: "black", }} >{item.message== "" ?"Missed Call": item.message +" min"}</Text>
+                      </View> 
                       </View>
                       <View style={{flexDirection:"row",justifyContent:"flex-end",top:5}}>
                       <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
                      </View>
-                    {/* <View style={{alignItems:"center",margin:5,}}>
-                    <View style={{backgroundColor:"#FFF",paddingHorizontal:15,paddingVertical:8, borderRadius:10}}>
-                    <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Missed Video Call "}</Text>
-                    <Text style={{ fontSize:10, color: "black", textAlign:"right"}}> {dateVal()}  </Text>
-                     
-                      </View>
-                    </View> */}
+                   
                     </View>
                     :
                     <View style={alignment == "right" ?  styles.rightView : styles.leftView}>
-                    <View style={{flexDirection:"row"}}>
+                    <View style={{flexDirection:"row"}} key={item.messageid}>
                       {item.message == "" ? 
                         <View style={{backgroundColor:alignment == "right"?"#A8A8A8":"#EC0029",alignItems:"center",justifyContent:"center",borderRadius:360,height:40,width:40}}>
                         <Image
@@ -971,8 +967,8 @@ else if(formateDate2 == formateDate){
                         </View>
                       }
                       <View style={{ paddingLeft:5}}>
-                      <Text style={{ fontSize: 14, color: "black", }} key={index}>{"Audio Call"}</Text>
-                      <Text style={{ fontSize: 10, color: "black", }} key={index}>{item.message== "" ?"Missed Call": item.message +" min"}</Text>
+                      <Text style={{ fontSize: 14, color: "black", }}>{"Audio Call"}</Text>
+                      <Text style={{ fontSize: 10, color: "black", }}>{item.message== "" ?"Missed Call": item.message +" min"}</Text>
                       </View>
                       </View>
                       <View style={{flexDirection:"row",justifyContent:"flex-end",top:5}}>
@@ -981,7 +977,7 @@ else if(formateDate2 == formateDate){
                    
                     </View>
                    
-                    }
+                    } 
                   
                     
                     </View>
