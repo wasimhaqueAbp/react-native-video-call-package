@@ -10,7 +10,7 @@ import {
   Dimensions,
   Platform,
   Pressable,
- 
+  Image
 
 } from 'react-native';
 
@@ -82,13 +82,34 @@ export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMess
        </View>
        <View style={styles.lastMessageView}>
       
-        { showLastMessage && item.messagebody != "" && ( 
+        { showLastMessage && item.messagebody != "" && item.calltype =="txt"? ( 
          <View style={styles.flex1}>
         <Text 
         numberOfLines={1}
         style={styles.lastMessageText(item)}> {showmessagebody(item)} </Text>
         </View>
-        )} 
+        ): showLastMessage && item.messagebody != "" && item.calltype =="video"?
+        <View style={{flex:1,flexDirection:"row",alignItems:"center"}}>
+        <Image
+        style={{height:18,width:18,}}
+       source={item.messagebody =="missedCall"?require('../icons/video_call_reject.png') :require('../icons/video_call_accepted.png')} resizeMode="contain" /> 
+        <Text 
+        numberOfLines={1}
+        style={[styles.lastMessageText(item)]}> {showmessagebody(item)} </Text>
+        </View>
+        :
+        showLastMessage && item.messagebody != "" && item.calltype =="voice" &&
+        <View style={{flex:1,flexDirection:"row",alignItems:"center"}}>
+        <Image
+        style={{height:18,width:18,}}
+       //source={item.messagebody == "missedCall"?require('../icons/audio_call_reject.png'):require('../icons/audio_call_accept.png')} 
+       source={item.messagebody == "missedCall"?require('../icons/audio_call_reject.png'):require('../icons/audio_call_accepted.png')} 
+       resizeMode="contain" /> 
+        <Text 
+        numberOfLines={1}
+        style={[styles.lastMessageText(item)]}> {showmessagebody(item)} </Text>
+        </View>
+         } 
         {item.unreadcount> 0 && ( 
          <View style={styles.userCountMainView}>
           <Text 
