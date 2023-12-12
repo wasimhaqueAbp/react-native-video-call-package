@@ -491,8 +491,8 @@ const [userData,setUserData] = useState({
 
   const onMessageReceived = (msg, messages) => {
 
-     console.log('MESSAGE:' + JSON.stringify(msg))
-     console.log('MESSAGE:' + JSON.stringify(messages))
+     console.log('MESSAGE msg:' + JSON.stringify(msg))
+     console.log('MESSAGE messages:' + JSON.stringify(messages))
      console.log('MESSAGE:' +userCode)
      
      if(msg == null) return
@@ -531,15 +531,17 @@ const [userData,setUserData] = useState({
             
             if(item.mappedUserCode==msg.senderName ){
               const date =parseInt(msg.createdon)
+              
                 arr3={
                     
                     senderName: msg.senderName,
                     targetUserName: msg.targetUserName,
                     message:msg.message,
                    createdon:date, //formatTime(msg.createdon),//getCreatedDate(),
-                   type: "txt",
+                   type:msg.type, //"txt",
                    "showDate":value,
                 }
+                console.log("hiii",arr3);
                 setAsyncData(arr3)
                 setData(addAfter(messages, 0, arr3))
                

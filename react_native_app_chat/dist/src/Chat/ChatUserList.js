@@ -108,7 +108,12 @@ useEffect(()=>{
    
   console.log("pushDataCall??????",newPushData);
  
-  if(newPushData != null && newPushData.from == "call" && props.socket != null && props.socket!='' && chatuserId != null){
+  if(newPushData != null && newPushData.from == "call" && newPushData.callType == "missedcall"){
+    setOpenUserDetailPage(false);
+    setPageType(null)
+    pushData = null;
+  }
+ else if(newPushData != null && newPushData.from == "call" && props.socket != null && props.socket!='' && chatuserId != null){
     console.log("in else call reject")
     
     onCancelHandler(newPushData)
