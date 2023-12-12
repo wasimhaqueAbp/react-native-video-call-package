@@ -127,7 +127,7 @@ const onCancelHandler = async (dataPush) =>{
     //console.log({to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms})
     props.socket.emit('endCall', {to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms});
     props.socket.emit("misesdcall", { from: dataPush.userId, to:dataPush.sourceuid ,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
-    calltype:dataPush.calltype,initiateCallUser:dataPush.callinitiateByothers == "own"? dataPush.sourceuid  :dataPush.userId  });
+    calltype:dataPush.calltype,initiateCallUser:dataPush.callinitiateByothers == "own"? dataPush.sourceuid  :dataPush.userId, room: dataPush.rooms  });
    
   } catch (error) {
     console.log("End Call Error",error)
