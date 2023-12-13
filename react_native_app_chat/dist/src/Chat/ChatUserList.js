@@ -43,6 +43,7 @@ const [searchText,setSearchText] = useState("")
 const [openUserDetailPage,setOpenUserDetailPage] = useState(false)
 const [items,setItems] = useState(null)
 const [types,setTypes] = useState(null)
+const [showAudioVideoIcon,setshowAudioVideoIcon] = useState(0)
 //const [socket,setsocket]=useState(props.socket);
 
 const ws = useRef(null);
@@ -227,13 +228,17 @@ const localRemortData = async ()=>{
         }
         
       const response =  await callApi(ServiceConstant.FETCH_CHAT_FRIENDS_LIST, arr);
+      //console.log("vdoutboundisallowed",response.vdoutboundisallowed);
+      if(response.vdoutboundisallowed != null){
+        setshowAudioVideoIcon(response.vdoutboundisallowed);
+      
+      }
       
      
       if(response != null && response['friendlist'] != null){
 
         let result = response.friendlist
-
-        
+       
         const asyncData = await AsyncStorage.getItem("chatData")
         const parsedValue = JSON.parse(asyncData);
       
@@ -574,6 +579,7 @@ setSearchText(e)
         clearChat={()=>onPressClearChat()}
         genderId={genderId}
         profileName={profileName}
+        showAudioVideoIcon={showAudioVideoIcon}
         type={types}
              socketConneted={socketConneted}
              onClickVideoCall={(data)=> props.onClickVideoCall(data)}

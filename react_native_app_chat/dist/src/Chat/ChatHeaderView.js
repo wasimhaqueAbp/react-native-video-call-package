@@ -23,7 +23,8 @@ import { useNavigation } from '@react-navigation/native';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { prepareShortName } from '../Utility/Utility';
 import { RNVectorIcon } from '../Utility/RNVectorIcon';
-export const ChatHeaderView = ({item,genderId, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback, 
+export const ChatHeaderView = ({item,genderId, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback,
+  showAudioVideoIcon,
   style={borderRadius:0,backgroundColor:"#FFF",elevation:2}
 } 
   ) => {
@@ -56,14 +57,17 @@ return(
        <Text style={{color:"black",fontWeight:"500"  }}> {item.mappedUserName} </Text>
        <Text style={{color:"#DB233D",fontWeight:"500" }}> {item.mappedUserCode } </Text>
   </Pressable>
-   <View>
+  {showAudioVideoIcon == 1  && item.vdinboundisallowed == 1 &&
+  <View>
   <Pressable onPress={() => onAudioPress()}>
   <Image
         style={{height:25,width:25,marginLeft: 8,paddingRight:10,}}
        source={require('../icons/phone_call.png')} resizeMode="contain" /> 
                  
               </Pressable>
-  </View>
+  </View>}
+  {showAudioVideoIcon == 1  && item.vdinboundisallowed == 1 &&
+  
   <View>
   
   <Pressable onPress={() => onVideoPress()}>
@@ -72,7 +76,7 @@ return(
        source={require('../icons/video.png')} resizeMode="contain" /> 
                  
               </Pressable>
-  </View> 
+  </View> }
   {/* <View>
   <Menu
             visible={isMenuVisible}

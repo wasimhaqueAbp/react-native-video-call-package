@@ -40,7 +40,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
-const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted} = props
+const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted,showAudioVideoIcon} = props
 
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
@@ -1154,6 +1154,7 @@ const documentMenu=()=>{
              }}
              genderId={genderId}
               showLastMessage={false}
+              showAudioVideoIcon={showAudioVideoIcon}
               onGoback={(e)=>{ props.goBack();
                 props.clearChat();}}
             onMenuPress={(e)=> onMenuPress(e)}
@@ -1165,7 +1166,7 @@ const documentMenu=()=>{
         
         checkPermissions("video")
          }
-        
+         
        }
            /> 
 
