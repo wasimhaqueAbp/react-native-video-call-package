@@ -848,9 +848,10 @@ useEffect(() => {
       clearInterval(intervalId);
     }
    
-    socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios"});
+    socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios",
+    initiateCallUser:callinitiateByothers == "own"? fromUser : remoteSocketId});
   
-  console.log("devPlatform",{to: remoteSocketId, from: fromUser, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios"});
+  //console.log("devPlatform",{to: remoteSocketId, from: fromUser, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios"});
     InCallManager.stop();
     setcallOn(false);
     peer.peer.close();
