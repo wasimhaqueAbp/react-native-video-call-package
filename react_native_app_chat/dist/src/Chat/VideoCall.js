@@ -55,7 +55,8 @@ import {
 } from '@saserinn/react-native-app-utils';
 import { set } from 'date-fns';
 
-
+//var callDuration = { "start": "", "end": "" };
+var callDurationAccepted = false;
 const VideoChatCall = props => {
   const {t, i18n} = useTranslation();
 
@@ -130,6 +131,8 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   const [timer, setTimer] = useState(0);
   const [remoteAudioEnableDisable,setRemoteAudioEnableDisable] = useState("")
   const [remoteVideoEnableDisable,setRemoteVideoEnableDisable] = useState("")
+  const [callAcceptedCalculate,setCallAcceptedCalculate] = useState(false)
+console.log("callAcceptedCalculate",callAcceptedCalculate);
     const [callDuration,setCallDuration]= useState({
       start:'',
       end:''
@@ -141,7 +144,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
     useEffect(() => {
       // Enable screen keep awake when the component mounts
       
-   
+    //  callDurationAccepted = false;
 
   Keyboard.dismiss()
       // Disable screen keep awake when the component unmounts
@@ -197,7 +200,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 
   const handleAppStateChange = (nextAppState) => {
     //Code done by Wasim on 01
-    console.log("nextAppState videocall",nextAppState)
+    console.log("nextAppState videocall",nextAppState,callDuration)
     if (nextAppState == 'background') {
       // App has gone to the background, perform your background action here
       console.log("nextAppState videocall????",nextAppState)
@@ -414,6 +417,9 @@ setAudioORVideo(callTypes)
   const handleuserInRoom = async () => {
     console.log("handle User in room")
     setuserRoomJoined(true);
+    setCallAcceptedCalculate(true);
+        callDurationAccepted = true
+        
   };
 
 
@@ -437,6 +443,7 @@ setAudioORVideo(callTypes)
   const acceptCall = async () => {
     try {
       InCallManager.stop();
+      
       const stream = await mediaDevices.getUserMedia({
         video: true,
         audio: {
@@ -447,6 +454,9 @@ setAudioORVideo(callTypes)
         // audio: true,
       });
       setMyStream(stream);
+      
+    //  const startDate =getCreatedDate()
+     // console.log("startDate????",startDate);
       console.log("incomingCall.offer",incomingCall.offer)
       const ans = await peer.getAnswer(incomingCall.offer);
 
@@ -463,11 +473,13 @@ setAudioORVideo(callTypes)
         room: room,
       });
       autoDisconectBit = true
-      socket.emit("calltime", { to: incomingCall.from, from: fromUser, starttime: getCreatedDate(), endtime: '' });
-      setCallDuration((prevData) => {
-        return { ...prevData, ['start']: getCreatedDate() }
-    })
-    
+      setCallAcceptedCalculate(true)
+      callDurationAccepted = true
+     // socket.emit("calltime", { to: incomingCall.from, from: fromUser, starttime: getCreatedDate(), endtime: '' });
+    //   setCallDuration((prevData) => {
+    //     return { ...prevData, ['start']: getCreatedDate() }
+    // })
+    // callDurations = getCreatedDate();
       console.log('stream????', stream, incomingCall.from, fromUser);
     } catch (error) {
       console.log('errorrr acceptCall', error);
@@ -508,7 +520,8 @@ const handleCallAccepted = useCallback(
         console.log('Call Accepted!', ans);
         let a = sendStreamFlag;
         setsendStreamFlag(a++);
-        
+        setCallAcceptedCalculate(true);
+        callDurationAccepted = true
         //sendStreams();
       }
   },
@@ -834,9 +847,10 @@ useEffect(() => {
     if(timer > 0){
       clearInterval(intervalId);
     }
-    socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
+   
+    socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios"});
   
-  
+  console.log("devPlatform",{to: remoteSocketId, from: fromUser, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios"});
     InCallManager.stop();
     setcallOn(false);
     peer.peer.close();
@@ -851,30 +865,30 @@ useEffect(() => {
       
     }
     setRemoteStream();
-    console.log('remoteSocketId',item, remoteSocketId, fromUser);
+    console.log('remoteSocketId',callAcceptedCalculate,callDurationAccepted);
    // socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
     await peer.reconnectPeerConnection();
-    if (callDuration.start) {
-
-      let endCallTime = getCreatedDate();
-      let actualDuration = endCallTime - callDuration.start
-      let diffInSec = Math.floor(actualDuration / 1000);
-  let duration =formatTime(diffInSec);
-      const secTalked = diffInSec % 60
-      const minTalked = Math.floor(diffInSec / 60)
-      console.log('endCallTime', endCallTime, 'callDuration.start', callDuration.start,"duration",duration)
-      console.log(secTalked,"secTalked",minTalked,"minTalked");
-      let arr={
-        senderName:userCode,
-    targetUserName: mappedUserCode,
-    message: duration,
-    "createdon":  getCreatedDate(),
-    "modifyon":  getCreatedDate(),
-    type:audioVideoType == "video"? "video":"voice",
-    "devPlatform":Platform.OS =="android"?"android":"ios"
-    }
-    console.log("arr",arr)
-      socket.emit("messageSendToUser",arr);
+    if (callAcceptedCalculate || callDurationAccepted) {
+      console.log("callAcceptedCalculate")
+  //     let endCallTime = getCreatedDate();
+  //     let actualDuration = endCallTime - callDuration.start
+  //     let diffInSec = Math.floor(actualDuration / 1000);
+  // let duration =formatTime(diffInSec);
+  //     const secTalked = diffInSec % 60
+  //     const minTalked = Math.floor(diffInSec / 60)
+  //     console.log('endCallTime', endCallTime, 'callDuration.start', callDuration.start,"duration",duration)
+  //     console.log(secTalked,"secTalked",minTalked,"minTalked");
+  //     let arr={
+  //       senderName:userCode,
+  //   targetUserName: mappedUserCode,
+  //   message: duration,
+  //   "createdon":  getCreatedDate(),
+  //   "modifyon":  getCreatedDate(),
+  //   type:audioVideoType == "video"? "video":"voice",
+  //   "devPlatform":Platform.OS =="android"?"android":"ios"
+  //   }
+  //   console.log("arr",arr)
+  //     socket.emit("messageSendToUser",arr);
         
     }
     else{
@@ -989,6 +1003,7 @@ useEffect(() => {
     console.log('handleCallTimeEmit', data)
     if ('starttime' in data) {
         setCallDuration({ ...callDuration, start: data.starttime })
+     
     }
 }
 const handleCallEngage = (data) => {
@@ -1129,9 +1144,13 @@ useEffect(()=>{
               backgroundColor="white"
               icon={audioORVideo ? 'camera' : 'camera-off'}
               color="white"
+              
               size={25}
               onPress={async () => {
                console.log("audioORVideo",audioORVideo)
+
+               if(myStream != undefined){
+                
                if(audioORVideo){
       socket.emit('disablevideo', {
         to: remoteSocketId,
@@ -1157,6 +1176,7 @@ useEffect(()=>{
             return prevStream;
         });
       setAudioORVideo(!audioORVideo)
+               }
               }}
             />
           </View>}
@@ -1183,7 +1203,11 @@ useEffect(()=>{
               color="white"
               size={25}
               onPress={() => {
-                toggleAudio();
+                
+                if(myStream != undefined){
+                  toggleAudio();
+                }
+                
               }}
             />
           </View>
@@ -1195,8 +1219,12 @@ useEffect(()=>{
               icon="phone-hangup-outline"
               color="white"
               size={25}
+              
               onPress={() => {
+                if(myStream != undefined){
+                
                 EndCall();
+                }
               }}
             />
           </View>

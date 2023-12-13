@@ -177,9 +177,9 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       
 
       
-      let calldisplayname =  'Abpweddings - Voice Call';
+      let calldisplayname =  'ABP Weddings - Voice Call';
       if (targetCallType == 'video') {
-        calldisplayname = 'Abpweddings - Video Call';
+        calldisplayname = 'ABP Weddings - Video Call';
       }
 
       console.log("currentItem.data",currentItem);
