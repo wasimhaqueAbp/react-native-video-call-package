@@ -23,6 +23,7 @@ import { useNavigation } from '@react-navigation/native';
 import { getImageUrl } from '../../NW/ServiceURL';
 import { prepareShortName } from '../Utility/Utility';
 import { RNVectorIcon } from '../Utility/RNVectorIcon';
+import { showToast } from '../../../../../src/Utility/Utility';
 export const ChatHeaderView = ({item,genderId, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback,
   showAudioVideoIcon,
   style={borderRadius:0,backgroundColor:"#FFF",elevation:2}
@@ -57,20 +58,41 @@ return(
        <Text style={{color:"black",fontWeight:"500"  }}> {item.mappedUserName} </Text>
        <Text style={{color:"#DB233D",fontWeight:"500" }}> {item.mappedUserCode } </Text>
   </Pressable>
-  {showAudioVideoIcon == 1  && item.vdinboundisallowed == 1 &&
+  {(showAudioVideoIcon == 1   ||  showAudioVideoIcon == 2)  &&
   <View>
-  <Pressable onPress={() => onAudioPress()}>
+  <Pressable onPress={() => {
+    if(showAudioVideoIcon == 2 ){
+      showToast("You have exhausted your calling limit.");
+    }
+    else if(item.vdinboundisallowed == 0){
+      showToast("The user you are trying to call does not have the latest app version.");
+    }
+    else if(showAudioVideoIcon == 1){
+      onAudioPress()
+    }
+    }}>
   <Image
         style={{height:25,width:25,marginLeft: 8,paddingRight:10,}}
        source={require('../icons/phone_call.png')} resizeMode="contain" /> 
                  
               </Pressable>
   </View>}
-  {showAudioVideoIcon == 1  && item.vdinboundisallowed == 1 &&
+  {(showAudioVideoIcon == 1   ||  showAudioVideoIcon == 2) &&
   
   <View>
   
-  <Pressable onPress={() => onVideoPress()}>
+  <Pressable onPress={() => {
+     if(showAudioVideoIcon == 2 ){
+      showToast("You have exhausted your calling limit.");
+    }
+    else if(item.vdinboundisallowed == 0){
+      showToast("The user you are trying to call does not have the latest app version.");
+    }
+  
+    else if(showAudioVideoIcon == 1){
+    onVideoPress()
+    }
+    }}>
   <Image
         style={{height:25,width:25,marginLeft:10}}
        source={require('../icons/video.png')} resizeMode="contain" /> 

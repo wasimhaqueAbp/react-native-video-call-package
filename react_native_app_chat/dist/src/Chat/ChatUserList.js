@@ -31,7 +31,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  const ChatUserList = props => {
 
 const newProps = props //props.route.params.props; //props
-const  {userCode,chatuserId,profileImage,profileName,genderId,socketConneted } = props;
+const  {userCode,chatuserId,profileImage,profileName,genderId,socketConneted,userPlanStatus } = props;
 let {pushData} = props
 
  
@@ -557,19 +557,28 @@ setSearchText(e)
       
       <View style={styles.container}>
       {openUserDetailPage == false? 
+
+       data.length == 0 && userPlanStatus =="Free"? 
+       <View style={styles.container}>
+
+        {props.freeUserComponent}
+        </View>
+        :
+        data.length == 0 && userPlanStatus =="Paid"?
+
+         <View style={styles.container}>
+
+        {props.paidUserComponent}
+        </View>:
         <View style={styles.container}>
-        {/* {headerView()}   */}
-         {/* {netInfo.isConnected == null || netInfo.isConnected  ?   */}
           <View  style={{flex:1, paddingHorizontal: 15,marginTop:10}}>
        {searchView()} 
         {userListView()} 
         </View> 
-         {/* {:
-        <DefaultView title ={"You are not connected to internet" } action={onRefreshList()} />
-}
-          */}
+        
        
-      </View>
+      </View> 
+      
       : 
       pageType != null && pageType =="detail"? 
      <ChatConversation props={props}

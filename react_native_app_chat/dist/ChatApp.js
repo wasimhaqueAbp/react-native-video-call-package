@@ -234,6 +234,9 @@ return(
              onClickVideoCall={(data)=> props.onClickVideoCall(data)}
           onClickAudioCall={(data)=> props.onClickAudioCall(data)}
           registerUserToSocket_={registerUserToSocket}
+          freeUserComponent={props.freeUserComponent}
+          paidUserComponent={props.paidUserComponent}
+          userPlanStatus={props.userPlanStatus}
         /> 
        
     </View>
