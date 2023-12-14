@@ -144,7 +144,7 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
     useEffect(() => {
       // Enable screen keep awake when the component mounts
       
-    //  callDurationAccepted = false;
+      callDurationAccepted = false;
 
   Keyboard.dismiss()
       // Disable screen keep awake when the component unmounts
@@ -370,19 +370,19 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
 
   useEffect(() => {
     setTimeout(() => {
-      console.log("remoteStream",remoteStream)
-     console.log("Callon",autoDisconectBit);
+      //console.log("remoteStream",remoteStream)
+     console.log("Callon???",callDurationAccepted);
     
-      if(autoDisconectBit == false && remoteStream == undefined){
+      if(callDurationAccepted == false){
      InCallManager.stop();
     
     console.log("in auto dis")
     //Code change on 01 december
-       // EndCall();
+        EndCall();
       }
       
      //
-    }, 160000);
+    }, 30 * 1000);
   }, []);
 
   const handleCallUser = async () => {
@@ -442,10 +442,12 @@ setAudioORVideo(callTypes)
   }, [userRoomJoined, room]);
   const acceptCall = async () => {
     try {
+      const callTypes =audioVideoType == "video"? true: false
+     
       InCallManager.stop();
       
       const stream = await mediaDevices.getUserMedia({
-        video: true,
+        video: callTypes,
         audio: {
           mandatory: {
             googEchoCancellation: true, // Enable echo cancellation
@@ -772,9 +774,7 @@ useEffect(() => {
   const handleEndCall = async ({from}) => {
     // Stop the streams
 
-    PartialWakeLock.release(); 
-    ScreenLock.release();
-
+   
     let fromname = 'Remote User';
     if (from == 'own') {
       fromname = 'You';
@@ -800,7 +800,12 @@ useEffect(() => {
     console.log("in Endcall2")
     WakeLock.release();
     props.goBack()
+    setTimeout(()=>{
+     // PartialWakeLock.release(); 
+      ScreenLock.release();
+    },500)
     
+
   };
 
   useEffect(() => {
@@ -842,16 +847,16 @@ useEffect(() => {
 
  
   const EndCall = async () => {
-    PartialWakeLock.release(); 
-    ScreenLock.release();
+    
     if(timer > 0){
       clearInterval(intervalId);
     }
-   
-    socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios",
-    initiateCallUser:callinitiateByothers == "own"? fromUser : remoteSocketId});
+   let fromUserId =fromUser == ""?UserData.userId :fromUser
+    socket.emit('endCall', {to: remoteSocketId, from: fromUserId, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios",
+    initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId});
   
-  //console.log("devPlatform",{to: remoteSocketId, from: fromUser, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios"});
+  console.log("devPlatform",{to: remoteSocketId, from: fromUserId, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios",
+  initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId});
     InCallManager.stop();
     setcallOn(false);
     peer.peer.close();
@@ -894,14 +899,18 @@ useEffect(() => {
     }
     else{
       console.log("in missed call")
-      socket.emit("misesdcall", { from: fromUser, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
-      calltype:audioVideoType,initiateCallUser:callinitiateByothers == "own"? fromUser : remoteSocketId, room: room});
+      socket.emit("misesdcall", { from: fromUserId, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
+      calltype:audioVideoType,initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId, room: room});
     }  
     WakeLock.release();
     
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
     props.goBack()
+    setTimeout(()=>{
+      // PartialWakeLock.release(); 
+       ScreenLock.release();
+     },500)
   };
 
   useEffect(() => {
@@ -1022,8 +1031,8 @@ const handlecheckUserStatusResponse = async(ev) =>{
     setcheckCallActive(true);
   }
   else{
-    PartialWakeLock.release(); 
-    ScreenLock.release();
+    
+    
     console.log("Props");
     InCallManager.stop();
     peer.peer.close();
@@ -1040,6 +1049,10 @@ const handlecheckUserStatusResponse = async(ev) =>{
     await peer.reconnectPeerConnection();
     WakeLock.release();
     props.goBack();
+    setTimeout(()=>{
+      // PartialWakeLock.release(); 
+       ScreenLock.release();
+     },500)
   }
 }
 

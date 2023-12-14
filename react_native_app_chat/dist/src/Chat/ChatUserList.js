@@ -73,7 +73,7 @@ const [data, setData] = useState([]);
     
     setTimeout(()=>{
      
-    console.log("pushData??????",pushData,newPushData,data);
+   // console.log("pushData??????",pushData,newPushData,data);
    if(newPushData != null && newPushData.from == "push"){
      
      if(data.length >0){
@@ -113,6 +113,7 @@ useEffect(()=>{
     setOpenUserDetailPage(false);
     setPageType(null)
     pushData = null;
+    setNewPushData(null)
   }
  else if(newPushData != null && newPushData.from == "call" && props.socket != null && props.socket!='' && chatuserId != null){
     console.log("in else call reject")
@@ -126,16 +127,17 @@ useEffect(()=>{
 
 
 const onCancelHandler = async (dataPush) =>{
-  //alert("hisis")
+  
   try {
     console.log('remoteSocketId on cancel handler', dataPush,dataPush.sourceuid);
     //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
     //console.log({to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms})
     props.socket.emit('endCall', {to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms,calltype:dataPush.calltype,devplatform:Platform.OS =="android"?"android":"ios",
   initiateCallUser:dataPush.callinitiateByothers == "own"? dataPush.sourceuid  :dataPush.userId,});
-    props.socket.emit("misesdcall", { from: dataPush.userId, to:dataPush.sourceuid ,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
-    calltype:dataPush.calltype,initiateCallUser:dataPush.callinitiateByothers == "own"? dataPush.sourceuid  :dataPush.userId, room: dataPush.rooms  });
-   
+    // props.socket.emit("misesdcall", { from: dataPush.userId, to:dataPush.sourceuid ,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
+    // calltype:dataPush.calltype,initiateCallUser:dataPush.callinitiateByothers == "own"? dataPush.sourceuid  :dataPush.userId, room: dataPush.rooms  });
+    setNewPushData(null)
+    pushData = null;
   } catch (error) {
     console.log("End Call Error",error)
   }

@@ -57,7 +57,7 @@ const ChatApp = props => {
       });
        //console.log("socketConnection",socketConnection)
        socketConnection.on('connect', () => {
-         console.log('Socket connected');
+         console.log('Socket connected in Chat App');
          
          setsocketConneted(true);
          
@@ -141,21 +141,19 @@ const ChatApp = props => {
         'change',
         async (nextAppState) => {
 
-          console.log("App state chat App", nextAppState, appState.current)
+          console.log("App state Chat App ", nextAppState)
 
           if (
-            appState.current.match(/active/) &&
+            appState.current.match(/inactive|background/) &&
             nextAppState === 'active'
           ) {
-
-            console.log('App active');
-            setSocketConnection()
-            
+            await setSocketConnection() 
+            console.log('App active Chat App');
+           
           }
           else {
 
             console.log("App inactive")
-            socket.disconnect()
             if(globalScoketConnection) {
               globalScoketConnection.disconnect();
                setsocketConneted(false);
@@ -166,6 +164,35 @@ const ChatApp = props => {
 
         },
       )
+      // const  subscription = AppState.addEventListener(
+      //   'change',
+      //   async (nextAppState) => {
+
+      //     console.log("App state chat App", nextAppState, appState.current)
+
+      //     if (
+      //       appState.current.match(/active/) &&
+      //       nextAppState === 'active'
+      //     ) {
+
+      //       console.log('App active');
+      //       setSocketConnection()
+            
+      //     }
+      //     else {
+
+      //       console.log("App inactive")
+      //       socket.disconnect()
+            // if(globalScoketConnection) {
+            //   globalScoketConnection.disconnect();
+            //    setsocketConneted(false);
+            //  }
+      //     }
+  
+      //     appState.current = nextAppState;
+
+      //   },
+      // )
     
       
       // if(socket!=null && appStates=="background" || socket!=null && appStates== "inactive" ){
