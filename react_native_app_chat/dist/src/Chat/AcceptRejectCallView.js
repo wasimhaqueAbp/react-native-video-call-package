@@ -131,6 +131,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       setautoDisconnectTimeOutEvent(() => {
         return setTimeout(() => {
           if(globalAcceptReject == false){
+            console.log("in end Call Accept Reject",globalAcceptReject)
             onCancelHandler()
           }
           

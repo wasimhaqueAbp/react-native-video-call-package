@@ -59,6 +59,7 @@ return(
   {(showAudioVideoIcon == 1   ||  showAudioVideoIcon == 2)  &&
   <View>
   <Pressable onPress={() => {
+   
     if(showAudioVideoIcon == 2 ){
       showToast("You have exhausted your calling limit.");
     }
@@ -80,6 +81,7 @@ return(
   <View>
   
   <Pressable onPress={() => {
+    
      if(showAudioVideoIcon == 2 ){
       showToast("You have exhausted your calling limit.");
     }

@@ -122,6 +122,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   const [remoteAudioEnableDisable,setRemoteAudioEnableDisable] = useState("")
   const [remoteVideoEnableDisable,setRemoteVideoEnableDisable] = useState("")
   const [callAcceptedCalculate,setCallAcceptedCalculate] = useState(false)
+  const [callTimeout, setCallTimeout] = useState(null);
 
     const [callDuration,setCallDuration]= useState({
       start:'',
@@ -283,19 +284,18 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   }, [toUser]);
 
   useEffect(() => {
-    setTimeout(() => {
-      
-    
-      if(callDurationAccepted == false){
-     InCallManager.stop();
-    
-    //Code change on 01 december
-        EndCall();
-      }
-      
-     //
-    }, 30 * 1000);
-  }, []);
+
+
+    if(callAcceptedCalculate === false){
+      setCallTimeout(setTimeout(EndCall, 80000)); // Adjust the timeout as needed (30 seconds in this example)
+    }
+    else{
+      clearTimeout(callTimeout);
+    }
+     return () => {
+      clearTimeout(callTimeout);
+    };
+  }, [callAcceptedCalculate]);
 
   const handleCallUser = async () => {
     try {
