@@ -81,17 +81,7 @@ const VideoChatCall = props => {
     targetUserImage
   } = props.props;
   
- // console.log('item video call',props.props,
-  // registerUserToSocket_,
-  // roomno,
-  // rooms,
-  // audio,
-  // video,
-  // callinitiateByothers,
-  // callaccept,
-  // item,
-  // socketConneted,
- // );
+ 
   let intervalId = null;
   let autoDisconectBit= false
   const [socket,setsocket]=useState(sockets);
@@ -132,7 +122,7 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
   const [remoteAudioEnableDisable,setRemoteAudioEnableDisable] = useState("")
   const [remoteVideoEnableDisable,setRemoteVideoEnableDisable] = useState("")
   const [callAcceptedCalculate,setCallAcceptedCalculate] = useState(false)
-console.log("callAcceptedCalculate",callAcceptedCalculate);
+
     const [callDuration,setCallDuration]= useState({
       start:'',
       end:''
@@ -200,33 +190,23 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
 
   const handleAppStateChange = (nextAppState) => {
     //Code done by Wasim on 01
-    console.log("nextAppState videocall",nextAppState,callDuration)
+    
     if (nextAppState == 'background') {
       // App has gone to the background, perform your background action here
-      console.log("nextAppState videocall????",nextAppState)
       
      EndCall();
     }
   };
 
-  // useEffect(() => {
-  //   // Subscribe to app state changes
-  //   document.addEventListener("visibilitychange",event=>{
-  //     console.log("Document.visiblity state",document.visibilityState);
-  //   })
-  //   // Clean up the subscription when the component unmounts
-  //   return () => {
-      
-  //   };
-  // }, []);
+  
   useEffect(()=>{
     if(audioVideoType!=null && audioVideoType!=''){
       if(audioVideoType=='video'){
-        console.log("Tapas Speaker");
+        
         InCallManager.setSpeakerphoneOn(true);
       }
       else{
-        console.log("Tapas Speaker off");
+        
         InCallManager.setSpeakerphoneOn(false);
       }
     }
@@ -234,62 +214,6 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
     
   },[audioVideoType])
   
-  //InCallManager.start({media: 'audio'}); // audio/video, default: audioElement
-  
-  // useEffect(() => {
-  //   console.log("Tapas in videos",sockets);
-  //   if(sockets== undefined || sockets.id == null){
-  //     const envType =getEnvironment()
-  //     console.log(envType)
-  //     const url = envType =="TEST"? "ws://10.132.100.191:8878":"https://messegingserviceskt.abpweddings.com"
-      
-  //   console.log("Tapas in video");
-  //   const socketConnection = io(url,{
-  //     "force new connection" : true,
-  //       "reconnectionAttempts": "Infinity", 
-  //       "timeout" : 10000,                  
-  //       "transports" : ["websocket"],
-  //     withCredentials: true,
-  //     extraHeaders: {
-  //       "my-custom-header": "abcd"
-  //     }
-  //   });
-
-  //   // Set up event listeners or other socket-related logic here
-  //   // For example:
-  //   socketConnection.on('connect', () => {
-  //     console.log('Socket connected in video');
-  //    // setsocketConneted(true);
-  //   });
-
-  //   setsocket(socketConnection);    
-
-  //   // Clean up the socket connection when the component is unmounted
-  //   return () => {
-  //     if (socketConnection) {
-  //       socketConnection.disconnect();
-  //       setsocketConneted(false);
-  //     }
-  //   };
-  // }
-  // }, []);
-
-  // useEffect(() => {
-  //   // Set up an interval that runs every 1000 milliseconds (1 second)
-  //   if(callOn ){
-  //     intervalId = setInterval(() => {
-  //       setTimer((prevTimer) => prevTimer + 1);
-  //      // console.log("timer",timer)
-  //     }, 1000); // Update the timer every second
-  
-  //     // Clean up the interval when the component is unmounted
-  //     return () => clearInterval(intervalId);
-  
-  //   }
-    
-    
-  //  }, [callOn]);
-
   const formatTime = (timeInSeconds) => {
     const hours = Math.floor(timeInSeconds / 3600);
     const minutes = Math.floor((timeInSeconds % 3600) / 60);
@@ -305,9 +229,7 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
     return time//`${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   };
   useEffect(() => {
-    //let realmObj;
-   // InCallManager.stop();
-    console.log("incoming")
+    
     if(callinitiateByothers == "own"){
       InCallManager.start({media: 'audio', ringback: '_BUNDLE_', auto: audioVideoType == "video"? 'speaker':"earpiece"}); // or _DEFAULT_ or _DTMF_
     }
@@ -315,7 +237,7 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
 
     (async () => {
       const obj = UserData //await getUser();
-      console.log('UserData???', obj);
+      
       setUserData(obj);
       setfromUser(obj.userId);
     })();
@@ -330,21 +252,13 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
   };
 
   useEffect(() => {
-    // const userData = await getUser();
-    console.log(
-      'userDatass VideoCall',
-      socket,
-      userData,
-      socketConneted,
-      registerUserToSocket_,
-    );
+   
     if (
       socket != null &&
       userData != null &&
       socketConneted &&
       registerUserToSocket_ == null
     ) {
-      console.log('registerUser emit', userData);
       socket.emit('registerUser', {from: userData.userId});
 
       try {
@@ -370,13 +284,11 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
 
   useEffect(() => {
     setTimeout(() => {
-      //console.log("remoteStream",remoteStream)
-     console.log("Callon???",callDurationAccepted);
+      
     
       if(callDurationAccepted == false){
      InCallManager.stop();
     
-    console.log("in auto dis")
     //Code change on 01 december
         EndCall();
       }
@@ -399,15 +311,14 @@ console.log("callAcceptedCalculate",callAcceptedCalculate);
         // audio: true,
       });
       setMyStream(stream);
-      console.log('stream??', callTypes);
+      
 
 setAudioORVideo(callTypes)
-//alert(audioVideoType+audioORVideo)
+
       // socket.emit('initCall', {from: fromUser, to: remoteSocketId, room: room,fromname:userData.username,calltype:audioVideoType});
       var devPlat = Platform.OS=="android"?"android":"ios" 
       socket.emit("initCall", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:userData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode});
-      console.log("initCall??? ", { from: fromUser, to: remoteSocketId, room: room, calltype: audioVideoType,fromname:UserData.username,devplatform:devPlat,userCode:userCode, mappedUserCode:mappedUserCode})
-      //socket.emit("startCall", { from:fromUser, to: remoteSocketId, offer });
+      
       
     } catch (error) {
 
@@ -415,7 +326,7 @@ setAudioORVideo(callTypes)
     }
   };
   const handleuserInRoom = async () => {
-    console.log("handle User in room")
+    
     setuserRoomJoined(true);
     setCallAcceptedCalculate(true);
         callDurationAccepted = true
@@ -429,7 +340,7 @@ setAudioORVideo(callTypes)
         setcallOn(true);
         const sdpOffer = await peer.getOffer();
         const offer = sdpOffer;
-        console.log("sdpOffer startCall",sdpOffer,offer,room)
+        
         socket.emit('startCall', {
           from: fromUser,
           to: remoteSocketId,
@@ -458,16 +369,11 @@ setAudioORVideo(callTypes)
       setMyStream(stream);
       
     //  const startDate =getCreatedDate()
-     // console.log("startDate????",startDate);
-      console.log("incomingCall.offer",incomingCall.offer)
+     
       const ans = await peer.getAnswer(incomingCall.offer);
 
-      console.log('Tapas In', ans);
-      console.log('Tapas In incomingCall.from', incomingCall.from);
-      console.log('Tapas In fromUser', fromUser);
       var devPlat = Platform.OS=="android"?"android":"ios" 
-      //socket.emit("acceptCall", { to: incomingCall.from, from: fromUser, ans: ans, room: room,devplatform:devPlat });
-     // socket.emit("acceptCall", { to: roomno, from: fromUser, ans: ans, room: room,devplatform:devPlat });
+      
       socket.emit('acceptCall', {
         to: incomingCall.from,
         from: fromUser,
@@ -482,7 +388,7 @@ setAudioORVideo(callTypes)
     //     return { ...prevData, ['start']: getCreatedDate() }
     // })
     // callDurations = getCreatedDate();
-      console.log('stream????', stream, incomingCall.from, fromUser);
+     
     } catch (error) {
       console.log('errorrr acceptCall', error);
     }
@@ -490,7 +396,7 @@ setAudioORVideo(callTypes)
 
   const getCallDetails = () => {
     WakeLock.acquire();
-    console.log("getCallDetails",remoteSocketId,fromUser,room);
+    
     
     socket.emit('getCallDetails', {
       from: remoteSocketId,
@@ -503,10 +409,9 @@ setAudioORVideo(callTypes)
   const handleIncommingCall = useCallback(
     async ({ from, offer }) => {
 
-        console.log("Tapas Incomming",from, offer);
-        //setRemoteSocketId(from);
+
+        
         setIncomingCall({ from, offer});
-        //////console.log(`Incoming Call`, from, offer);
         
     },
     [socket]
@@ -515,16 +420,16 @@ setAudioORVideo(callTypes)
 const handleCallAccepted = useCallback(
   ({ from, ans }) => {
 
-      console.log("Tapas Accepted", from, ans);
+      
 
       if (ans != null && ans != undefined) {
         peer.setLocalDescription(ans);
-        console.log('Call Accepted!', ans);
+      
         let a = sendStreamFlag;
         setsendStreamFlag(a++);
         setCallAcceptedCalculate(true);
         callDurationAccepted = true
-        //sendStreams();
+        
       }
   },
   [sendStreams]
@@ -539,7 +444,7 @@ const sendStreams = () => {
 const handleICECandidateEvent = useCallback(
   async (event) => {
       if (event.candidate && remoteSocketId && room && fromUser) {
-          console.log("event.candidate", fromUser, remoteSocketId, event.candidate);
+          
           socket.emit('iceCandidate', { from: fromUser, to: remoteSocketId, candidate: event.candidate, room: room });
       }
 
@@ -560,10 +465,8 @@ const handleNegoNeedIncomming = useCallback(
       if (userData != null) {
         if (offer) {
           const ans = await peer.getAnswer(offer);
-          console.log('handleNegoNeedIncomming-ANS', ans);
+          
 
-          console.log('TTTTTTTT');
-          console.log('handleNegoNeedIncomming', offer);
           socket.emit('negotiationDone', {
             to: from,
             from: fromUser, // userData.userId,
@@ -579,36 +482,14 @@ const handleNegoNeedIncomming = useCallback(
   [socket, userData, room],
 )
 
-// const handleNegoNeeded = useCallback(async () => {
-//   try {
-//     if (userData != null) {
-//       const offer2 = await peer.getOffer();
-//       let offer = offer2;
-//       console.log('offer2???', offer2);
-//       console.log('offer2???', fromUser);
-//       console.log('New', offer, remoteSocketId);
-//       setTimeout(() => {
-//         console.log('offer2 from???', userData.userId);
-//         socket.emit('negotiationneeded', {
-//           offer,
-//           to: remoteSocketId,
-//           from: userData.userId,
-//           room: room,
-//         });
-//       }, 1500);
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// }, [remoteSocketId, socket, userData, room]);
   const handleNegoNeeded = useCallback(async () => {
     try {
 
-        console.log("remoteSocketId", remoteSocketId, "fromUser", fromUser);
+        
         if(remoteSocketId!=null && fromUser!=null){
         const offer2 = await peer.getOffer();
         let offer = offer2;
-        console.log("New handleNegoNeeded",offer,remoteSocketId);
+        
         socket.emit("negotiationneeded", { offer: offer, to: remoteSocketId, from: fromUser, room: room });
          }
 
@@ -618,7 +499,7 @@ const handleNegoNeedIncomming = useCallback(
 }, [remoteSocketId, socket, room,fromUser]);
 
 useEffect(() => {
-  console.log("Nego Needed EXtra");
+  
   peer.peer.addEventListener('negotiationneeded', handleNegoNeeded);
   return () => {
     peer.peer.removeEventListener('negotiationneeded', handleNegoNeeded);
@@ -633,7 +514,7 @@ useEffect(() => {
 
 const handleNegoNeedFinal = useCallback(
   async ({ans}) => {
-    console.log('setLocalDescription handle', ans);
+    
     try {
       await peer.setLocalDescription(ans);
     } catch (error) {
@@ -644,10 +525,10 @@ const handleNegoNeedFinal = useCallback(
 );
 
 const handleRemoteICECandidate = data => {
-  console.log('Received remote ICE candidate:', data.candidate);
+  
   try {
     const candidate = new RTCIceCandidate(data.candidate);
-    //console.log("candidate",candidate);
+  
     peer.peer.addIceCandidate(candidate).catch(error => {
       console.error('Error adding ICE candidate:', error);
     });
@@ -659,17 +540,17 @@ useEffect(() => {
   try {
     peer.peer.addEventListener('track', async ev => {
       const remoteStream = ev.streams;
-       console.log('GOT TRACKS!!', remoteStream[0]);
+       
       autoDisconectBit=  true;
      // setRemoteStream(remoteStream[0]);
       if( audioVideoType == "video"){
-        console.log("video call")
+        
         
           setRemoteStream(remoteStream[0]);
         
       }
       else if(audioVideoType == "voice"){
-        console.log("audio call")
+        
         remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
 
     setRemoteStream(remoteStream[0]);
@@ -679,33 +560,6 @@ useEffect(() => {
     console.log('errorrr useEffect ', error);
   }
 }, []);
-
-// useEffect(() => {
-//   try {
-//       peer.peer.addEventListener("track", async (ev) => {
-//           const remoteStream = ev.streams;
-//           console.log("GOT TRACKS!!Remote", remoteStream[0]);
-//           setRemoteStream(remoteStream[0]);
-//          autoDisconectBit=  true;
-        //   if( audioVideoType == "video"){
-        //     console.log("video call")
-            
-        //       setRemoteStream(remoteStream[0]);
-            
-        //   }
-        //   else if(audioVideoType == "voice"){
-        //     console.log("audio call")
-        //     remoteStream.getVideoTracks()[0].enabled = false//!remoteStream.getVideoTracks()[0].enabled
-
-        // setRemoteStream(remoteStream[0]);
-        //   }
-          
-//       });
-//   } catch (error) {
-//       //console.log("errorrr useEffect ",error);
-//   }
-
-// }, []);
 
 useEffect(() => {
   if (
@@ -721,12 +575,7 @@ useEffect(() => {
 }, [toUser, fromUser, socket, registerUserToSocket, callinitiateByothers]);
 
 useEffect(() => {
-  console.log(
-    'getCallDetails123',
-    callaccepted,
-    remoteSocketId,
-    registerUserToSocket,
-  );
+  
   if (
     callaccepted == 'Y' &&
     remoteSocketId != null &&
@@ -750,7 +599,7 @@ useEffect(() => {
 }, [incomingCall])
 
   useEffect(() => {
-    //console.log("mmmmm",audioElement,incomingCall,callinitiateByothers,userRoomJoined);
+    
     //if(audioElement!=null && incomingCall==null && callinitiateByothers=='own' && userRoomJoined){
     if (
       incomingCall == null &&
@@ -787,17 +636,17 @@ useEffect(() => {
     if (remoteStream) {
       remoteStream.getTracks().forEach(track => track.stop());
     }
-    console.log("in Endcall")
+    
     peer.peer.close();
     setcallOn(false);
     setMyStream()
     setRemoteStream();
     setcallended(true);
     await peer.reconnectPeerConnection();
-    console.log("in Endcall1")
+    
     InCallManager.stop();
     
-    console.log("in Endcall2")
+    
     WakeLock.release();
     props.goBack()
     setTimeout(()=>{
@@ -816,7 +665,7 @@ useEffect(() => {
 
   const handleRemoteStream = remoteStream => {
     // Attach the remote stream to the remote video element
-    console.log('remoteStream handleRemoteStream', remoteStream);
+    
     try {
       // Enable echo cancellation and noise suppression on the remote audio track
       if (remoteStream) {
@@ -826,19 +675,8 @@ useEffect(() => {
           
           InCallManager.setForceSpeakerphoneOn(true);
         }
-        // else{
-        //   console.log("in else of remote")
-        //   InCallManager.setForceSpeakerphoneOn(false);
-        //   InCallManager.setSpeakerphoneOn(!InCallManager.isSpeakerOn)
-        // }
-
         
-
-        console.log('TTTTT');
-
-        // if (remoteAudioTrack) {
-        // const settings = remoteAudioTrack.getSettings();
-        // remoteAudioTrack.setPlaybackDevice('speaker');
+       
       }
     } catch (error) {
       console.log('errorrr handleRemoteStream', error);
@@ -855,13 +693,11 @@ useEffect(() => {
     socket.emit('endCall', {to: remoteSocketId, from: fromUserId, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios",
     initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId});
   
-  console.log("devPlatform",{to: remoteSocketId, from: fromUserId, room: room,calltype:audioVideoType,devplatform:Platform.OS =="android"?"android":"ios",
-  initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId});
     InCallManager.stop();
     setcallOn(false);
     peer.peer.close();
     setcallended(true);
-    console.log("in Endcall");
+    
     if (myStream) {
       myStream.getTracks().forEach(track => track.stop());
       setMyStream()
@@ -871,19 +707,17 @@ useEffect(() => {
       
     }
     setRemoteStream();
-    console.log('remoteSocketId',callAcceptedCalculate,callDurationAccepted);
+    
    // socket.emit('endCall', {to: remoteSocketId, from: fromUser, room: room});
     await peer.reconnectPeerConnection();
     if (callAcceptedCalculate || callDurationAccepted) {
-      console.log("callAcceptedCalculate")
+      
   //     let endCallTime = getCreatedDate();
   //     let actualDuration = endCallTime - callDuration.start
   //     let diffInSec = Math.floor(actualDuration / 1000);
   // let duration =formatTime(diffInSec);
   //     const secTalked = diffInSec % 60
   //     const minTalked = Math.floor(diffInSec / 60)
-  //     console.log('endCallTime', endCallTime, 'callDuration.start', callDuration.start,"duration",duration)
-  //     console.log(secTalked,"secTalked",minTalked,"minTalked");
   //     let arr={
   //       senderName:userCode,
   //   targetUserName: mappedUserCode,
@@ -893,12 +727,12 @@ useEffect(() => {
   //   type:audioVideoType == "video"? "video":"voice",
   //   "devPlatform":Platform.OS =="android"?"android":"ios"
   //   }
-  //   console.log("arr",arr)
+  
   //     socket.emit("messageSendToUser",arr);
         
     }
     else{
-      console.log("in missed call")
+      
       socket.emit("misesdcall", { from: fromUserId, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
       calltype:audioVideoType,initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId, room: room});
     }  
@@ -923,7 +757,7 @@ useEffect(() => {
   }, [audioEnabled]);
 
   const toggleAudio = () => {
-    //console.log("audioEnabled",audioEnabled,remoteSocketId,fromUser);
+    
 
     if(audioEnabled){
       socket.emit('disableaudio', {
@@ -966,24 +800,24 @@ useEffect(() => {
   };
 
   const handleEnableAudio = async ({audio}) => { 
-    console.log("event Audio Enable",audio)
+    
     setRemoteAudioEnableDisable("")
 
   }
   const handleDisableAudio = async ({audio}) => { 
-   // console.log("event Audio disable",audio)
+   
     setRemoteAudioEnableDisable(audio)
   }
   const handleEnableVideo = async ({video}) => { 
-    console.log("event Video Enable",{video}, audioORVideo)
+    
     let videoDisble =audioORVideo;
     setRemoteVideoEnableDisable("")
    
      
     // setTimeout(()=>{
-    //   console.log("in timeout")
+    
     //   setMyStream((prevStream) => {
-    //     console.log("in timeout",prevStream.getVideoTracks()[0].enabled,audioORVideo )
+    
     //     prevStream.getVideoTracks()[0].enabled = !prevStream.getVideoTracks()[0].enabled
   
     //     return prevStream;
@@ -995,12 +829,12 @@ useEffect(() => {
    
   }
   const handleDisableVideo = async ({video}) => { 
-    console.log("event Video  disable",video)
+    
     setRemoteVideoEnableDisable(video)
   }
   useEffect(() => {
     if (callended) {
-      console.log('TEnd');
+     
         socket.emit('clearRoomandSockets', {
           to: remoteSocketId,
           from: fromUser,
@@ -1010,14 +844,14 @@ useEffect(() => {
     }
   }, [callended]);
   const handleCallTimeEmit = (data) => {
-    console.log('handleCallTimeEmit', data)
+   
     if ('starttime' in data) {
         setCallDuration({ ...callDuration, start: data.starttime })
      
     }
 }
 const handleCallEngage = (data) => {
-  console.log('handleCallEngageEmit', data)
+ 
   EndCall();
 }
 
@@ -1025,7 +859,7 @@ const handleCallEngage = (data) => {
 
 const handlecheckUserStatusResponse = async(ev) =>{
 
-  console.log("evvv",ev);
+  
 
   if(ev.targetuserStatus!=null && ev.targetuserStatus=='true'){
     setcheckCallActive(true);
@@ -1033,7 +867,7 @@ const handlecheckUserStatusResponse = async(ev) =>{
   else{
     
     
-    console.log("Props");
+    
     InCallManager.stop();
     peer.peer.close();
     if (myStream) {
@@ -1161,7 +995,7 @@ useEffect(()=>{
               
               size={25}
               onPress={async () => {
-               console.log("audioORVideo",audioORVideo)
+               
 
                if(myStream != undefined){
                 
