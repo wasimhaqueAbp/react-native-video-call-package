@@ -267,13 +267,6 @@ const [userData,setUserData] = useState({
     
 
 
-    // if( startIndex == 0){
-    //   console.log("in if start")
-    //         const tempData = chatData;
-    //       tempData[index].userChatHistory = list;
-    //       await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
-
-    // }
     
     if(startIndex > 0){
      
@@ -358,83 +351,7 @@ const [userData,setUserData] = useState({
 
 
     
-    // if(chathistoryData.length== 0){
-    //   if(chathistoryData.length > 0){
-      
-    //   const processedMessages = list.map((message, index) => {
-        
-    //     let showDate = false;
-
-    //     if (index === 0) {
-    //       // For the first message, set showDate to true
-    //      // showDate = true;
-    //     } else {
-    //       const currentDate = new Date(message.createdon).toDateString();
-    //       const nextMessage = list[index + 1];
-          
-    //       // If there is a next message and its date is different, set showDate to true
-    //       if (nextMessage && currentDate !== new Date(nextMessage.createdon).toDateString()) {
-    //         showDate = true;
-    //       }
-    //     }
-      
-    //     // Set showDate to true for the last item in the list
-    //     if (index === list.length - 1) {
-    //       showDate = true;
-    //     }
-     
-    //     // const showDate =
-    //     //   index === 0 ||
-    //     //   new Date(message.createdon).toDateString() !==
-    //     //     new Date(list[index - 1].createdon).toDateString();
-    //      return { ...message, showDate };
-    //   });
-         
-      
-    //       setData(processedMessages);
-
-    //       const tempData = chatData;
-    //       tempData[index].userChatHistory = list;
-    //       await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
-
-    // }
-    // else{
-
-      
-    //   const mergedArray = list.concat(chathistoryData);
-    //   const processedMessages = mergedArray.map((message, index) => {
-        
-    //     let showDate = false;
-
-    //     if (index === 0) {
-    //       // For the first message, set showDate to true
-    //      // showDate = true;
-    //     } else {
-    //       const currentDate = new Date(message.createdon).toDateString();
-    //       const nextMessage = mergedArray[index + 1];
-          
-    //       // If there is a next message and its date is different, set showDate to true
-    //       if (nextMessage && currentDate !== new Date(nextMessage.createdon).toDateString()) {
-    //         showDate = true;
-    //       }
-    //     }
-      
-    //     // Set showDate to true for the last item in the list
-    //     if (index === mergedArray.length - 1) {
-    //       showDate = true;
-    //     }
-     
-        
-    //      return { ...message, showDate };
-    //   });
-    //  // setData(processedMessages)
-    //   const tempData = chatData;
-    //   tempData[index].userChatHistory = mergedArray;
-    //  // console.log("tempData",JSON.stringify(tempData));
-    // //  await AsyncStorage.setItem("chatData", JSON.stringify(tempData));
-
-    // }
-  }
+   }
 
   if(response.status == 0 && response.chathistory.chatlist == null){
     //setTotalCount(startIndex+10)
@@ -491,9 +408,6 @@ const [userData,setUserData] = useState({
 
   const onMessageReceived = (msg, messages) => {
 
-     console.log('MESSAGE msg:' + JSON.stringify(msg))
-     console.log('MESSAGE messages:' + JSON.stringify(messages))
-     console.log('MESSAGE:' +userCode)
      
      if(msg == null) return
 
@@ -541,7 +455,7 @@ const [userData,setUserData] = useState({
                    type:msg.type, //"txt",
                    "showDate":value,
                 }
-                console.log("hiii",arr3);
+                
                 setAsyncData(arr3)
                 setData(addAfter(messages, 0, arr3))
                
@@ -605,10 +519,10 @@ const [userData,setUserData] = useState({
                   // Check for other permissions here
                 ) {
                   handleCallVideo(type);
-                  console.log('All permissions granted');
+                  
                   // You can now use the requested features that require these permissions
                 } else {
-                  console.log('One or more permissions denied');
+                  
                   Alert.alert(
                     '',
                     "Please allow the camera and microphone permissions from settings to access the video call",
@@ -646,7 +560,7 @@ const [userData,setUserData] = useState({
                 const { statusMicroPhone } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
                 
                 if (status === 'granted' && statusMicroPhone === 'granted') {
-                  console.log('Camera permission is granted.');
+                  
                   handleCallVideo(type);
                 }  else {
                   Alert.alert(
@@ -675,7 +589,7 @@ const [userData,setUserData] = useState({
                  
                   //showToast("Please allow the camera and microphone permissions from settings to access the video call")
     
-                  console.log('Camera permission is not granted.');
+                  
                 }
               } catch (err) {
                 console.warn(err);

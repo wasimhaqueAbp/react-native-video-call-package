@@ -75,14 +75,13 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   const [callAccepted,setCallAccepted] = useState(false);
   
   
-  console.log("Accept Reject ", name, item, socketConneted, currentItem)
+  
   useEffect(() => {
     //let realmObj;
 
     (async () => {
      
       const obj = UserData;
-     // console.log('UserData Accept reject', obj);
       setUserData(obj);
 
     })();
@@ -94,35 +93,9 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
  
 
-  // const IncommingCallNotification = useCallback(
-  //     async ({ from,room,calltype,fromname,userCode, mappedUserCode}) => {
-
-
-  //         console.log("IncommingCallNotification",room,from,fromname,userCode,mappedUserCode)
-  //         setshowNotificationIncomingCall(true);
-  //         //handleremoteSocketId(from);
-
-
-  //         setIncomingCall({ from,room,calltype,fromname,userCode, mappedUserCode});
-  //         setTargetUserName(fromname)
-  //         setCallTypes(calltype)
-  //   setautoDisconnectTimeOutEvent(()=>{
-  //     return setTimeout(()=>{
-  //         console.log('call auto disconnected')
-  //         callCancelHandler(event)
-  //     },20*1000)
-  // })
-  //         //console.log(`Incoming Call`, from, offer);
-  //     },
-  //     [socket]
-  // );
-
-
+ 
   useEffect(() => {
-    //console.log("audioElement 111",audioElement);
     if (currentItem != null) {
-    //  RNNotificationCall.removeEventListener('answer');
-      //RNNotificationCall.removeEventListener('endCall');
       
       let targetUsername = '';
       let targetCallType = '';
@@ -140,8 +113,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         roomsStr=currentItem.rooms;
         profileimage = 'https://testcdn.abpweddings.com/'+currentItem.image;
       }
-      console.log("audioElement??? ", currentItem);
-
+     
       if(targetCallType!='endcall'){
 
       
@@ -154,21 +126,11 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       
       }
     })();
-      // if(currentItem.data ){
-      //   setTargetUserName(currentItem.data.name);
-      //   setCallTypes(currentItem.data.callType)
-      // }else{
-      //   setTargetUserName(currentItem.name);
-      //   setCallTypes(currentItem.callType)
-
-      // }
-
+      
       //Code on 01 December by Wasim
       setautoDisconnectTimeOutEvent(() => {
         return setTimeout(() => {
-          console.log('call auto disconnected',globalAcceptReject)
           if(globalAcceptReject == false){
-            console.log('call auto disconnected11')
             onCancelHandler()
           }
           
@@ -182,8 +144,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         calldisplayname = 'ABP Weddings - Video Call';
       }
 
-      console.log("currentItem.data",currentItem);
-
+     
       RNNotificationCall.displayNotification(
         roomsStr,
         profileimage,
@@ -207,7 +168,6 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       RNNotificationCall.addEventListener('answer', (data) => {
         RNNotificationCall.backToApp();
         const { callUUID, payload } = data;
-        console.log('press answer', callUUID,item,callType);
         InCallManager.stop();
         RNNotificationCall.hideNotification();
         Keyboard.dismiss()
@@ -216,7 +176,6 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       });
       RNNotificationCall.addEventListener('endCall', (data) => {
         const { callUUID, endAction, payload } = data;
-        console.log('press endCall', callUUID);
         InCallManager.stop();
         RNNotificationCall.hideNotification();
         Keyboard.dismiss()
@@ -278,25 +237,6 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   }, [currentItem])
 
 
-  // useEffect(()=>{
-  //   console.log("callAccepted11???",callAccepted,item);
-  //   if(callAccepted){
-  //     console.log("callAccepted???",callAccepted,item);
-  //     if (currentItem != null) {
-
-  //       let uri = currentItem.data ?
-  //         currentItem.data.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
-  //         : currentItem.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
-  //       console.log("Accepted call", uri)
-  //       Linking.openURL(uri);
-  //     }
-  //     else {
-  
-  //       let uri = "aevl://app.wed/redirect?SCREENVALUE=VIDEOCHATCALL" + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes+ "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
-  //       Linking.openURL(uri);
-  //     }
-  //   }
-  // },[callAccepted])
   const acceptCall = async () => {
 
     InCallManager.stop();
@@ -328,10 +268,8 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
           setshowNotificationIncomingCall(false);
 
           handleAcceptButton();
-          console.log('All permissions granted');
           // You can now use the requested features that require these permissions
         } else {
-          console.log('One or more permissions denied');
           Alert.alert(
             '',
             'Please allow the camera and microphone permissions from settings to access the video call',
@@ -371,7 +309,6 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         const { statusMicroPhone } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
 
         if (status === 'granted' && statusMicroPhone === 'granted') {
-          console.log('Camera permission is granted.');
           setshowNotificationIncomingCall(false);
 
           handleAcceptButton();
@@ -402,7 +339,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
           showToast('Please allow the camera and microphone permissions from settings to access the video call')
 
-          console.log('Camera permission is not granted.');
+          
         }
       } catch (err) {
         console.warn(err);
@@ -431,18 +368,18 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
     // const props = {"roomno":incomingCall.from,"rooms=":incomingCall.room,"audio":true,"video":true,"callaccept":"Y","callinitiateByothers":"remote","item":item} 
     //Code done on 01 December by wasim
     if (autoDisconnectTimeOutEvent) {
-      console.log('if autoDisconnectTimeOutEvent')
+     
       clearTimeout(autoDisconnectTimeOutEvent)
     }
    
     //Un comment this when push
-    console.log("itemd?????",currentItem,callTypes,callType);
+   
     if (currentItem != null) {
 
       let uri = currentItem.data ?
         currentItem.data.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
         : currentItem.LINK + "&roomno=" + item.roomno + "&rooms=" + item.rooms + "&audio=true&video=true&callaccept=Y&callinitiateByothers=remote&audioVideoType=video&item=" + item + "&calltype=" + callTypes + "&userCode=" + item.userCode + "&mappedUserCode=" + item.mappedUserCode + "&name=" + item.name + "&image=" + item.image + "&uid=" + item.uid + "&accept=true&sourceuid=" + item.sourceuid
-      console.log("Accepted call", uri)
+      
       Linking.openURL(uri);
     }
     else {
@@ -473,7 +410,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
   const handleEndCall = async ({ from }) => {
     // Stop the streams
-    console.log("handleEndCall")
+    
     setshowNotificationIncomingCall(false);
     InCallManager.stop();
 
@@ -494,9 +431,9 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         rooms:item.rooms
 
       };
-      console.log("response rejectCall Push handler??",body)
+      
       const response = await callApi(ServiceConstant.VIDEO_CALL_REJECT, body);
-     console.log("response push handler rejectCall??",response)
+     
     
     
     
@@ -507,39 +444,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
   }
 
-  // const onCancelHandler = async () => {
-  //   //Code done on 01 December by wasim
-  //   if (autoDisconnectTimeOutEvent) {
-  //     console.log('if autoDisconnectTimeOutEvent')
-  //     clearTimeout(autoDisconnectTimeOutEvent)
-  //   }
-  //   // remoteSocketId 2713882 2702140
-  //   //  setVideoCallEvent("cancel")// un comment
-  //   globalAcceptReject = true;
-  //   try {
-  //     console.log('remoteSocketId', item, UserData.userId);
-  //     //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
-  //     setshowNotificationIncomingCall(false);
-  //     InCallManager.stop();
-
-
-  //     socket.emit('endCall', { to: item.sourceuid, from: UserData.userId, room: item.rooms });
-  //     socket.emit("misesdcall", { from: UserData.userId, to: item.sourceuid, call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
-  //     calltype:item.calltype });
-  //     console.log("remoteSocketId??",socket);
-  //   onNavigate()
-  //   } catch (error) {
-  //     console.log("in cancle error", error)
-  //   }
-  //   //peer.peer.close();
-
-
-  //   // await peer.reconnectPeerConnection();
-
-
-  // }
-
-
+  
 
   return (
 

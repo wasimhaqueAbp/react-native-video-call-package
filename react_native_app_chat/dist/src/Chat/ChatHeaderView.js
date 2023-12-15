@@ -30,9 +30,7 @@ export const ChatHeaderView = ({item,genderId, index, onSelectProfile, showLastM
 } 
   ) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
- /// const navigation = useNavigation();
- //console.log("item header", item)
- //const {t, i18n} = useTranslation();
+ 
 return(
     <Card style={style}>
     <View style={{paddingVertical:10, marginHorizontal:10}} >

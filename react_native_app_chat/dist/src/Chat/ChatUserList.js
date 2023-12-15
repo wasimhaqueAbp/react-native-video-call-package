@@ -73,7 +73,7 @@ const [data, setData] = useState([]);
     
     setTimeout(()=>{
      
-   // console.log("pushData??????",pushData,newPushData,data);
+   
    if(newPushData != null && newPushData.from == "push"){
      
      if(data.length >0){
@@ -107,7 +107,7 @@ useEffect(()=>{
     
   setTimeout(()=>{
    
-  console.log("pushDataCall??????",newPushData);
+  
  
   if(newPushData != null && newPushData.from == "call" && newPushData.callType == "missedcall"){
     setOpenUserDetailPage(false);
@@ -116,7 +116,7 @@ useEffect(()=>{
     setNewPushData(null)
   }
  else if(newPushData != null && newPushData.from == "call" && props.socket != null && props.socket!='' && chatuserId != null){
-    console.log("in else call reject")
+    
     
     onCancelHandler(newPushData)
   }
@@ -129,9 +129,9 @@ useEffect(()=>{
 const onCancelHandler = async (dataPush) =>{
   
   try {
-    console.log('remoteSocketId on cancel handler', dataPush,dataPush.sourceuid);
-    //socket.emit('endCall', {to: incomingCall.from, from: UserData.userId });
-    //console.log({to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms})
+    
+    
+    
     props.socket.emit('endCall', {to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms,calltype:dataPush.calltype,devplatform:Platform.OS =="android"?"android":"ios",
   initiateCallUser:dataPush.callinitiateByothers == "own"? dataPush.sourceuid  :dataPush.userId,});
     // props.socket.emit("misesdcall", { from: dataPush.userId, to:dataPush.sourceuid ,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
@@ -148,35 +148,6 @@ const onCancelHandler = async (dataPush) =>{
       
 
   }
-//   useEffect(()=>{
-    
-//     setTimeout(()=>{
-     
-//     console.log("pushData??????",pushData,data);
-//    if(pushData != null && pushData.from == "push"){
-     
-//      if(data.length >0){
-//       for (const friend of data) {
-//         console.log(friend.mappedUserid,pushData.userId,"data.mappedUserid")
-//         if (friend.mappedUserid == pushData.userId) {
-//            // foundFriend = friend;
-//            console.log("friend",friend)
-//            setItems(friend);
-          
-//            setTimeout(()=>{
-//             setOpenUserDetailPage(true);
-//             setPageType("detail")
-//           }, 1500)
-//            break; // Exit the loop once the item is found
-//         }
-//     }
-//      }
-
-//    }
-
-//   }, 1000)
-   
-// },[pushData,data])
 
 const localRemortData = async ()=>{
   const asyncData = await AsyncStorage.getItem("chatData")
@@ -231,7 +202,7 @@ const localRemortData = async ()=>{
         }
         
       const response =  await callApi(ServiceConstant.FETCH_CHAT_FRIENDS_LIST, arr);
-      //console.log("vdoutboundisallowed",response.vdoutboundisallowed);
+      
       if(response.vdoutboundisallowed != null){
         setshowAudioVideoIcon(response.vdoutboundisallowed);
       
@@ -342,8 +313,6 @@ else{
       const updatedData = messages.map(item => {
         if (item.mappedUserCode === msg.senderName) {
           // Update the messagebody for the specified mappedUserCode
-         //console.log("item????",item);
-        // console.log("msg????",msg)
          
           return {
             ...item,
@@ -452,7 +421,7 @@ else{
        <TouchableOpacity style={{paddingLeft:8}} onPress={()=>{
            
             inputRef.current.focus()
-           // console.log(inputRef.current.focus())
+           
        }}>
         {newProps.searchIcon != null ? newProps.searchIcon :
         <Image
@@ -611,18 +580,7 @@ setSearchText(e)
       }  
 
      
-      {/* <WS
-          ref={ws}
-          url="http://10.133.12.25:8080/websocket-chat"
-          onOpen={() => {
-            console.log('Open!')
-            ws.send('Hello')
-          }}
-          onMessage={(e)=>{console.log("message",e)}}
-          onError={(e)=>{console.log("onError",e)}}
-          onClose={(e)=>{console.log("onClose",e)}}
-          reconnect={false} // Will try to reconnect onClose
-        /> */}
+      
       </View>
      
       
