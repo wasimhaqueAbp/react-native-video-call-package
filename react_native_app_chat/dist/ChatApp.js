@@ -35,7 +35,7 @@ const ChatApp = props => {
     }
        }, []);
        const setSocketConnection =()=>{
-        const socketConnection = io('https://messegingserviceskt.abpweddings.com',{
+        const socketConnection = io('wss://messageserviceqaapi.abpweddings.com',{
           "force new connection" : true,
             "reconnectionAttempts": "Infinity", 
          "timeout" : 10000,                  
