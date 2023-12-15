@@ -30,8 +30,6 @@ import DATE from 'date-and-time';
 import ModalScreen from '../Utility/Modal';
 import ViewProfile from './ViewProfile';
 import{Menu, MenuItem, MenuDivider}  from 'react-native-material-menu';
-import DocumentPicker from "react-native-document-picker";
-import { DefaultView } from '../Utility/DefaultView';
 import { ScreenLoader } from '../Utility/ScreenLoader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -717,7 +715,8 @@ else if(formateDate2 == formateDate){
  "createdon":  getCreatedDate(),
  "modifyon":  getCreatedDate(),
  type:'txt',
- "devPlatform":Platform.OS =="android"?"android":"ios"
+ "devPlatform":Platform.OS =="android"?"android":"ios",
+ newAppVersionFlag:true
           }
          
             socket.emit("messageSendToUser",arr);
