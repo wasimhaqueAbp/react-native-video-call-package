@@ -7,7 +7,7 @@ export const ServiceConfig = {
    
       BASE_URL_FILE_UPLOAD: 'https://testdl.abpweddings.com',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
-     BASE_CHAT :"http://10.132.100.191:8083"
+     BASE_CHAT :"https://messageserviceqa.abpweddings.com"
      
     },
   
@@ -16,7 +16,7 @@ export const ServiceConfig = {
    
        BASE_URL_FILE_UPLOAD: 'https://uatdl.abpweddings.com:8443',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
-      BASE_CHAT :"http://10.132.100.191:8083"
+      BASE_CHAT :"https://messageserviceqa.abpweddings.com"
     },
   
     PROD: {

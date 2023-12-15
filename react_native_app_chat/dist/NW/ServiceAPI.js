@@ -8,7 +8,7 @@ export const ENVIRONMENT = {
 
 export const getEnvironment = () => {
 
-  return ENVIRONMENT.PRODUCTION
+  return ENVIRONMENT.TEST
 }
 
 export const PlatformValue = () => {
