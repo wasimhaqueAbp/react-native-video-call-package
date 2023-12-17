@@ -383,6 +383,7 @@ setAudioORVideo(callTypes)
       autoDisconectBit = true
       setCallAcceptedCalculate(true)
       callDurationAccepted = true
+      clearTimeout(callTimeout);
      // socket.emit("calltime", { to: incomingCall.from, from: fromUser, starttime: getCreatedDate(), endtime: '' });
     //   setCallDuration((prevData) => {
     //     return { ...prevData, ['start']: getCreatedDate() }
@@ -645,7 +646,7 @@ useEffect(() => {
     await peer.reconnectPeerConnection();
     
     InCallManager.stop();
-    
+    clearTimeout(callTimeout);
     
     WakeLock.release();
     props.goBack()
@@ -737,7 +738,8 @@ useEffect(() => {
       calltype:audioVideoType,initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId, room: room});
     }  
     WakeLock.release();
-    
+    clearTimeout(callTimeout);
+    console.log("in Endcall")
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
     props.goBack()
@@ -882,12 +884,14 @@ const handlecheckUserStatusResponse = async(ev) =>{
     setRemoteStream();
     await peer.reconnectPeerConnection();
     WakeLock.release();
+    
     props.goBack();
     setTimeout(()=>{
       // PartialWakeLock.release(); 
        ScreenLock.release();
      },500)
   }
+  clearTimeout(callTimeout);
 }
 
 useEffect(()=>{
