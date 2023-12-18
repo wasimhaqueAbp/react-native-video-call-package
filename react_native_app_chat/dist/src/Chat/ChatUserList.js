@@ -72,7 +72,7 @@ const [data, setData] = useState([]);
   useEffect(()=>{
     
     setTimeout(()=>{
-     
+     console.log("pushData????",newPushData)
    
    if(newPushData != null && newPushData.from == "push"){
      
@@ -87,10 +87,11 @@ const [data, setData] = useState([]);
            setNewPushData(null);
            pushData= null;
            
+
            setTimeout(()=>{
             setOpenUserDetailPage(true);
             setPageType("detail")
-            setTypes(null);
+           // setTypes(null);
           }, 1500)
            break; // Exit the loop once the item is found
         }

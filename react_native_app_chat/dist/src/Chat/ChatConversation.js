@@ -17,7 +17,8 @@ import {
   Pressable,
   BackHandler,
   KeyboardAvoidingView,
-  ActivityIndicator
+  ActivityIndicator,
+  AppState
 } from 'react-native';
 import { formatChatDateTime,formatTime,formatDate, getCreatedDate,showToast, getEventEmitter } from '../Utility/Utility';
 
@@ -39,7 +40,7 @@ const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
 const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted,showAudioVideoIcon} = props
-
+const appState = useRef(AppState.currentState);
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
   userId:chatuserId,
@@ -102,6 +103,43 @@ const [userData,setUserData] = useState({
           });
          },[])
        
+         useEffect(() => {
+          const  subscription = AppState.addEventListener(
+            'change',
+            async (nextAppState) => {
+    
+              console.log("App state Chat App ", nextAppState)
+    
+              if (
+                appState.current.match(/inactive|background/) &&
+                nextAppState === 'active'
+              ) {
+                console.log('App active Chat Conversation');
+               if(type == "push"){
+                props.goBack();
+                props.clearChat()
+               }
+              }
+              else {
+    
+                console.log("App inactive Chat Conversation")
+                
+              }
+      
+              appState.current = nextAppState;
+    
+            },
+          )
+         return () => {
+    
+          if(subscription != null){
+            subscription.remove()
+          }
+    
+         
+        }
+     
+       }, [])
         useEffect( ()=>{
           
           // if( netInfo.isConnected ){
@@ -155,6 +193,7 @@ const [userData,setUserData] = useState({
              // setData(parsedValue[i].userChatHistory)
        //chatHistory(parsedValue,i,parsedValue[i].userChatHistory,parsedValue[i].userChatHistory[0].createdon) 
        if( netInfo.isConnected ){
+         console.log("in 1")
         chatHistory(parsedValue,i,) 
        }
        else if(netInfo.isConnected  == false){
@@ -196,8 +235,9 @@ const [userData,setUserData] = useState({
        
 
             }else{
-
+              console.log("in 2")
               if(netInfo.isConnected ){
+                console.log("in 3")
                 if(props.item!=null && item.mappedUserid!=null && userData!=null){
                   chatHistory(parsedValue,i, )  
                 }
@@ -257,7 +297,7 @@ const [userData,setUserData] = useState({
       "start":startIndex,
       "end":pageSize
     }
-
+console.log("obj1?????????",obj1)
     const response =  await callApi(ServiceConstant.FETCH_CHAT_HISTORY, obj1);
    
   if(response.status != 0){
