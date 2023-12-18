@@ -1,7 +1,9 @@
 import { RTCPeerConnection, RTCSessionDescription } from "react-native-webrtc";
+import { getEnvironment } from "../../NW/ServiceAPI";
 
 class PeerService {
     constructor() {
+      const envType = getEnvironment()
       if (!this.peer) {
         // this.peer = new RTCPeerConnection({
         //   iceServers: [
@@ -25,16 +27,31 @@ class PeerService {
         //       ]
         // });
         //Live server peer
-        this.peer = new RTCPeerConnection({
-          iceServers: [
-              { urls: 'stun:14.140.228.254:40022' },
-              {
-                urls: 'turn:14.140.228.254:40022',
-                username: 'abp',
-                credential: 'P@ssw0rd#123@@'
-              }
-            ]
-      });
+        if(envType == "TEST" ){
+          this.peer = new RTCPeerConnection({
+            iceServers: [
+                { urls: 'stun:14.140.228.254:40022' },
+                {
+                  urls: 'turn:14.140.228.254:40022',
+                  username: 'abp',
+                  credential: 'P@ssw0rd#123@@'
+                }
+              ]
+        });
+        }
+        else {
+          this.peer = new RTCPeerConnection({
+            iceServers: [
+                { urls: 'stun:turn.abpweddings.com:40022' },
+                {
+                  urls: 'turn:turn.abpweddings.com:40022',
+                  username: 'abp',
+                  credential: 'P@ssw0rd#123@@'
+                }
+              ]
+        });
+        }
+       
       // this.peer = new RTCPeerConnection({
       //   iceServers: [
       //       { urls: 'stun:14.140.228.249:3478' },
@@ -49,7 +66,7 @@ class PeerService {
     }
   
 async reconnectPeerConnection(){
-  
+  const envType = getEnvironment()
   //if (!this.peer) {
    // console.log("hiii reconnect",this.peer);  
   //   this.peer = new RTCPeerConnection({
@@ -63,6 +80,7 @@ async reconnectPeerConnection(){
   //       ]
   // });
   //Live server peer
+  if(envType == "TEST" ){
   this.peer = new RTCPeerConnection({
     iceServers: [
         { urls: 'stun:14.140.228.254:40022' },
@@ -73,6 +91,19 @@ async reconnectPeerConnection(){
         }
       ]
 });
+}
+else {
+  this.peer = new RTCPeerConnection({
+    iceServers: [
+        { urls: 'stun:turn.abpweddings.com:40022' },
+        {
+          urls: 'turn:turn.abpweddings.com:40022',
+          username: 'abp',
+          credential: 'P@ssw0rd#123@@'
+        }
+      ]
+});
+}
 // this.peer = new RTCPeerConnection({
 //   iceServers: [
 //       { urls: 'stun:14.140.228.249:3478' },

@@ -31,7 +31,7 @@ import RNNotificationCall from 'react-native-full-screen-notification-incoming-c
 
 import RNCallKeep from 'react-native-callkeep';
 import Incomingvideocall from "../Utility/incoming-video-call";
-import { ServiceConstant } from '../../NW/ServiceAPI';
+import { getEnvironment, ServiceConstant } from '../../NW/ServiceAPI';
 import { callApi } from '../../NW/APIManager';
 import {
   RINGER_MODE,
@@ -96,7 +96,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
  
   useEffect(() => {
     if (currentItem != null) {
-      
+      const envType = getEnvironment()
       let targetUsername = '';
       let targetCallType = '';
       let roomsStr=''
@@ -106,12 +106,12 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         targetUsername = currentItem.data.name;
         targetCallType = currentItem.data.callType;
         roomsStr=currentItem.data.rooms;
-        profileimage = 'https://testcdn.abpweddings.com/'+currentItem.data.image;
+        profileimage = envType == "TEST" ?'https://testcdn.abpweddings.com/'+currentItem.data.image:'https://cdn.abpweddings.com/'+currentItem.data.image;
       } else {
         targetUsername = currentItem.name;
         targetCallType = currentItem.callType;
         roomsStr=currentItem.rooms;
-        profileimage = 'https://testcdn.abpweddings.com/'+currentItem.image;
+        profileimage =  envType == "TEST" ?'https://testcdn.abpweddings.com/'+currentItem.image :'https://cdn.abpweddings.com/'+currentItem.image;
       }
      
       if(targetCallType!='endcall'){
