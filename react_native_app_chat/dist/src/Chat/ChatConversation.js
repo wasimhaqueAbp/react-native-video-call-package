@@ -663,10 +663,13 @@ console.log("obj1?????????",obj1)
                 mappedUserCode:item.mappedUserCode,
                 name:item.mappedUserName,image:item.userphotoimageurl
                 }
-                if(type =="audio"){
+                
+                if(type=="voice" || type =="audio"){
+                  props.googleAnalyticsData("audio")
                   props.onClickAudioCall(data)
                 }
                 else{
+                  props.googleAnalyticsData("video")
                   props.onClickVideoCall(data)
                 }
                 
@@ -766,6 +769,7 @@ else if(formateDate2 == formateDate){
             "message":chatText
           }
            setChatText("")
+           props.googleAnalyticsData("send")
           //  const response =  await callApi(ServiceConstant.FETCH_SEND_CHAT, arr1);
           
           }

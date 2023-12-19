@@ -506,7 +506,7 @@ setSearchText(e)
         setItems(item)
         selectItem = item;
 
-       
+       // props.googleAnalyticsData("listing")
         setTimeout(()=>{
           setOpenUserDetailPage(true);
           setPageType("detail")
@@ -566,7 +566,7 @@ setSearchText(e)
              socketConneted={socketConneted}
              onClickVideoCall={(data)=> props.onClickVideoCall(data)}
           onClickAudioCall={(data)=> props.onClickAudioCall(data)}
-         
+          googleAnalyticsData={(data)=> props.googleAnalyticsData(data)}
         
       />
       :

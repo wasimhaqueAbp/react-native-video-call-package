@@ -233,6 +233,7 @@ return(
              socketConneted={socketConneted}
              onClickVideoCall={(data)=> props.onClickVideoCall(data)}
           onClickAudioCall={(data)=> props.onClickAudioCall(data)}
+          googleAnalyticsData={(data)=> props.googleAnalyticsData(data)}
           registerUserToSocket_={registerUserToSocket}
           freeUserComponent={props.freeUserComponent}
           paidUserComponent={props.paidUserComponent}
