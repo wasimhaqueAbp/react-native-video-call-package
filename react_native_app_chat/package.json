@@ -1,6 +1,6 @@
 {
-  "name": "react_native_app_chat",
-  "version": "1.0.6",
+  "name": "react_native_app_chat_abp",
+  "version": "1.0.7",
   "description": "This is video chat component",
   "main": "index.js",
   "scripts": {
@@ -39,10 +39,8 @@
     "@react-navigation/native-stack": "^6.9.13",
     "date-and-time": "^3.0.3",
     "react": "^17.0.2",
-    "react-native-callkeep": "^4.3.12",
-    "react-native-document-picker": "^8.2.1",
-    "react-native-emoji-selector": "^0.2.0",
-    "react-native-incall-manager": "^4.1.0"
+    "react-native-callkeep": "^4.3.12"
+   
      
   },
   "dependencies": {
