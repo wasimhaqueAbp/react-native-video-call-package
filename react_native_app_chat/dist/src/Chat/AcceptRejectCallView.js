@@ -20,7 +20,7 @@ import { IconButton } from 'react-native-paper';
 
 
 import InCallManager from 'react-native-incall-manager';
-
+import uuid from 'react-native-uuid';
 
 //import { setVideoCallEvent } from '../../../Utility/FirebaseHandler';
 
@@ -39,7 +39,7 @@ import {
   RingerModeType,
 } from 'react-native-ringer-mode';
 import { removeItem } from '../../../../../src/db/Storage';
-
+import { PERMISSIONS, request } from 'react-native-permissions';
 
 // const options = {
 //   ios: {
@@ -73,8 +73,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   const [autoDisconnectTimeOutEvent, setautoDisconnectTimeOutEvent] = useState()
   const [newItems,setNewItems] =useState(item)
   const [callAccepted,setCallAccepted] = useState(false);
-  
-  
+  let acceptRejectCall = false;
   
   useEffect(() => {
     //let realmObj;
@@ -92,10 +91,18 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
   }, [userData]);
 
  
-
+  const CAMERA_PERMISSION = Platform.select({
+    ios: PERMISSIONS.IOS.CAMERA,
+    //android: PERMISSIONS.ANDROID.CAMERA,
+  });
+  const MICROPHONE_PERMISSION = Platform.select({
+    ios: PERMISSIONS.IOS.MICROPHONE,
+    //android: PERMISSIONS.ANDROID.RECORD_AUDIO,
+  });
  
   useEffect(() => {
     if (currentItem != null) {
+     
       const envType = getEnvironment()
       let targetUsername = '';
       let targetCallType = '';
@@ -131,7 +138,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       setautoDisconnectTimeOutEvent(() => {
         return setTimeout(() => {
           if(globalAcceptReject == false){
-            console.log("in end Call Accept Reject",globalAcceptReject)
+            console.log("in end Call Accept Reject1 ",globalAcceptReject)
             onCancelHandler()
           }
           
@@ -145,7 +152,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         calldisplayname = 'ABP Weddings - Video Call';
       }
 
-     
+     if(Platform.OS == "android"){
       RNNotificationCall.displayNotification(
         roomsStr,
         profileimage,
@@ -185,7 +192,65 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         onCancelHandler()
       });
 
+    }
+    else{
+
+  const   uuidData  = uuid.v4();
+  console.log("uuidData",uuidData);
+      const options = {
+        ios: {
+          appName: 'RNABPWedings',
+        }
+      };
       
+       RNCallKeep.setup(options).then(accepted => {});
+       RNCallKeep.setAvailable(true);
+  
+     
+    
+    setTimeout(()=>{
+      RNCallKeep.displayIncomingCall(
+        uuidData,
+        calldisplayname,
+        calldisplayname,
+       "generic",
+       targetCallType == "video" ? true: false,
+        {
+          supportsDTMF: true,
+          supportsHolding: true,
+       }
+      )
+    //  RNCallKeep.addEventListener('didDisplayIncomingCall', onIncomingCallDisplayed(remotemsg.data,uuidData));
+  
+    },2000)
+
+
+
+    RNCallKeep.addEventListener('endCall', ({ callUUID }) => {
+      // Do your normal `Hang Up` actions here
+      InCallManager.stop();
+      console.log("callUUID",callUUID)
+     
+      if(acceptRejectCall == false){
+        onCancelHandler();
+      }
+      else {
+        acceptRejectCall = false
+      }
+      //
+    });
+
+    RNCallKeep.addEventListener('answerCall', ({ callUUID }) => {
+      acceptRejectCall = true;
+      Keyboard.dismiss()
+      acceptCall()
+
+      setTimeout(  async() => {
+        RNCallKeep.endCall(uuidData);
+      }, 700)
+    });
+ 
+    }
       
       //Change done by wasim on 3 december 
       // let targetUsername='';
@@ -223,16 +288,29 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       //           Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
     }
     else{
-      InCallManager.stop();
-      RNNotificationCall.hideNotification();
+      if(Platform.OS == "android"){
+        InCallManager.stop();
+        RNNotificationCall.hideNotification();
+      }
+      else{
+        InCallManager.stop();
+      }
+      
       globalAcceptReject= true;
     }
 
 
     }
     return () => {
-      RNNotificationCall.removeEventListener('endCall');
-      RNNotificationCall.removeEventListener('answer')
+      if(Platform.OS == "android"){
+        RNNotificationCall.removeEventListener('endCall');
+        RNNotificationCall.removeEventListener('answer')
+      }
+      else{
+        RNCallKeep.removeEventListener('answerCall');
+        RNCallKeep.removeEventListener('endCall');
+      }
+     
     };
 
   }, [currentItem])
@@ -250,7 +328,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
   const checkPermissions = async () => {
 
-    if (Platform.OS = "android") {
+    if (Platform.OS == "android") {
 
       try {
 
@@ -306,10 +384,14 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
     }
     else {
       try {
-        const { status } = await Permissions.askAsync(Permissions.CAMERA);
-        const { statusMicroPhone } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
-
-        if (status === 'granted' && statusMicroPhone === 'granted') {
+        // const { status } = await Permissions.askAsync(Permissions.CAMERA);
+        // const { statusMicroPhone } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+        const cameraStatus = await request(CAMERA_PERMISSION);
+        const microphoneStatus = await request(MICROPHONE_PERMISSION);
+    
+        if (cameraStatus === 'granted' && microphoneStatus === 'granted') {
+      
+        
           setshowNotificationIncomingCall(false);
 
           handleAcceptButton();
@@ -422,7 +504,11 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
      //  setVideoCallEvent("cancel")// un comment
 
      try {
-      await removeItem('PUSH_PAYLOAD')
+       if(Platform.OS == "android"){
+         console.log("in android If")
+        await removeItem('PUSH_PAYLOAD')
+       }
+       console.log("in ios If")
       //  PushNotification.cancelAllLocalNotifications({ id: currentItem.id });
       const body = {
         from: item.uid,

@@ -299,7 +299,10 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 
   const handleCallUser = async () => {
     try {
-      WakeLock.acquire();
+      if(Platform.OS == "android"){
+        WakeLock.acquire();
+      }
+     
       const callTypes =audioVideoType == "video"? true: false
       const stream = await mediaDevices.getUserMedia({
         audio: {
@@ -396,8 +399,10 @@ setAudioORVideo(callTypes)
   };
 
   const getCallDetails = () => {
-    WakeLock.acquire();
     
+    if(Platform.OS == "android"){
+      WakeLock.acquire();
+    }
     
     socket.emit('getCallDetails', {
       from: remoteSocketId,
@@ -647,12 +652,16 @@ useEffect(() => {
     
     InCallManager.stop();
     clearTimeout(callTimeout);
-    
-    WakeLock.release();
+    if(Platform.OS == "android"){
+      WakeLock.release();
+    }
+  
     props.goBack()
     setTimeout(()=>{
      // PartialWakeLock.release(); 
+     if(Platform.OS == "android"){
       ScreenLock.release();
+     }
     },500)
     
 
@@ -737,7 +746,10 @@ useEffect(() => {
       socket.emit("misesdcall", { from: fromUserId, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
       calltype:audioVideoType,initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId, room: room});
     }  
-    WakeLock.release();
+    if(Platform.OS == "android"){
+      WakeLock.release();
+    }
+    
     clearTimeout(callTimeout);
     console.log("in Endcall")
  // peer.peer.close();
@@ -745,7 +757,10 @@ useEffect(() => {
     props.goBack()
     setTimeout(()=>{
       // PartialWakeLock.release(); 
-       ScreenLock.release();
+       
+       if(Platform.OS == "android"){
+        ScreenLock.release();
+       }
      },500)
   };
 
@@ -883,12 +898,17 @@ const handlecheckUserStatusResponse = async(ev) =>{
     }
     setRemoteStream();
     await peer.reconnectPeerConnection();
-    WakeLock.release();
+    if(Platform.OS == "android"){
+      WakeLock.release();
+    }
     
     props.goBack();
     setTimeout(()=>{
       // PartialWakeLock.release(); 
-       ScreenLock.release();
+      if(Platform.OS == "android"){
+        ScreenLock.release();
+       }
+       
      },500)
   }
   clearTimeout(callTimeout);
