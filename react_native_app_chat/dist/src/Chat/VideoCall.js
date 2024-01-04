@@ -54,6 +54,7 @@ import {
   PictureInPicture
 } from '@saserinn/react-native-app-utils';
 import { set } from 'date-fns';
+import RNCallKeep from 'react-native-callkeep';
 
 //var callDuration = { "start": "", "end": "" };
 var callDurationAccepted = false;
@@ -191,11 +192,19 @@ const [remoteAcceptCall,setRemoteAcceptCall] = useState(false);
 
   const handleAppStateChange = (nextAppState) => {
     //Code done by Wasim on 01
-    
+    console.log("nextAppState",nextAppState);
     if (nextAppState == 'background') {
       // App has gone to the background, perform your background action here
-      
-     EndCall();
+    if(Platform.OS == "android"){
+      EndCall();
+    }   
+
+    
+    }
+    else if(nextAppState == 'inactive'){
+      if(Platform.OS == "ios"){
+        EndCall();
+      }  
     }
   };
 
@@ -359,6 +368,13 @@ setAudioORVideo(callTypes)
       const callTypes =audioVideoType == "video"? true: false
      
       InCallManager.stop();
+//       if(Platform.OS == "ios"){
+//         setTimeout(async ()=>{
+//  RNCallKeep.endAllCalls();
+//  await peer.reconnectPeerConnection();
+//         },100000)
+       
+//       }
       
       const stream = await mediaDevices.getUserMedia({
         video: callTypes,
@@ -546,7 +562,7 @@ useEffect(() => {
   try {
     peer.peer.addEventListener('track', async ev => {
       const remoteStream = ev.streams;
-       
+       console.log(remoteStream,"remoteStream??????????????")
       autoDisconectBit=  true;
      // setRemoteStream(remoteStream[0]);
       if( audioVideoType == "video"){
@@ -656,6 +672,13 @@ useEffect(() => {
       WakeLock.release();
     }
   
+    if(Platform.OS == "ios"){
+      RNCallKeep.endAllCalls();
+      RNCallKeep.removeEventListener('checkReachability')
+      RNCallKeep.removeEventListener('answerCall');
+      RNCallKeep.removeEventListener('endCall');
+    }
+
     props.goBack()
     setTimeout(()=>{
      // PartialWakeLock.release(); 
@@ -743,7 +766,7 @@ useEffect(() => {
     }
     else{
       
-      socket.emit("misesdcall", { from: fromUserId, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS ="android"?"android":"ios",
+      socket.emit("misesdcall", { from: fromUserId, to: remoteSocketId,call: 'missedCall', devplatform:Platform.OS =="android"?"android":"ios",
       calltype:audioVideoType,initiateCallUser:callinitiateByothers == "own"? fromUserId : remoteSocketId, room: room});
     }  
     if(Platform.OS == "android"){
@@ -752,6 +775,12 @@ useEffect(() => {
     
     clearTimeout(callTimeout);
     console.log("in Endcall")
+    if(Platform.OS == "ios"){
+      RNCallKeep.endAllCalls();
+      RNCallKeep.removeEventListener('checkReachability')
+      RNCallKeep.removeEventListener('answerCall');
+      RNCallKeep.removeEventListener('endCall');
+    }
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
     props.goBack()
@@ -767,6 +796,7 @@ useEffect(() => {
   useEffect(() => {
     // Enable or disable audio track based on audioEnabled state
     if (myStream) {
+      console.log("myStream???",myStream)
       myStream.getAudioTracks().forEach(track => {
         track.enabled = audioEnabled;
       });

@@ -135,7 +135,7 @@ const onCancelHandler = async (dataPush) =>{
     
     props.socket.emit('endCall', {to:dataPush.sourceuid, from: dataPush.userId, room: dataPush.rooms,calltype:dataPush.calltype,devplatform:Platform.OS =="android"?"android":"ios",
   initiateCallUser:dataPush.callinitiateByothers == "own"? dataPush.sourceuid  :dataPush.userId,});
-    // props.socket.emit("misesdcall", { from: dataPush.userId, to:dataPush.sourceuid ,call: 'missedCall',devplatform:Platform.OS ="android"?"android":"ios",
+    // props.socket.emit("misesdcall", { from: dataPush.userId, to:dataPush.sourceuid ,call: 'missedCall',devplatform:Platform.OS =="android"?"android":"ios",
     // calltype:dataPush.calltype,initiateCallUser:dataPush.callinitiateByothers == "own"? dataPush.sourceuid  :dataPush.userId, room: dataPush.rooms  });
     setNewPushData(null)
     pushData = null;

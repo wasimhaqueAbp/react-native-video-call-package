@@ -194,9 +194,11 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
     }
     else{
-
+      RNCallKeep.removeEventListener('checkReachability')
+      RNCallKeep.removeEventListener('answerCall');
+      RNCallKeep.removeEventListener('endCall');
   const   uuidData  = uuid.v4();
-  console.log("uuidData",uuidData);
+  
       const options = {
         ios: {
           appName: 'RNABPWedings',
@@ -214,13 +216,13 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         calldisplayname,
         calldisplayname,
        "generic",
-       targetCallType == "video" ? true: false,
+       true,// targetCallType == "video" ? true: false,
         {
           supportsDTMF: true,
           supportsHolding: true,
        }
       )
-    //  RNCallKeep.addEventListener('didDisplayIncomingCall', onIncomingCallDisplayed(remotemsg.data,uuidData));
+    
   
     },2000)
 
@@ -230,7 +232,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       // Do your normal `Hang Up` actions here
       InCallManager.stop();
       console.log("callUUID",callUUID)
-     
+      globalAcceptReject= true;
       if(acceptRejectCall == false){
         onCancelHandler();
       }
@@ -246,7 +248,8 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       acceptCall()
 
       setTimeout(  async() => {
-        RNCallKeep.endCall(uuidData);
+        console.log("in Accept handler????")
+        RNCallKeep.endAllCalls();
       }, 700)
     });
  
@@ -288,6 +291,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       //           Incomingvideocall.configure(incomingCallAnswer, endIncomingCall);
     }
     else{
+     
       if(Platform.OS == "android"){
         InCallManager.stop();
         RNNotificationCall.hideNotification();
@@ -307,6 +311,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
         RNNotificationCall.removeEventListener('answer')
       }
       else{
+       
         RNCallKeep.removeEventListener('answerCall');
         RNCallKeep.removeEventListener('endCall');
       }
@@ -505,7 +510,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
 
      try {
        if(Platform.OS == "android"){
-         console.log("in android If")
+         
         await removeItem('PUSH_PAYLOAD')
        }
        console.log("in ios If")
@@ -513,7 +518,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       const body = {
         from: item.uid,
         to:item.sourceuid,//call initiator
-        devplatform:Platform.OS ="android"?"android":"ios",
+        devplatform:Platform.OS =="android"?"android":"ios",
         calltype:item.calltype,
         rooms:item.rooms
 
