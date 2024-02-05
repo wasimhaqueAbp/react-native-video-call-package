@@ -250,9 +250,11 @@ else{
 }  
 
      //  const sortedFriendList = response.friendlist.sort((a, b) => b.modifyon - a.modifyon);
-
-        setData(response.friendlist)
-        setPreviousData(response.friendlist)
+     const sortedFriendList = response.friendlist.sort((a, b) => b.modifyon - a.modifyon);
+     setData(sortedFriendList)
+     setPreviousData(sortedFriendList)
+        // setData(response.friendlist)
+        // setPreviousData(response.friendlist)
 
        }
 
