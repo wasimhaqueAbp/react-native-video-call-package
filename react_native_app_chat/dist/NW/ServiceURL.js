@@ -22,7 +22,7 @@ export const ServiceConfig = {
     PROD: {
       BASE_URL_SOF: 'https://sof.abpweddings.com',
       BASE_URL_FILE_UPLOAD: 'https://dl.abpweddings.com',
-      BASE_URL_IMAGE: 'https://media.abpweddings.com',
+      BASE_URL_IMAGE: 'https://lrservice.abpweddings.com',//'https://media.abpweddings.com',
       BASE_CHAT :"https://messegingservice.abpweddings.com"
      },
   };

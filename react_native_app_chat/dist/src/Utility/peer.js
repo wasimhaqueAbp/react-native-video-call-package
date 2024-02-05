@@ -40,18 +40,27 @@ class PeerService {
         // });
         // }
         // else {
-          this.peer = new RTCPeerConnection({
-            iceServers: [
-                { urls: 'stun:turn.abpweddings.com:40022' },
-                {
-                  urls: 'turn:turn.abpweddings.com:40022',
-                  username: 'abp',
-                  credential: 'P@ssw0rd#123@@'
-                }
-              ]
-        });
+        //   this.peer = new RTCPeerConnection({
+        //     iceServers: [
+        //         { urls: 'stun:turn.abpweddings.com:40022' },
+        //         {
+        //           urls: 'turn:turn.abpweddings.com:40022',
+        //           username: 'abp',
+        //           credential: 'P@ssw0rd#123@@'
+        //         }
+        //       ]
+        // });
        // }
-       
+       this.peer = new RTCPeerConnection({
+        iceServers: [
+            { urls: 'stun:13.233.83.186:40022' },
+            {
+              urls: 'turn:13.233.83.186:40022',
+              username: 'abp',
+              credential: 'P@ssw0rd#123@@'
+            }
+          ]
+    });
       // this.peer = new RTCPeerConnection({
       //   iceServers: [
       //       { urls: 'stun:14.140.228.249:3478' },
