@@ -25,7 +25,7 @@ import { prepareShortName } from '../Utility/Utility';
 import { RNVectorIcon } from '../Utility/RNVectorIcon';
 import { showToast } from '../../../../../src/Utility/Utility';
 export const ChatHeaderView = ({item,genderId, index, onSelectProfile, showLastMessage = true,onMenuPress,onVideoPress,onAudioPress,onGoback,
-  showAudioVideoIcon,
+  showAudioVideoIcon,checkuservideocallstatus,
   style={borderRadius:0,backgroundColor:"#FFF",elevation:2}
 } 
   ) => {
@@ -59,15 +59,19 @@ return(
   {(showAudioVideoIcon == 1   ||  showAudioVideoIcon == 2)  &&
   <View>
   <Pressable onPress={() => {
-   
-    if(showAudioVideoIcon == 2 ){
-      showToast("You have exhausted your calling limit.");
+   if(checkuservideocallstatus){
+      if(showAudioVideoIcon == 2 ){
+        showToast("You have exhausted your calling limit.");
+      }
+      else if(item.vdinboundisallowed == 0){
+        showToast("The user you are trying to call does not have the latest app version.");
+      }
+      else if(showAudioVideoIcon == 1){
+        onAudioPress()
+      }
     }
-    else if(item.vdinboundisallowed == 0){
-      showToast("The user you are trying to call does not have the latest app version.");
-    }
-    else if(showAudioVideoIcon == 1){
-      onAudioPress()
+    else{
+      showToast("Buy a Plan to make UNLIMITED calls");
     }
     }}>
   <Image
@@ -81,7 +85,7 @@ return(
   <View>
   
   <Pressable onPress={() => {
-    
+    if(checkuservideocallstatus){
      if(showAudioVideoIcon == 2 ){
       showToast("You have exhausted your calling limit.");
     }
@@ -90,8 +94,13 @@ return(
     }
   
     else if(showAudioVideoIcon == 1){
-    onVideoPress()
+
+      onVideoPress()
     }
+  }
+  else{
+    showToast("Buy a Plan to make UNLIMITED calls");
+  }
     }}>
   <Image
         style={{height:25,width:25,marginLeft:10}}

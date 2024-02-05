@@ -33,13 +33,13 @@ import ViewProfile from './ViewProfile';
 import{Menu, MenuItem, MenuDivider}  from 'react-native-material-menu';
 import { ScreenLoader } from '../Utility/ScreenLoader';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { PERMISSIONS, request } from 'react-native-permissions';
 
 
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
-const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted,showAudioVideoIcon} = props
+const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted,showAudioVideoIcon,checkuservideocallstatus} = props
 const appState = useRef(AppState.currentState);
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
@@ -537,10 +537,17 @@ console.log("obj1?????????",obj1)
             
           
           }
-
+          const CAMERA_PERMISSION = Platform.select({
+            ios: PERMISSIONS.IOS.CAMERA,
+            //android: PERMISSIONS.ANDROID.CAMERA,
+          });
+          const MICROPHONE_PERMISSION = Platform.select({
+            ios: PERMISSIONS.IOS.MICROPHONE,
+            //android: PERMISSIONS.ANDROID.RECORD_AUDIO,
+          });
           const checkPermissions= async (type)=>{
-        
-            if(Platform.OS ="android"){
+            
+            if(Platform.OS =="android"){
     
               try {
     
@@ -594,10 +601,13 @@ console.log("obj1?????????",obj1)
             }
             else{
               try {
-                const { status } = await Permissions.askAsync(Permissions.CAMERA);
-                const { statusMicroPhone } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
                 
-                if (status === 'granted' && statusMicroPhone === 'granted') {
+               // const { status } = await Permissions.askAsync(Permissions.CAMERA);
+                //const { statusMicroPhone } = await Permissions.askAsync(Permissions.AUDIO_RECORDING);
+                const cameraStatus = await request(CAMERA_PERMISSION);
+                const microphoneStatus = await request(MICROPHONE_PERMISSION);
+            
+                if (cameraStatus === 'granted' && microphoneStatus === 'granted') {
                   
                   handleCallVideo(type);
                 }  else {
@@ -1109,6 +1119,7 @@ const documentMenu=()=>{
              onSelectProfile={(item,index)=>{
               // setOpenChatVideoViewProfile(true);
              }}
+             checkuservideocallstatus={checkuservideocallstatus}
              genderId={genderId}
               showLastMessage={false}
               showAudioVideoIcon={showAudioVideoIcon}

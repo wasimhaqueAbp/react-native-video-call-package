@@ -31,7 +31,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  const ChatUserList = props => {
 
 const newProps = props //props.route.params.props; //props
-const  {userCode,chatuserId,profileImage,profileName,genderId,socketConneted,userPlanStatus } = props;
+const  {userCode,chatuserId,profileImage,profileName,genderId,socketConneted,userPlanStatus,checkuservideocallstatus } = props;
 let {pushData} = props
 
  
@@ -490,6 +490,7 @@ setSearchText(e)
             index={index}
              onSelectProfile={onSelectProfile}
              genderId={genderId}
+             
           />
         );
       };
@@ -567,7 +568,7 @@ setSearchText(e)
              onClickVideoCall={(data)=> props.onClickVideoCall(data)}
           onClickAudioCall={(data)=> props.onClickAudioCall(data)}
           googleAnalyticsData={(data)=> props.googleAnalyticsData(data)}
-        
+          checkuservideocallstatus={checkuservideocallstatus}
       />
       :
        pageType != null && pageType =="block"?

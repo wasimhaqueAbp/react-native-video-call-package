@@ -10,7 +10,7 @@ import { getEnvironment } from './NW/ServiceAPI';
 
 const ChatApp = props => {
   var globalScoketConnection;
- const  {userCode,chatuserId,profileImage,profileName,pushData,genderId,appStates,pageFocus } = props;
+ const  {userCode,chatuserId,profileImage,profileName,pushData,genderId,appStates,pageFocus,checkuservideocallstatus } = props;
  //console.log(userCode,pushData,"userCode")
  const appState = useRef(AppState.currentState);
       const [socket,setsocket]=useState(null);
@@ -238,6 +238,7 @@ return(
           freeUserComponent={props.freeUserComponent}
           paidUserComponent={props.paidUserComponent}
           userPlanStatus={props.userPlanStatus}
+          checkuservideocallstatus={checkuservideocallstatus}
         /> 
        
     </View>
