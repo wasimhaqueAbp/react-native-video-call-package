@@ -1,6 +1,6 @@
 {
   "name": "react_native_app_chat_abp",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "This is video chat component",
   "main": "index.js",
   "scripts": {
