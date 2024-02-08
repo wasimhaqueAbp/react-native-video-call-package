@@ -40,11 +40,10 @@
     "date-and-time": "^3.0.3",
     "react": "^17.0.2",
     "react-native-callkeep": "^4.3.12"
-   
-     
   },
   "dependencies": {
     "@saserinn/react-native-app-utils": "^1.0.0",
+    "react-native-permissions": "^4.1.1",
     "react-native-ringer-mode": "^2.0.0",
     "react-native-uuid": "^2.0.1"
   }
