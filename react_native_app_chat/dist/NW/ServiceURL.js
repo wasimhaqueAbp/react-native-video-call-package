@@ -7,7 +7,8 @@ export const ServiceConfig = {
    
       BASE_URL_FILE_UPLOAD: 'https://testdl.abpweddings.com',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
-     BASE_CHAT :"https://messageserviceqa.abpweddings.com" //"http://messageserviceqa.abpweddings.com:8083"
+     BASE_CHAT :"https://messageserviceqa.abpweddings.com", //"http://messageserviceqa.abpweddings.com:8083"
+     BASE_DEFAULT_IMAGE_URL :"https://testcdn.abpweddings.com",
      
     },
   
@@ -16,16 +17,33 @@ export const ServiceConfig = {
    
        BASE_URL_FILE_UPLOAD: 'https://uatdl.abpweddings.com:8443',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
-      BASE_CHAT :"https://messageserviceqa.abpweddings.com" //"http://messageserviceqa.abpweddings.com:8083"
+      BASE_CHAT :"https://messageserviceqa.abpweddings.com", //"http://messageserviceqa.abpweddings.com:8083"
+      BASE_DEFAULT_IMAGE_URL :"https://testcdn.abpweddings.com"
     },
   
     PROD: {
       BASE_URL_SOF: 'https://sof.abpweddings.com',
       BASE_URL_FILE_UPLOAD: 'https://dl.abpweddings.com',
       BASE_URL_IMAGE: 'https://media.abpweddings.com',
-      BASE_CHAT :"https://messegingservice.abpweddings.com"
+      BASE_CHAT :"https://messegingservice.abpweddings.com",
+      BASE_DEFAULT_IMAGE_URL :"https://cdn.abpweddings.com",
      },
   };
+
+  export const getDefaultImageUrl = (genderId) => {
+    let envVal = getEnvironment();
+    const base = ServiceConfig[envVal];
+
+    const defaultImageUrl =
+     genderId == "male" || genderId == undefined
+       ?base.BASE_DEFAULT_IMAGE_URL + '/application-images/imagefemale.jpg'
+       : base.BASE_DEFAULT_IMAGE_URL +  '/application-images/imagemale.jpg'
+    ;
+
+    return defaultImageUrl;
+
+  }
+
 export const getImageUrl = (path,genderId) => {
   
     let envVal = getEnvironment(); //ENVIRONMENT.PRODUCTION;
@@ -35,8 +53,8 @@ export const getImageUrl = (path,genderId) => {
    const defaultUrl =
    path != null
      ? genderId == "male" ||genderId == undefined
-       ?base.BASE_URL_IMAGE + '/documents/images/image-Female.jpg'//getImageUrl('/documents/images/image-Female.jpg')
-       : base.BASE_URL_IMAGE +  '/documents/images/image-Male.jpg'///getImageUrl('/documents/images/image-Male.jpg')
+       ?base.BASE_DEFAULT_IMAGE_URL + '/application-images/imagefemale.jpg'//getImageUrl('/documents/images/image-Female.jpg')
+       : base.BASE_DEFAULT_IMAGE_URL +  '/application-images/imagemale.jpg'///getImageUrl('/documents/images/image-Male.jpg')
      : '';
 
  const imageUrl = path != null ? base.BASE_URL_IMAGE + path : defaultUrl;

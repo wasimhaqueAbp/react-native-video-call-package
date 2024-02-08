@@ -20,7 +20,7 @@ import {Divider, Button, Card, Avatar,IconButton} from 'react-native-paper';
 
 
 import { useNavigation } from '@react-navigation/native';
-import { getImageUrl } from '../../NW/ServiceURL';
+import { getImageUrl,getDefaultImageUrl } from '../../NW/ServiceURL';
 import { prepareShortName } from '../Utility/Utility';
 import { RNVectorIcon } from '../Utility/RNVectorIcon';
 import { showToast } from '../../../../../src/Utility/Utility';
@@ -30,6 +30,12 @@ export const ChatHeaderView = ({item,genderId, index, onSelectProfile, showLastM
 } 
   ) => {
   const [isMenuVisible, setIsMenuVisible] = useState(false);
+
+  const [imageSource,setimageSource] = useState(getImageUrl(item.userphotoimageurl,genderId));
+  const [fallbackSource,setfallbackSource] = useState(getDefaultImageUrl(genderId));
+  
+
+
  
 return(
     <Card style={style}>
@@ -48,7 +54,11 @@ return(
               </Pressable>
   </View>
   <Pressable onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}>
-  <Avatar.Image style={{backgroundColor:'white',}} size={45} source={{uri: getImageUrl(item.userphotoimageurl,genderId)}} />
+    <Avatar.Image style={{backgroundColor:'white',}} size={45} source={{uri: imageSource}} 
+      onError={ async (e) => {      
+        setimageSource(fallbackSource);
+      }}
+    />
   </Pressable>
   <Pressable style={{marginHorizontal:8,flex:1,}}
   onPress={ () => onSelectProfile != null? onSelectProfile(item, index) : console.log("select")}
