@@ -39,7 +39,7 @@ import { PERMISSIONS, request } from 'react-native-permissions';
 const ChatConversation = (props) => {
 
 // const [socket,setsocket] = useState(props.socket)
-const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted,showAudioVideoIcon} = props
+const {socket,item,userCode,profileName,chatuserId,genderId,type,socketConneted,showAudioVideoIcon,checkuservideocallstatus} = props
 const appState = useRef(AppState.currentState);
 const netInfo = useNetInfo();
 const [userData,setUserData] = useState({
@@ -1119,6 +1119,7 @@ const documentMenu=()=>{
              onSelectProfile={(item,index)=>{
               // setOpenChatVideoViewProfile(true);
              }}
+             checkuservideocallstatus={checkuservideocallstatus}
              genderId={genderId}
               showLastMessage={false}
               showAudioVideoIcon={showAudioVideoIcon}

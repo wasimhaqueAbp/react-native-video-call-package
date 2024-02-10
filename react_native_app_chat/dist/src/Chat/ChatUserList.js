@@ -31,7 +31,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  const ChatUserList = props => {
 
 const newProps = props //props.route.params.props; //props
-const  {userCode,chatuserId,profileImage,profileName,genderId,socketConneted,userPlanStatus } = props;
+const  {userCode,chatuserId,profileImage,profileName,genderId,socketConneted,userPlanStatus,checkuservideocallstatus } = props;
 let {pushData} = props
 
  
@@ -250,9 +250,11 @@ else{
 }  
 
      //  const sortedFriendList = response.friendlist.sort((a, b) => b.modifyon - a.modifyon);
-
-        setData(response.friendlist)
-        setPreviousData(response.friendlist)
+     const sortedFriendList = response.friendlist.sort((a, b) => b.modifyon - a.modifyon);
+     setData(sortedFriendList)
+     setPreviousData(sortedFriendList)
+        // setData(response.friendlist)
+        // setPreviousData(response.friendlist)
 
        }
 
@@ -490,6 +492,7 @@ setSearchText(e)
             index={index}
              onSelectProfile={onSelectProfile}
              genderId={genderId}
+             
           />
         );
       };
@@ -567,7 +570,7 @@ setSearchText(e)
              onClickVideoCall={(data)=> props.onClickVideoCall(data)}
           onClickAudioCall={(data)=> props.onClickAudioCall(data)}
           googleAnalyticsData={(data)=> props.googleAnalyticsData(data)}
-        
+          checkuservideocallstatus={checkuservideocallstatus}
       />
       :
        pageType != null && pageType =="block"?

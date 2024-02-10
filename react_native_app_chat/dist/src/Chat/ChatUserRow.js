@@ -16,7 +16,7 @@ import {
 
 import {Divider, Button, Card, Avatar} from 'react-native-paper';
 import { formatChatDateTimeGMT,formatDate,formatChatTimestamp, prepareShortName } from '../Utility/Utility';
-import { getImageUrl } from '../../NW/ServiceURL';
+import { getImageUrl,getDefaultImageUrl } from '../../NW/ServiceURL';
 
 import { formatChatDateTime } from '../Utility/Utility';
 
@@ -27,7 +27,10 @@ export const Circle = ({size, color}) => {
 };
 
 export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMessage = true, style={marginHorizontal:16, marginVertical:8, elevation:2}}) => {
- 
+
+  const [imageSource,setimageSource] = useState(getImageUrl(item.userphotoimageurl,genderId));
+  const [fallbackSource,setfallbackSource] = useState(getDefaultImageUrl(genderId));
+  console.log("Tapas Log",imageSource);
  const showmessagebody = (item) =>{
   //item.messagebody
   
@@ -66,7 +69,11 @@ export const ChatUserRow = ({item,genderId, index, onSelectProfile, showLastMess
     
        <View style={styles.imageMainView}>
   
-       <Avatar.Image style={{backgroundColor:'white'}} size={55} source={{uri: getImageUrl(item.userphotoimageurl,genderId)}} /> 
+       <Avatar.Image style={{backgroundColor:'white'}} size={55} source={{uri: imageSource}} 
+        onError={ async (e) => {      
+          setimageSource(fallbackSource);
+        }}
+       /> 
   
        <View style={styles.textMainView}>
        
