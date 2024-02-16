@@ -85,7 +85,7 @@ return(
     }
     }}>
   <Image
-        style={{height:25,width:25,marginLeft: 8,paddingRight:10,}}
+        style={{height:22,width:22,marginLeft: 8,paddingRight:15,}}
        source={require('../icons/phone_call.png')} resizeMode="contain" /> 
                  
               </Pressable>
@@ -113,8 +113,8 @@ return(
   }
     }}>
   <Image
-        style={{height:25,width:25,marginLeft:10}}
-       source={require('../icons/video.png')} resizeMode="contain" /> 
+        style={{height:22,width:22,marginLeft:17, marginRight:10}}
+       source={require('../icons/video.png')} resizeMode="contain" />
                  
               </Pressable>
   </View> }

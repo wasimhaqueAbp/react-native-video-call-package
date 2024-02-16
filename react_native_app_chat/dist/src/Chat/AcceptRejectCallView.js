@@ -214,7 +214,7 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
       RNCallKeep.displayIncomingCall(
         uuidData,
         calldisplayname,
-        calldisplayname,
+        prepareShortName(targetUsername),
        "generic",
        true,// targetCallType == "video" ? true: false,
         {

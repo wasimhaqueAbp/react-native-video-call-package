@@ -677,6 +677,7 @@ useEffect(() => {
       RNCallKeep.removeEventListener('checkReachability')
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
+      RNCallKeep.clearInitialEvents();
     }
 
     props.goBack()
@@ -705,8 +706,13 @@ useEffect(() => {
         // const remoteAudioTrack = remoteStream.getAudioTracks()[0];
 
         if(audioVideoType == "video"){
+         
+          setTimeout(()=>{
+            InCallManager.setSpeakerphoneOn(true);
+            InCallManager.setForceSpeakerphoneOn(true);
+          },500)
+         
           
-          InCallManager.setForceSpeakerphoneOn(true);
         }
         
        
@@ -780,6 +786,7 @@ useEffect(() => {
       RNCallKeep.removeEventListener('checkReachability')
       RNCallKeep.removeEventListener('answerCall');
       RNCallKeep.removeEventListener('endCall');
+      RNCallKeep.clearInitialEvents();
     }
  // peer.peer.close();
  // await peer.reconnectPeerConnection();
