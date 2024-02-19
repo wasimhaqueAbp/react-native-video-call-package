@@ -211,19 +211,37 @@ const AcceptRejectCallView = ({ name, socket, item, socketConneted, currentItem,
      
     
     setTimeout(()=>{
-      RNCallKeep.displayIncomingCall(
-        uuidData,
-        calldisplayname,
-        prepareShortName(targetUsername),
-       "generic",
-       true,// targetCallType == "video" ? true: false,
-        {
-          supportsDTMF: true,
-          supportsHolding: true,
-       }
-      )
-    
+      if(targetCallType == "video"){
+        RNCallKeep.displayIncomingCall(
+          uuidData,
+          calldisplayname,
+          prepareShortName(targetUsername),
+         "generic",
+         true,// targetCallType == "video" ? true: false,
+          {
+            supportsDTMF: true,
+            supportsHolding: true,
+         }
+        )
+      
   
+      }
+      else{
+        RNCallKeep.displayIncomingCall(
+          uuidData,
+          calldisplayname,
+          prepareShortName(targetUsername),
+         "generic",
+         false,// targetCallType == "video" ? true: false,
+          {
+            supportsDTMF: true,
+            supportsHolding: true,
+         }
+        )
+      
+  
+      }
+        
     },2000)
 
 

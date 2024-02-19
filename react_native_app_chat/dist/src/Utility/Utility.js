@@ -10,7 +10,9 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
     let finalStr = '';
   
     try {
-      const arrOfStr = matrimonyUserName.trim().split(' ');
+      let matrimonyUserNameNew=decodeURIComponent(matrimonyUserName);
+      const arrOfStr = matrimonyUserNameNew.trim().split(' ');
+      
   
       if (arrOfStr.length > 1) {
         finalStr = arrOfStr[0].substring(0, 1).toUpperCase() + ' ';
@@ -29,7 +31,7 @@ export const prepareShortName = (matrimonyUserName, maxLimit = 30) => {
         finalStr += '...';
       }
     } catch (e) {
-      finalStr = matrimonyUserName;
+      finalStr = matrimonyUserNameNew;
     }
   
     return finalStr;

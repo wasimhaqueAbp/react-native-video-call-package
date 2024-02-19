@@ -57,9 +57,29 @@ export const getImageUrl = (path,genderId) => {
        : base.BASE_DEFAULT_IMAGE_URL +  '/application-images/imagemale.jpg'///getImageUrl('/documents/images/image-Male.jpg')
      : '';
 
- const imageUrl = path != null ? base.BASE_URL_IMAGE + path : defaultUrl;
+     let lrservice='https://lrservice.abpweddings.com';
+     let pattern='/documents/20181';
 
-    return imageUrl //base.BASE_URL_IMAGE + path;
+     if(path != null){
+      if(path.indexOf('https') > -1){ // if host already found
+        return path;
+        }
+        else if( path.indexOf(pattern) > -1 ){
+          return lrservice + path;
+        }else{
+            return base.BASE_URL_IMAGE + path;
+        }
+     }
+     else{
+        return defaultUrl;
+     }
+     
+
+    //const imageUrl = path != null ? base.BASE_URL_IMAGE + path : defaultUrl;
+
+
+
+    //return imageUrl //base.BASE_URL_IMAGE + path;
   };
 
   const ServiceApi = {
