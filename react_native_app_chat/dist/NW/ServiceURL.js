@@ -9,7 +9,7 @@ export const ServiceConfig = {
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
      BASE_CHAT :"https://messageserviceqa.abpweddings.com", //"http://messageserviceqa.abpweddings.com:8083"
      BASE_DEFAULT_IMAGE_URL :"https://testcdn.abpweddings.com",
-     
+     BASE_URL_IMAGE_NEW :'https://cdnnew.abpweddings.com'
     },
   
     UAT: {
@@ -18,7 +18,8 @@ export const ServiceConfig = {
        BASE_URL_FILE_UPLOAD: 'https://uatdl.abpweddings.com:8443',
       BASE_URL_IMAGE: 'https://testcdn.abpweddings.com',
       BASE_CHAT :"https://messageserviceqa.abpweddings.com", //"http://messageserviceqa.abpweddings.com:8083"
-      BASE_DEFAULT_IMAGE_URL :"https://testcdn.abpweddings.com"
+      BASE_DEFAULT_IMAGE_URL :"https://testcdn.abpweddings.com",
+      BASE_URL_IMAGE_NEW :'https://cdnnew.abpweddings.com'
     },
   
     PROD: {
@@ -27,6 +28,7 @@ export const ServiceConfig = {
       BASE_URL_IMAGE: 'https://media.abpweddings.com',
       BASE_CHAT :"https://messegingservice.abpweddings.com",
       BASE_DEFAULT_IMAGE_URL :"https://cdn.abpweddings.com",
+      BASE_URL_IMAGE_NEW :'https://cdnnew.abpweddings.com'
      },
   };
 
@@ -57,7 +59,7 @@ export const getImageUrl = (path,genderId) => {
        : base.BASE_DEFAULT_IMAGE_URL +  '/application-images/imagemale.jpg'///getImageUrl('/documents/images/image-Male.jpg')
      : '';
 
-     let lrservice='https://lrservice.abpweddings.com';
+     let lrservice= base.BASE_URL_IMAGE_NEW
      let pattern='/documents/20181';
 
      if(path != null){
