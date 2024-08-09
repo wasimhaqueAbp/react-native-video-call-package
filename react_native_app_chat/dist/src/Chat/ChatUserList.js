@@ -523,70 +523,83 @@ setSearchText(e)
         const onPressClearChat=()=>{
           setNewPushData(null);
         }
-    return (
+        return (
       
-      <View style={styles.container}>
-      {openUserDetailPage == false? 
-
-       data.length == 0 && userPlanStatus =="Free"? 
-       <View style={styles.container}>
-
-        {props.freeUserComponent}
-        </View>
-        :
-        data.length == 0 && userPlanStatus =="Paid"?
-
-         <View style={styles.container}>
-
-        {props.paidUserComponent}
-        </View>:
-        <View style={styles.container}>
-          <View  style={{flex:1, paddingHorizontal: 15,marginTop:10}}>
-       {searchView()} 
-        {userListView()} 
-        </View> 
-        
-       
-      </View> 
-      
-      : 
-      pageType != null && pageType =="detail"? 
-     <ChatConversation props={props}
-        
-        item={items}
-        goBack={()=>onPressGoBack()}
-        socket={props.socket}
-        userCode={userCode}
-        chatuserId={chatuserId}
-        clearChat={()=>onPressClearChat()}
-        genderId={genderId}
-        profileName={profileName}
-        showAudioVideoIcon={showAudioVideoIcon}
-        type={types}
-             socketConneted={socketConneted}
-             onClickVideoCall={(data)=> props.onClickVideoCall(data)}
-          onClickAudioCall={(data)=> props.onClickAudioCall(data)}
-          googleAnalyticsData={(data)=> props.googleAnalyticsData(data)}
-        
-      />
-      :
-       pageType != null && pageType =="block"?
-      <BlockList
-         goBack={()=>onPressGoBack()}
-      />
-      :
-      <PendingRequest
-        goBack={()=>onPressGoBack()}
-      />
-      }  
-
-     
-      
-      </View>
-     
-      
-        
-      );
+          <View style={styles.container}>
+            
+          {openUserDetailPage == false? 
+          <View style={{flex:1}}>
+    
+          {data.length == 0 && userPlanStatus =="Free"? 
+           <View style={styles.container}>
+    
+            {props.freeUserComponent}
+            </View>:
+             data.length == 0 && userPlanStatus =="Paid"?
+    
+             <View style={styles.container}>
+    
+            {props.paidUserComponent}
+            </View>:
+     <View style={styles.container}>
+     <View  style={{flex:1, paddingHorizontal: 15,marginTop:10}}>
+    {searchView()} 
+    {userListView()} 
+    </View> 
+    
+    
+    </View> }
+    
+    
+     {isLoading && (
+            <ScreenLoader loading={isLoading} topMargin={0} text={"Loading.."} />
+           )}
+    
+            </View>
+           
+          
+          
+          
+          
+          : 
+          pageType != null && pageType =="detail"? 
+         <ChatConversation props={props}
+            
+            item={items}
+            goBack={()=>onPressGoBack()}
+            socket={props.socket}
+            userCode={userCode}
+            chatuserId={chatuserId}
+            clearChat={()=>onPressClearChat()}
+            genderId={genderId}
+            profileName={profileName}
+            showAudioVideoIcon={showAudioVideoIcon}
+            type={types}
+                 socketConneted={socketConneted}
+                 onClickVideoCall={(data)=> props.onClickVideoCall(data)}
+              onClickAudioCall={(data)=> props.onClickAudioCall(data)}
+              googleAnalyticsData={(data)=> props.googleAnalyticsData(data)}
+            
+          />
+          :
+           pageType != null && pageType =="block"?
+          <BlockList
+             goBack={()=>onPressGoBack()}
+          />
+          :
+          <PendingRequest
+            goBack={()=>onPressGoBack()}
+          />
+          }  
+    
+         
+          
+          </View>
+         
+          
+            
+          );
+    
 }
 
 const styles = StyleSheet.create({
